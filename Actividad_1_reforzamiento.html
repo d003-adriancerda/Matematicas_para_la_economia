@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad de Reforzamiento: Propiedades de las Funciones</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e67e22;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --gray: #95a5a6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 850px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
+        header { background: var(--primary); color: #fff; padding: 25px; text-align: center; }
+        header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        header h2 { font-size: 1.1rem; font-weight: 400; opacity: 0.9; }
+        section { padding: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input[type="text"], input[type="date"] { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px; box-sizing: border-box; }
+        .btn { display: inline-block; background: var(--secondary); color: #fff; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.3s; width: 100%; margin-top: 10px; }
+        .btn:hover { background: #d35400; }
+        .btn:disabled { background: var(--gray); cursor: not-allowed; }
+        .btn-next { background: var(--primary); }
+        .btn-next:hover { background: #1a252f; }
+        
+        .stats-bar { display: flex; justify-content: space-between; background: #f8f9fa; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; flex-wrap: wrap; gap: 10px; }
+        .stat-item span { color: var(--secondary); }
+        .progress-container { height: 8px; background: #e0e0e0; border-radius: 4px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.4s ease; }
+        
+        .question-box { margin-bottom: 20px; }
+        .question-text { font-size: 1.2rem; margin-bottom: 20px; font-weight: 500; background: #fdfefe; padding: 15px; border-radius: 8px; border-left: 5px solid var(--secondary); }
+        .options { display: grid; gap: 10px; }
+        .option-btn { padding: 12px; background: #fff; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s; font-size: 1.1rem; width: 100%; }
+        .option-btn:hover:not(.disabled) { border-color: var(--secondary); background: #fef5e7; }
+        .option-btn.selected { border-color: var(--secondary); background: #fdebd0; font-weight: 600; }
+        .option-btn.correct { border-color: var(--success); background: #d5f5e3; }
+        .option-btn.incorrect { border-color: var(--danger); background: #fadbd8; }
+        .option-btn.disabled { pointer-events: none; opacity: 0.7; }
+        
+        .feedback { margin-top: 15px; padding: 12px; border-radius: 6px; display: none; }
+        .feedback.correct { background: #d5f5e3; color: #145a32; border: 1px solid #27ae60; }
+        .feedback.incorrect { background: #fadbd8; color: #7b241c; border: 1px solid #e74c3c; }
+        
+        .results-box { text-align: center; }
+        .score-circle { width: 120px; height: 120px; background: var(--secondary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700; margin: 20px auto; }
+        .hidden { display: none !important; }
+        
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            section { padding: 15px; }
+            .option-btn { font-size: 1rem; padding: 10px; }
+            .stats-bar { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Actividad de Reforzamiento</h1>
+        <h2>Matemáticas para la Economía I | Propiedades Elementales de las Funciones</h2>
+    </header>
+
+    <section id="registro">
+        <div class="form-group">
+            <label for="nombre">Nombre del Estudiante</label>
+            <input type="text" id="nombre" placeholder="Tu nombre completo">
+            <label for="fecha">Fecha de Realización</label>
+            <input type="date" id="fecha">
+        </div>
+        <button class="btn" onclick="startQuiz()">Iniciar Evaluación</button>
+    </section>
+
+    <section id="actividad" class="hidden">
+        <div class="stats-bar">
+            <div class="stat-item">✅ <span id="correct-count">0</span></div>
+            <div class="stat-item">❌ <span id="error-count">0</span>/10</div>
+            <div class="stat-item">📊 <span id="progress-pct">0%</span></div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div id="question-container">
+            <div class="question-box">
+                <p class="question-text" id="q-text"></p>
+                <div class="options" id="options-container"></div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            <button class="btn btn-next" id="btn-next" onclick="nextQuestion()" disabled>Siguiente</button>
+        </div>
+    </section>
+
+    <section id="resultados" class="hidden">
+        <div class="results-box">
+            <h2>Resultado para <span id="student-name-display"></span></h2>
+            <div class="score-circle" id="final-score">0%</div>
+            <div id="personal-message" style="margin: 20px 0; font-size: 1.1rem;"></div>
+            <button class="btn" onclick="location.reload()">Reiniciar Actividad</button>
+        </div>
+    </section>
+</div>
+
+<script>
+    // 25 reactivos sobre PROPIEDADES ELEMENTALES DE LAS FUNCIONES
+    // Contexto: Ingeniería Financiera (valor presente, demanda, costos, paridad put-call)
+    const questions = [
+        // ==================== SECCIÓN 1: Simetría (funciones pares e impares) ====================
+        {
+            q: "La función de costo total de una planta industrial es $C(q) = q^2 + 5$. ¿Esta función es par, impar o ninguna?",
+            options: ["Par, porque $C(-q) = (-q)^2 + 5 = q^2 + 5 = C(q)$", "Impar, porque tiene un exponente", "Ninguna, porque $C(-q) \\neq -C(q)$", "Periódica, porque es cuadrática"],
+            correct: 0,
+            explanation: "Una función es par si $f(-x) = f(x)$. Aquí $C(-q) = (-q)^2 + 5 = q^2 + 5 = C(q)$, por lo tanto es par. Su gráfica es simétrica respecto al eje vertical."
+        },
+        {
+            q: "El modelo de utilidad de un inversionista se define como $U(x) = x^3 - x$, donde $x$ representa el monto invertido. ¿Es par o impar?",
+            options: ["Impar, porque $U(-x) = (-x)^3 - (-x) = -x^3 + x = -(x^3 - x) = -U(x)$", "Par, porque $U(-x) = U(x)$", "Ninguna, porque tiene dos términos", "Periódica con periodo 1"],
+            correct: 0,
+            explanation: "Una función es impar si $f(-x) = -f(x)$. Calculando: $U(-x) = (-x)^3 - (-x) = -x^3 + x = -(x^3 - x) = -U(x)$. Es impar, simétrica respecto al origen."
+        },
+        {
+            q: "La desviación absoluta de un precio objetivo $p^*$ se modela como $f(p) = |p - p^*|$. Si tomamos $p^* = 0$, entonces $f(p) = |p|$. ¿Qué tipo de simetría presenta?",
+            options: ["Es función par, porque $|-p| = |p|$", "Es función impar", "No tiene simetría", "Es periódica"],
+            correct: 0,
+            explanation: "El valor absoluto es par: $f(-p) = |-p| = |p| = f(p)$. Su gráfica es simétrica respecto al eje $y$, lo cual es útil para analizar desviaciones positivas o negativas del precio objetivo."
+        },
+        {
+            q: "La función $h(x) = e^x$, que modela el crecimiento continuo del capital $VF = VP \\cdot e^{rt}$, ¿es par, impar o ninguna?",
+            options: ["Ninguna, porque $e^{-x} \\neq e^x$ y $e^{-x} \\neq -e^x$", "Par, porque es continua", "Impar, porque es creciente", "Periódica"],
+            correct: 0,
+            explanation: "Para ser par se requiere $f(-x)=f(x)$ y para impar $f(-x)=-f(x)$. Aquí $e^{-x} = 1/e^x \\neq e^x$ y $e^{-x} \\neq -e^x$. Por tanto $e^x$ no tiene simetría par ni impar."
+        },
+        {
+            q: "¿Es la función $f(x) = x^4 - 3x^2$ (que puede representar un costo cuártico) par o impar?",
+            options: ["Par, porque solo tiene potencias pares de $x$", "Impar, porque tiene exponentes", "Ninguna, porque no es lineal", "Periódica"],
+            correct: 0,
+            explanation: "Calculando: $f(-x) = (-x)^4 - 3(-x)^2 = x^4 - 3x^2 = f(x)$. Como $f(-x) = f(x)$, es par. Toda función formada solo por potencias pares de $x$ es función par."
+        },
+
+        // ==================== SECCIÓN 2: Monotonía ====================
+        {
+            q: "La función $f(x) = e^x$ modela el crecimiento compuesto continuo del valor futuro $VF = VP \\cdot e^{rt}$. ¿Cómo es su monotonía?",
+            options: ["Estrictamente creciente en todo $\\mathbb{R}$", "Estrictamente decreciente", "Constante", "Decreciente para $x<0$ y creciente para $x>0$"],
+            correct: 0,
+            explanation: "La derivada $f'(x) = e^x > 0$ para todo $x \\in \\mathbb{R}$, por lo tanto $e^x$ es estrictamente creciente. Financieramente: a mayor tiempo $t$, mayor valor futuro."
+        },
+        {
+            q: "El factor de descuento $g(t) = \\dfrac{1}{(1+r)^t}$ con $r>0$ se usa para calcular valor presente. ¿Cuál es su monotonía respecto a $t$?",
+            options: ["Estrictamente decreciente en $t$", "Estrictamente creciente en $t$", "Constante", "Periódica con periodo $r$"],
+            correct: 0,
+            explanation: "Como $r > 0$, la base $(1+r) > 1$, por lo que $(1+r)^t$ crece con $t$ y su inverso $g(t)$ decrece. Financieramente: a mayor plazo, menor el valor presente de un monto futuro."
+        },
+        {
+            q: "La función de demanda lineal de un bien financiero es $q = 120 - 3p$, con $p \\geq 0$. ¿Cuál es su monotonía?",
+            options: ["Estrictamente decreciente respecto a $p$", "Estrictamente creciente respecto a $p$", "Constante", "No es monótona"],
+            correct: 0,
+            explanation: "Si $p_1 < p_2$, entonces $-3p_1 > -3p_2$ y por tanto $120 - 3p_1 > 120 - 3p_2$, es decir $q(p_1) > q(p_2)$. Es decreciente: a mayor precio, menor cantidad demandada (ley de la demanda)."
+        },
+        {
+            q: "Sea $f(x) = \\ln(1 + x)$, función que aparece en el cálculo del tiempo de duplicación. ¿Es creciente o decreciente en su dominio?",
+            options: ["Estrictamente creciente en $(-1, \\infty)$", "Estrictamente decreciente", "Constante", "Decrece para $x<0$ y crece para $x>0$"],
+            correct: 0,
+            explanation: "La derivada $f'(x) = \\dfrac{1}{1+x} > 0$ para todo $x > -1$, por lo tanto $\\ln(1+x)$ es estrictamente creciente en su dominio $(-1, \\infty)$."
+        },
+        {
+            q: "La función de ingreso total $I(q) = 5q$, donde $q$ es la cantidad vendida y $5$ el precio unitario constante, es:",
+            options: ["Estrictamente creciente y función impar", "Estrictamente decreciente", "Constante", "Periódica"],
+            correct: 0,
+            explanation: "$I(q) = 5q$ es lineal con pendiente $5 > 0$, por lo que es estrictamente creciente. Además $I(-q) = -5q = -I(q)$, por lo que también es función impar (simétrica respecto al origen)."
+        },
+
+        // ==================== SECCIÓN 3: Funciones inversas ====================
+        {
+            q: "La demanda de un bien financiero es $q = 120 - 3p$. ¿Cuál es la función de demanda inversa $p(q)$?",
+            options: ["$p = \\dfrac{120 - q}{3}$", "$p = 120 - 3q$", "$p = \\dfrac{120 + q}{3}$", "$p = 3q - 120$"],
+            correct: 0,
+            explanation: "Despejando $p$: $3p = 120 - q \\Rightarrow p = \\dfrac{120 - q}{3}$. Esta demanda inversa es la que se utiliza para expresar el ingreso como $I(q) = p(q) \\cdot q$."
+        },
+        {
+            q: "El valor presente de un pago único de $\\$10{,}000$ a $t$ años, con tasa anual $r$, es $VP(t) = 10000(1+r)^{-t}$. ¿Cuál es la función inversa $t(VP)$?",
+            options: ["$t = -\\dfrac{\\ln(VP/10000)}{\\ln(1+r)}$", "$t = \\dfrac{\\ln(VP/10000)}{\\ln(1+r)}$", "$t = VP \\cdot (1+r)^t$", "$t = \\dfrac{\\ln(10000/VP)}{r}$"],
+            correct: 0,
+            explanation: "De $VP = 10000(1+r)^{-t}$ se tiene $(1+r)^{-t} = VP/10000$. Tomando logaritmo: $-t\\ln(1+r) = \\ln(VP/10000)$, por lo que $t = -\\dfrac{\\ln(VP/10000)}{\\ln(1+r)}$."
+        },
+        {
+            q: "Si $VP(t) = 10000(1.05)^{-t}$ (tasa $r = 5\\%$), ¿aproximadamente en cuántos años el valor presente será $\\$6{,}000$?",
+            options: ["Aproximadamente 10.5 años", "5 años", "20 años", "1 año"],
+            correct: 0,
+            explanation: "Planteando: $6000 = 10000(1.05)^{-t} \\Rightarrow (1.05)^t = 10000/6000 = 1.6667$. Entonces $t = \\dfrac{\\ln(1.6667)}{\\ln(1.05)} \\approx \\dfrac{0.5108}{0.0488} \\approx 10.47$ años, aproximadamente 10.5 años."
+        },
+        {
+            q: "La función de costo total $C(q) = q^2 + 20q$ con $q \\geq 0$ representa el costo de producir $q$ unidades. ¿Existe su función inversa en $q \\geq 0$?",
+            options: ["Sí, porque $C(q)$ es estrictamente creciente en $q \\geq 0$", "No, porque es una función cuadrática", "No, porque no es monótona", "Sí, pero solo para $q < 0$"],
+            correct: 0,
+            explanation: "La derivada $C'(q) = 2q + 20 > 0$ para todo $q \\geq 0$, por lo que $C$ es estrictamente creciente en ese intervalo. Toda función estrictamente monótona admite inversa en su dominio. La inversa $q(C)$ responde: ¿qué cantidad produce un costo dado?"
+        },
+        {
+            q: "Sea $f(x) = 2x + 3$, función que modela un costo lineal. ¿Cuál es su función inversa $f^{-1}(x)$?",
+            options: ["$f^{-1}(x) = \\dfrac{x - 3}{2}$", "$f^{-1}(x) = \\dfrac{x + 3}{2}$", "$f^{-1}(x) = 2x - 3$", "$f^{-1}(x) = \\dfrac{x}{2} + 3$"],
+            correct: 0,
+            explanation: "Sea $y = 2x + 3$. Despejando $x$: $2x = y - 3 \\Rightarrow x = \\dfrac{y - 3}{2}$. Por tanto $f^{-1}(x) = \\dfrac{x - 3}{2}$. Verificación: $f(f^{-1}(x)) = 2\\cdot\\dfrac{x-3}{2} + 3 = x$ ✓"
+        },
+
+        // ==================== SECCIÓN 4: Funciones periódicas ====================
+        {
+            q: "Las ventas mensuales de una sucursal bancaria se modelan con $V(t) = 50 + 20\\sin\\!\\left(\\dfrac{\\pi t}{6}\\right)$, donde $t$ está en meses. ¿Cuál es el periodo de la función?",
+            options: ["12 meses", "6 meses", "24 meses", "$\\pi$ meses"],
+            correct: 0,
+            explanation: "El periodo de $\\sin(\\omega t)$ es $T = \\dfrac{2\\pi}{\\omega}$. Aquí $\\omega = \\dfrac{\\pi}{6}$, por lo que $T = \\dfrac{2\\pi}{\\pi/6} = 12$ meses. Refleja un ciclo anual de ventas estacionales."
+        },
+        {
+            q: "Para la función $V(t) = 50 + 20\\sin\\!\\left(\\dfrac{\\pi t}{6}\\right)$, ¿cuál es la amplitud de la oscilación?",
+            options: ["20 (miles de pesos)", "50 (miles de pesos)", "70 (miles de pesos)", "30 (miles de pesos)"],
+            correct: 0,
+            explanation: "En una función de la forma $A + B\\sin(\\omega t)$, la amplitud es el coeficiente $|B|$. Aquí $B = 20$, que representa la magnitud de la desviación de las ventas respecto al nivel medio de 50."
+        },
+        {
+            q: "Para la función $V(t) = 50 + 20\\sin\\!\\left(\\dfrac{\\pi t}{6}\\right)$, que representa ventas mensuales (en miles de pesos), ¿cuál es el valor máximo que pueden tomar las ventas?",
+            options: ["70 mil pesos", "50 mil pesos", "20 mil pesos", "30 mil pesos"],
+            correct: 0,
+            explanation: "El seno alcanza su máximo $1$, por lo que $V_{\\max} = 50 + 20(1) = 70$ mil pesos. Este máximo ocurre cuando $\\dfrac{\\pi t}{6} = \\dfrac{\\pi}{2}$, es decir en $t = 3$ meses."
+        },
+
+        // ==================== SECCIÓN 5: Dominio económico y relaciones ====================
+        {
+            q: "Para la función $VP(t) = 10000(1+r)^{-t}$ con $r > -1$, ¿cuál es su dominio económico (considerando tiempo no negativo)?",
+            options: ["$t \\geq 0$", "$t \\in \\mathbb{R}$", "$t \\leq 0$", "$t > 0$ y entero"],
+            correct: 0,
+            explanation: "El tiempo $t$ es una variable no negativa en el contexto financiero, por lo que el dominio económico es $t \\geq 0$. Matemáticamente $VP$ está definida para todo $t \\in \\mathbb{R}$ si $r > 0$, pero económicamente solo tiene sentido $t \\geq 0$."
+        },
+        {
+            q: "Para la demanda $q = 120 - 3p$ con $q \\geq 0$ y $p \\geq 0$, ¿cuál es el dominio económico de $p$?",
+            options: ["$0 \\leq p \\leq 40$", "$0 \\leq p \\leq 120$", "$p \\geq 0$ sin cota", "$0 \\leq p \\leq 60$"],
+            correct: 0,
+            explanation: "Como $q \\geq 0$: $120 - 3p \\geq 0 \\Rightarrow p \\leq 40$. Junto con $p \\geq 0$, el dominio económico es $0 \\leq p \\leq 40$. Para $p > 40$ la cantidad demandada sería negativa, lo cual no tiene sentido económico."
+        },
+        {
+            q: "La relación $x^2 + y^2 = 100$, que podría representar una isocuanta o frontera de posibilidades, ¿por qué NO es una función $y = f(x)$?",
+            options: ["Porque para cada $x$ en $(-10, 10)$ hay dos valores de $y$ (positivo y negativo)", "Porque tiene un cuadrado", "Porque es una circunferencia pequeña", "Porque $x$ y $y$ son independientes"],
+            correct: 0,
+            explanation: "Despejando: $y = \\pm\\sqrt{100 - x^2}$. Para un mismo $x$ (con $|x|<10$) existen dos valores de $y$, violando la condición de unicidad de una función. Para modelarla como función se debe restringir a $y \\geq 0$ (semicircunferencia superior) o $y \\leq 0$."
+        },
+
+        // ==================== SECCIÓN 6: Paridad put-call y aplicaciones ====================
+        {
+            q: "La paridad put-call para opciones europeas sobre una acción sin dividendos establece $C - P = S - K e^{-rT}$. ¿Qué tipo de relación funcional representa?",
+            options: ["Una relación de paridad (simetría) entre el precio de la call y la put", "Una función periódica de $T$", "Una función par de $S$", "Una función impar de $K$"],
+            correct: 0,
+            explanation: "La paridad put-call es una relación de simetría: un aumento en $C$ se compensa con un aumento en $P$ (manteniendo $S$ y $K e^{-rT}$ constantes). Es fundamental para la valoración consistente de derivados y la detección de oportunidades de arbitraje."
+        },
+        {
+            q: "En la paridad $C - P = S - K e^{-rT}$, si el precio de la acción subyacente $S$ aumenta (manteniendo $K$, $r$ y $T$ constantes), ¿qué ocurre con la diferencia $C - P$?",
+            options: ["Aumenta $C - P$", "Disminuye $C - P$", "Permanece constante en cero", "Se hace negativa"],
+            correct: 0,
+            explanation: "Si $S$ aumenta y los demás términos se mantienen, el lado derecho $S - K e^{-rT}$ aumenta, por lo que $C - P$ también aumenta. Es decir, una call se vuelve relativamente más valiosa que la put cuando sube el precio del subyacente."
+        },
+        {
+            q: "¿Por qué es importante reconocer la simetría (paridad put-call) en la valoración de derivados financieros?",
+            options: ["Porque permite obtener el precio de una opción a partir de la otra y evitar arbitraje", "Porque simplifica el cálculo de impuestos", "Porque elimina el riesgo de mercado", "Porque determina el periodo de la opción"],
+            correct: 0,
+            explanation: "La paridad put-call permite verificar consistencia entre precios de calls y puts. Si se viola, existe una oportunidad de arbitraje libre de riesgo. Reconocer esta simetría es esencial para la gestión de riesgos y la valoración de derivados."
+        },
+        {
+            q: "Una empresa tiene ingresos mensuales modelados por $I(t) = 100 + 30\\cos\\!\\left(\\dfrac{\\pi t}{6}\\right)$ en miles de pesos, $t$ en meses. ¿Cuál es el valor mínimo de los ingresos?",
+            options: ["70 mil pesos", "100 mil pesos", "130 mil pesos", "30 mil pesos"],
+            correct: 0,
+            explanation: "El coseno varía entre $-1$ y $1$. El mínimo ocurre cuando $\\cos = -1$: $I_{\\min} = 100 + 30(-1) = 70$ mil pesos. Esto ocurre en $t = 6$ meses, reflejando un mínimo estacional a mitad de año."
+        }
+    ];
+
+    let currentQ = 0;
+    let correctCount = 0;
+    let errorCount = 0;
+    let studentName = "";
+    let answered = false;
+    const MAX_ERRORS = 10;
+
+    // Establecer fecha de hoy por defecto
+    const fechaInput = document.getElementById('fecha');
+    if (fechaInput) {
+        const hoy = new Date();
+        const año = hoy.getFullYear();
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        fechaInput.value = `${año}-${mes}-${dia}`;
+    }
+
+    // Mezcla las opciones de una pregunta (Fisher-Yates) y actualiza el índice correcto
+    function shuffleOptions(q) {
+        // Construye arreglo temporal marcando cuál opción es la correcta
+        const opts = q.options.map((text, i) => ({ text, isCorrect: i === q.correct }));
+        for (let i = opts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        q.options = opts.map(o => o.text);
+        q.correct = opts.findIndex(o => o.isCorrect);
+    }
+
+    function startQuiz() {
+        const nameInput = document.getElementById('nombre').value.trim();
+        const dateInput = document.getElementById('fecha').value;
+        if(!nameInput || !dateInput) {
+            alert("Por favor, ingresa tu nombre y la fecha.");
+            return;
+        }
+        studentName = nameInput;
+        // Aleatoriza el orden de las opciones para cada pregunta (la respuesta correcta
+        // aparecerá en una posición distinta: 1ra, 2da, 3ra o 4ta)
+        questions.forEach(shuffleOptions);
+        document.getElementById('registro').classList.add('hidden');
+        document.getElementById('actividad').classList.remove('hidden');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        answered = false;
+        const q = questions[currentQ];
+        document.getElementById('q-text').innerHTML = `<strong>Pregunta ${currentQ + 1}:</strong><br>${q.q}`;
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        q.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = opt;
+            btn.onclick = () => selectOption(i, btn);
+            container.appendChild(btn);
+        });
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('btn-next').disabled = true;
+        updateStats();
+        
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise();
+        }
+    }
+
+    function selectOption(index, btn) {
+        if(answered) return;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('btn-next').disabled = false;
+        btn.dataset.index = index;
+    }
+
+    function nextQuestion() {
+        if(!answered) {
+            const selected = document.querySelector('.option-btn.selected');
+            if(!selected) {
+                alert("Por favor, selecciona una respuesta antes de continuar.");
+                return;
+            }
+            const idx = parseInt(selected.dataset.index);
+            checkAnswer(idx);
+            answered = true;
+            document.getElementById('btn-next').innerText = (currentQ < questions.length - 1) ? "Siguiente Pregunta" : "Finalizar";
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        } else {
+            currentQ++;
+            if(currentQ < questions.length) {
+                loadQuestion();
+                document.getElementById('btn-next').innerText = "Siguiente";
+            } else {
+                showResults();
+            }
+        }
+    }
+
+    function checkAnswer(selectedIdx) {
+        const q = questions[currentQ];
+        const isCorrect = selectedIdx === q.correct;
+        const feedback = document.getElementById('feedback');
+        const btns = document.querySelectorAll('.option-btn');
+
+        btns.forEach(b => b.classList.add('disabled'));
+        btns[q.correct].classList.add('correct');
+
+        if(isCorrect) {
+            correctCount++;
+            feedback.className = "feedback correct";
+            feedback.innerHTML = "<strong>¡Excelente!</strong> " + q.explanation;
+        } else {
+            errorCount++;
+            btns[selectedIdx].classList.add('incorrect');
+            feedback.className = "feedback incorrect";
+            feedback.innerHTML = "<strong>Incorrecto.</strong> " + q.explanation;
+            
+            if(errorCount >= MAX_ERRORS) {
+                setTimeout(() => {
+                    alert(`Has alcanzado el límite de ${MAX_ERRORS} errores. Te recomendamos repasar: simetrías (funciones pares e impares), monotonía (creciente/decreciente), funciones inversas, periodicidad y la paridad put-call.`);
+                    location.reload();
+                }, 1500);
+            }
+        }
+        feedback.style.display = 'block';
+        updateStats();
+    }
+
+    function updateStats() {
+        document.getElementById('correct-count').innerText = correctCount;
+        document.getElementById('error-count').innerText = errorCount;
+        const prog = Math.round((currentQ / questions.length) * 100);
+        document.getElementById('progress-pct').innerText = prog + "%";
+        document.getElementById('progress-bar').style.width = prog + "%";
+    }
+
+    function showResults() {
+        document.getElementById('actividad').classList.add('hidden');
+        document.getElementById('resultados').classList.remove('hidden');
+        document.getElementById('student-name-display').innerText = studentName;
+        const score = Math.round((correctCount / questions.length) * 100);
+        document.getElementById('final-score').innerText = score + "%";
+        
+        let msg = score >= 80 ? 
+            "¡Excelente trabajo! Dominas las propiedades elementales de las funciones: simetría (par/impar), monotonía, funciones inversas, periodicidad y la paridad put-call en contexto financiero." : 
+            "Buen esfuerzo. Te sugerimos repasar: identificación de funciones pares e impares, análisis de monotonía (creciente/decreciente), cálculo de funciones inversas como la demanda inversa, periodicidad de funciones trigonométricas en series estacionales, y la simetría de la paridad put-call.";
+        document.getElementById('personal-message').innerText = msg;
+    }
+</script>
+</body>
+</html>
