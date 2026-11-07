@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad de Reforzamiento: Continuidad y Límites</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e67e22;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --gray: #95a5a6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 850px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
+        header { background: var(--primary); color: #fff; padding: 25px; text-align: center; }
+        header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        header h2 { font-size: 1.1rem; font-weight: 400; opacity: 0.9; }
+        section { padding: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input[type="text"], input[type="date"] { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px; box-sizing: border-box; }
+        .btn { display: inline-block; background: var(--secondary); color: #fff; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.3s; width: 100%; margin-top: 10px; }
+        .btn:hover { background: #d35400; }
+        .btn:disabled { background: var(--gray); cursor: not-allowed; }
+        .btn-next { background: var(--primary); }
+        .btn-next:hover { background: #1a252f; }
+        
+        .stats-bar { display: flex; justify-content: space-between; background: #f8f9fa; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; flex-wrap: wrap; gap: 10px; }
+        .stat-item span { color: var(--secondary); }
+        .progress-container { height: 8px; background: #e0e0e0; border-radius: 4px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.4s ease; }
+        
+        .question-box { margin-bottom: 20px; }
+        .question-text { font-size: 1.2rem; margin-bottom: 20px; font-weight: 500; background: #fdfefe; padding: 15px; border-radius: 8px; border-left: 5px solid var(--secondary); }
+        .options { display: grid; gap: 10px; }
+        .option-btn { padding: 12px; background: #fff; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s; font-size: 1.1rem; width: 100%; }
+        .option-btn:hover:not(.disabled) { border-color: var(--secondary); background: #fef5e7; }
+        .option-btn.selected { border-color: var(--secondary); background: #fdebd0; font-weight: 600; }
+        .option-btn.correct { border-color: var(--success); background: #d5f5e3; }
+        .option-btn.incorrect { border-color: var(--danger); background: #fadbd8; }
+        .option-btn.disabled { pointer-events: none; opacity: 0.7; }
+        .option-label { display: inline-block; min-width: 28px; height: 28px; line-height: 28px; text-align: center; background: var(--primary); color: #fff; border-radius: 50%; font-weight: 700; margin-right: 12px; vertical-align: middle; font-size: 0.95rem; }
+        .option-btn.correct .option-label { background: var(--success); }
+        .option-btn.incorrect .option-label { background: var(--danger); }
+        .option-btn.selected .option-label { background: var(--secondary); }
+        .option-text { display: inline-block; vertical-align: middle; width: calc(100% - 45px); }
+        
+        .feedback { margin-top: 15px; padding: 12px; border-radius: 6px; display: none; }
+        .feedback.correct { background: #d5f5e3; color: #145a32; border: 1px solid #27ae60; }
+        .feedback.incorrect { background: #fadbd8; color: #7b241c; border: 1px solid #e74c3c; }
+        
+        .results-box { text-align: center; }
+        .score-circle { width: 120px; height: 120px; background: var(--secondary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700; margin: 20px auto; }
+        .hidden { display: none !important; }
+        
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            section { padding: 15px; }
+            .option-btn { font-size: 1rem; padding: 10px; }
+            .stats-bar { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Actividad de Reforzamiento</h1>
+        <h2>Matemáticas para la Economía I | Continuidad y Límites</h2>
+    </header>
+
+    <section id="registro">
+        <div class="form-group">
+            <label for="nombre">Nombre del Estudiante</label>
+            <input type="text" id="nombre" placeholder="Tu nombre completo">
+            <label for="fecha">Fecha de Realización</label>
+            <input type="date" id="fecha">
+        </div>
+        <button class="btn" onclick="startQuiz()">Iniciar Evaluación</button>
+    </section>
+
+    <section id="actividad" class="hidden">
+        <div class="stats-bar">
+            <div class="stat-item">✅ <span id="correct-count">0</span></div>
+            <div class="stat-item">❌ <span id="error-count">0</span>/10</div>
+            <div class="stat-item">📊 <span id="progress-pct">0%</span></div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div id="question-container">
+            <div class="question-box">
+                <p class="question-text" id="q-text"></p>
+                <div class="options" id="options-container"></div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            <button class="btn btn-next" id="btn-next" onclick="nextQuestion()" disabled>Siguiente</button>
+        </div>
+    </section>
+
+    <section id="resultados" class="hidden">
+        <div class="results-box">
+            <h2>Resultado para <span id="student-name-display"></span></h2>
+            <div class="score-circle" id="final-score">0%</div>
+            <div id="personal-message" style="margin: 20px 0; font-size: 1.1rem;"></div>
+            <button class="btn" onclick="location.reload()">Reiniciar Actividad</button>
+        </div>
+    </section>
+</div>
+
+<script>
+    // 25 reactivos sobre CONTINUIDAD Y LÍMITES
+    // Contexto: Ingeniería Financiera (costo marginal, valor presente, asíntotas, perpetuidades)
+    const questions = [
+        // ==================== SECCIÓN 1: Cálculo de límites por sustitución y factorización ====================
+        {
+            q: "Una planta industrial tiene un costo total $C(q)=q^2$. El costo medio de producir $q$ unidades adicionales a partir de $q=10$ es $\\dfrac{C(q)-C(10)}{q-10}$. Calcula $\\lim_{q\\to 10}\\dfrac{q^2-100}{q-10}$, que se interpreta como el costo marginal aproximado en $q=10$.",
+            options: ["20", "10", "0", "No existe"],
+            correct: 0,
+            explanation: "Factorizando: $\\frac{q^2-100}{q-10}=\\frac{(q-10)(q+10)}{q-10}=q+10$ para $q\\neq10$. Por tanto $\\lim_{q\\to10}(q+10)=20$. Si $C(q)=q^2$, el costo marginal en $q=10$ es $C'(10)=2(10)=20$."
+        },
+        {
+            q: "Sea la función de costo medio $f(q)=\\dfrac{q^2-5q+6}{q-2}$ con $q\\neq 2$. Calcula $\\lim_{q\\to 2}f(q)$.",
+            options: ["$-1$", "$1$", "$0$", "No existe"],
+            correct: 0,
+            explanation: "Factorizando el numerador: $q^2-5q+6=(q-2)(q-3)$. Entonces $\\frac{(q-2)(q-3)}{q-2}=q-3$ para $q\\neq2$. Por tanto $\\lim_{q\\to2}(q-3)=2-3=-1$."
+        },
+        {
+            q: "El ingreso total de una empresa es $I(q)=100q-2q^2$. Calcula por sustitución directa $\\lim_{q\\to 5}I(q)$.",
+            options: ["$450$", "$500$", "$400$", "$250$"],
+            correct: 0,
+            explanation: "Como $I(q)$ es un polinomio (función continua en todo $\\mathbb{R}$), el límite se obtiene por sustitución directa: $I(5)=100(5)-2(5)^2=500-50=450$."
+        },
+        {
+            q: "Un fondo de inversión paga una perpetuidad anual de $\\$1{,}000$ descontada continuamente a tasa $r=2$ (en escala anual). El valor presente es proporcional a $\\sum_{n=0}^{\\infty}e^{-2n}$. ¿Cuál es el valor de esta suma geométrica?",
+            options: ["$\\dfrac{1}{1-e^{-2}}$", "$\\dfrac{1}{1-e^{2}}$", "$1$", "$\\infty$"],
+            correct: 0,
+            explanation: "Como $|e^{-2}|<1$, la serie geométrica converge: $\\sum_{n=0}^{\\infty}(e^{-2})^n=\\frac{1}{1-e^{-2}}\\approx 1.1565$. Esta es la base para valorar perpetuidades con descuento continuo."
+        },
+        {
+            q: "Calcula $\\lim_{x\\to\\infty}\\dfrac{3x^3-2x+1}{x^3+4}$, que representa el comportamiento del costo medio a largo plazo.",
+            options: ["$3$", "$0$", "$\\infty$", "$-3$"],
+            correct: 0,
+            explanation: "Comparando términos dominantes: $\\lim_{x\\to\\infty}\\frac{3x^3}{x^3}=3$. Esto indica que a gran escala el costo unitario se estabiliza en $\\$3$, pues los costos fijos se diluyen."
+        },
+
+        // ==================== SECCIÓN 2: Continuidad en un punto ====================
+        {
+            q: "¿Es $f(x)=x^2-3x+5$ continua en $x=2$?",
+            options: ["Sí, porque es una función polinomial y todo polinomio es continuo en $\\mathbb{R}$", "No, porque $f(2)=3$", "Sí, pero solo por la derecha", "No, porque tiene una asíntota vertical"],
+            correct: 0,
+            explanation: "Las funciones polinomiales son continuas en todo $\\mathbb{R}$. Verificando: $f(2)=4-6+5=3$, $\\lim_{x\\to2}(x^2-3x+5)=3$, coinciden. La función es continua en $x=2$."
+        },
+        {
+            q: "¿Es $f(x)=\\ln(x)$ continua en $x=10$?",
+            options: ["Sí, $\\ln(x)$ es continua en todo su dominio $(0,\\infty)$", "No, porque no está definida en $x=10$", "Sí, pero solo por la izquierda", "No, porque tiene una discontinuidad de salto"],
+            correct: 0,
+            explanation: "La función logaritmo es continua en todo su dominio $(0,\\infty)$. Como $10>0$, $\\ln(x)$ es continua en $x=10$. Aquí $f(10)=\\ln(10)\\approx 2.303$ y el límite coincide."
+        },
+        {
+            q: "¿Es $f(x)=\\dfrac{1}{x}$ continua en $x=0.5$?",
+            options: ["Sí, es continua en todo $x\\neq 0$", "No, porque $1/0.5=2$", "Sí, pero solo por la derecha", "No, porque tiene una asíntota vertical"],
+            correct: 0,
+            explanation: "La función $1/x$ es continua en todo su dominio $\\mathbb{R}\\setminus\\{0\\}$. Como $x=0.5\\neq0$, $f$ es continua ahí. Aquí $f(0.5)=2$ y $\\lim_{x\\to0.5}1/x=2$."
+        },
+        {
+            q: "La función de demanda $q=120-3p$ con $p\\ge 0$ es continua en $p=10$. ¿Por qué?",
+            options: ["Porque es una función lineal (polinomial) y por tanto continua en todo $\\mathbb{R}$", "Porque $q(10)=90$ es positivo", "Porque tiene inversa", "Porque es monótona decreciente"],
+            correct: 0,
+            explanation: "Toda función lineal es un polinomio y, por tanto, continua en todo $\\mathbb{R}$. La demanda $q=120-3p$ cumple: $q(10)=90$, $\\lim_{p\\to10}(120-3p)=90$, coinciden. Es continua."
+        },
+        {
+            q: "Sea $f(x)=\\dfrac{x^2-9}{x-3}$ con $x\\neq 3$. ¿Es continua en $x=3$?",
+            options: ["No, porque $f(3)$ no está definida (discontinuidad removible)", "Sí, porque el límite existe", "Sí, porque es polinomial", "Sí, porque $f(3)=6$"],
+            correct: 0,
+            explanation: "Factorizando: $\\frac{x^2-9}{x-3}=\\frac{(x-3)(x+3)}{x-3}=x+3$ para $x\\neq3$. El límite cuando $x\\to3$ es 6, pero $f(3)$ no está definida. Es una discontinuidad removible (agujero)."
+        },
+
+        // ==================== SECCIÓN 3: Funciones a trozos y continuidad ====================
+        {
+            q: "Sea $C(q)=\\begin{cases}q^2+1 & q<0 \\\\ 2q+1 & q\\ge 0\\end{cases}$. ¿Es continua en $q=0$?",
+            options: ["Sí, porque $\\lim_{q\\to0^-}=1$, $\\lim_{q\\to0^+}=1$ y $C(0)=1$", "No, porque los límites laterales no coinciden", "No, porque $C(0)$ no existe", "Sí, pero solo por la derecha"],
+            correct: 0,
+            explanation: "Por la izquierda: $\\lim_{q\\to0^-}(q^2+1)=1$. Por la derecha: $\\lim_{q\\to0^+}(2q+1)=1$. Y $C(0)=2(0)+1=1$. Como los tres valores coinciden, $C$ es continua en $q=0$."
+        },
+        {
+            q: "Sea $f(x)=\\begin{cases}x+1 & x<1 \\\\ 2 & x=1 \\\\ x & x>1\\end{cases}$. ¿Es continua en $x=1$?",
+            options: ["No, porque $\\lim_{x\\to1^-}=2$ y $\\lim_{x\\to1^+}=1$ no coinciden (discontinuidad de salto)", "Sí, porque $f(1)=2$", "Sí, porque ambos límites laterales existen", "No, porque $f(1)$ no está definida"],
+            correct: 0,
+            explanation: "Por la izquierda: $\\lim_{x\\to1^-}(x+1)=2$. Por la derecha: $\\lim_{x\\to1^+}x=1$. Los límites laterales no coinciden, por tanto no es continua. Es una discontinuidad de salto."
+        },
+        {
+            q: "Sea $f(q)=\\begin{cases}\\dfrac{q^2-7q+10}{q-2} & q\\neq 2 \\\\ k & q=2\\end{cases}$. ¿Qué valor de $k$ la hace continua en $q=2$?",
+            options: ["$k=-3$", "$k=3$", "$k=0$", "$k=-1$"],
+            correct: 0,
+            explanation: "Factorizando: $q^2-7q+10=(q-2)(q-5)$, por lo que $\\frac{(q-2)(q-5)}{q-2}=q-5$ para $q\\neq2$. El límite es $\\lim_{q\\to2}(q-5)=2-5=-3$. Para continuidad, $k=-3$."
+        },
+        {
+            q: "Sea $f(x)=\\begin{cases}\\dfrac{\\sin(x)}{x} & x\\neq 0 \\\\ k & x=0\\end{cases}$. ¿Qué valor de $k$ la hace continua en $x=0$?",
+            options: ["$k=1$", "$k=0$", "$k=\\infty$", "$k=\\sin(0)=0$"],
+            correct: 0,
+            explanation: "El límite fundamental $\\lim_{x\\to0}\\frac{\\sin(x)}{x}=1$. Para que $f$ sea continua en $x=0$ se requiere $f(0)=k=1$."
+        },
+        {
+            q: "Una compañía cobra por kWh según la tarifa escalonada $T(q)=\\begin{cases}0.10q & 0\\le q\\le 100 \\\\ 0.15q-5 & q>100\\end{cases}$. ¿Es $T$ continua en $q=100$?",
+            options: ["Sí, porque $\\lim_{q\\to100^-}=10$, $\\lim_{q\\to100^+}=10$ y $T(100)=10$", "No, porque hay un salto de 5 pesos", "Sí, pero solo por la izquierda", "No, porque $T(100)$ no está definida"],
+            correct: 0,
+            explanation: "Por la izquierda: $\\lim_{q\\to100^-}0.10q=10$. Por la derecha: $\\lim_{q\\to100^+}(0.15q-5)=15-5=10$. Y $T(100)=0.10(100)=10$. Como los tres coinciden, $T$ es continua en $q=100$."
+        },
+
+        // ==================== SECCIÓN 4: Asíntotas ====================
+        {
+            q: "Para la función de costo medio $C(q)=\\dfrac{3q^2+5}{q-5}$, ¿cuál es la asíntota vertical?",
+            options: ["$q=5$", "$q=0$", "$q=-5$", "No tiene asíntota vertical"],
+            correct: 0,
+            explanation: "El denominador se anula en $q=5$ y el numerador no se anula ahí ($3(5)^2+5=80\\neq0$). Por tanto, hay asíntota vertical en $q=5$: el costo medio tiende a infinito al acercarse la producción a 5 unidades (punto crítico de operación)."
+        },
+        {
+            q: "Para la misma función $C(q)=\\dfrac{3q^2+5}{q-5}$, ¿cuál es la asíntota oblicua?",
+            options: ["$y=3q+15$", "$y=3q-15$", "$y=3q$", "No tiene asíntota oblicua"],
+            correct: 0,
+            explanation: "Dividiendo: $\\frac{3q^2+5}{q-5}=3q+15+\\frac{80}{q-5}$. Cuando $q\\to\\pm\\infty$, el residuo $\\frac{80}{q-5}\\to0$, así que la asíntota oblicua es $y=3q+15$. Refleja que a gran escala el costo medio crece linealmente."
+        },
+        {
+            q: "¿Tiene asíntota horizontal la función $C(q)=\\dfrac{3q^2+5}{q-5}$?",
+            options: ["No, porque el grado del numerador (2) excede al del denominador (1)", "Sí, $y=3$", "Sí, $y=0$", "Sí, $y=\\infty$"],
+            correct: 0,
+            explanation: "Cuando el grado del numerador excede al del denominador, no hay asíntota horizontal. Si el numerador supera al denominador en exactamente un grado, aparece una asíntota oblicua (en este caso $y=3q+15$)."
+        },
+        {
+            q: "¿Cuál es la asíntota horizontal de $f(t)=\\dfrac{100}{1+e^{-t}}$ (curva logística, que modela la adopción de un producto financiero)?",
+            options: ["$y=100$", "$y=0$", "$y=50$", "$y=1$"],
+            correct: 0,
+            explanation: "Cuando $t\\to\\infty$, $e^{-t}\\to0$, así que $f(t)\\to\\frac{100}{1+0}=100$. Por tanto, la asíntota horizontal es $y=100$: el nivel de saturación del mercado (máxima adopción posible)."
+        },
+        {
+            q: "El valor presente de un pago de $\\$10{,}000$ a $t$ años con tasa continua $r=0.05$ es $VP(t)=10000e^{-0.05t}$. ¿Cuál es su asíntota horizontal?",
+            options: ["$y=0$", "$y=10000$", "$y=500$", "No tiene asíntota horizontal"],
+            correct: 0,
+            explanation: "Cuando $t\\to\\infty$, $e^{-0.05t}\\to0$, por lo que $VP(t)\\to0$. La asíntota horizontal es $y=0$: el valor presente de un pago muy lejano tiende a cero (principio del valor del dinero en el tiempo)."
+        },
+
+        // ==================== SECCIÓN 5: Límites trigonométricos y al infinito ====================
+        {
+            q: "Calcula $\\lim_{x\\to 0}\\dfrac{1-\\cos(x)}{x}$. Este límite aparece al analizar la tasa de cambio de funciones periódicas cerca del origen.",
+            options: ["$0$", "$1$", "$\\infty$", "No existe"],
+            correct: 0,
+            explanation: "Multiplicando por el conjugado: $\\frac{1-\\cos(x)}{x}\\cdot\\frac{1+\\cos(x)}{1+\\cos(x)}=\\frac{\\sin^2(x)}{x(1+\\cos(x))}=\\frac{\\sin(x)}{x}\\cdot\\frac{\\sin(x)}{1+\\cos(x)}$. Cuando $x\\to0$: $1\\cdot\\frac{0}{2}=0$."
+        },
+        {
+            q: "Calcula $\\lim_{t\\to\\infty}10000e^{-0.05t}$, que representa el valor presente de un pago muy lejano.",
+            options: ["$0$", "$10000$", "$\\infty$", "$500$"],
+            correct: 0,
+            explanation: "Como $-0.05t\\to-\\infty$ cuando $t\\to\\infty$, se tiene $e^{-0.05t}\\to0$. Por tanto $\\lim_{t\\to\\infty}10000e^{-0.05t}=0$. El valor presente de un pago muy lejano tiende a cero."
+        },
+        {
+            q: "Calcula $\\lim_{n\\to\\infty}\\dfrac{7n^3+3n^2}{5n-14n^3}$, que aparece en el análisis del rendimiento de un bono perpetuo.",
+            options: ["$-\\dfrac{1}{2}$", "$\\dfrac{7}{5}$", "$0$", "$\\infty$"],
+            correct: 0,
+            explanation: "Comparando términos dominantes: $\\lim_{n\\to\\infty}\\frac{7n^3}{-14n^3}=-\\frac{1}{2}$. El cociente entre los términos principales (de mayor grado) determina el límite."
+        },
+        {
+            q: "Calcula $\\lim_{x\\to 0}\\dfrac{\\sin(x)}{x}$, límite fundamental trigonométrico que aparece al modelar variaciones estacionales.",
+            options: ["$1$", "$0$", "$\\infty$", "No existe"],
+            correct: 0,
+            explanation: "Es el límite fundamental: $\\lim_{x\\to0}\\frac{\\sin(x)}{x}=1$. Geométricamente, para valores pequeños de $x$ (en radianes), $\\sin(x)\\approx x$. Aparece en el análisis de tasas de cambio de funciones periódicas."
+        },
+        {
+            q: "Calcula $\\lim_{x\\to 0}\\dfrac{\\tan(x)}{x}$.",
+            options: ["$1$", "$0$", "$\\infty$", "$\\frac{1}{2}$"],
+            correct: 0,
+            explanation: "Como $\\tan(x)=\\frac{\\sin(x)}{\\cos(x)}$, entonces $\\frac{\\tan(x)}{x}=\\frac{\\sin(x)}{x}\\cdot\\frac{1}{\\cos(x)}$. Cuando $x\\to0$: $1\\cdot\\frac{1}{1}=1$. Por tanto, el límite es 1."
+        },
+
+        // ==================== SECCIÓN 6: Tipos de discontinuidad y aplicaciones ====================
+        {
+            q: "La función $f(x)=\\tan(x)$ en $x=\\pi/2$. ¿Qué tipo de discontinuidad presenta?",
+            options: ["Infinita (asintótica)", "Removible", "De salto", "Es continua"],
+            correct: 0,
+            explanation: "$\\tan(x)=\\frac{\\sin(x)}{\\cos(x)}$. En $x=\\pi/2$, $\\cos(\\pi/2)=0$, por lo que la función tiende a $\\pm\\infty$. Es una discontinuidad infinita (asíntota vertical)."
+        },
+        {
+            q: "La función $f(x)=\\dfrac{x^2-1}{x-1}$ en $x=1$. ¿Qué tipo de discontinuidad presenta?",
+            options: ["Removible", "Infinita", "De salto", "Es continua"],
+            correct: 0,
+            explanation: "Factorizando: $\\frac{(x-1)(x+1)}{x-1}=x+1$ para $x\\neq1$. El límite cuando $x\\to1$ es 2, pero $f(1)$ no está definida. Es una discontinuidad removible (agujero), pues podría ``corregirse'' definiendo $f(1)=2$."
+        },
+        {
+            q: "Si $f(x)=x^3-2$ es continua, $f(0)=-2$ y $f(2)=6$, ¿existe $c$ en $(0,2)$ tal que $f(c)=0$?",
+            options: ["Sí, por el Teorema del Valor Intermedio", "No, porque 0 no está entre $-2$ y $6$", "Sí, pero solo si $c$ es entero", "No se puede determinar"],
+            correct: 0,
+            explanation: "Por el TVI, como $f$ es continua en $[0,2]$ y $0$ está entre $f(0)=-2$ y $f(2)=6$, existe al menos un $c\\in(0,2)$ tal que $f(c)=0$. (En efecto, $c=\\sqrt[3]{2}\\approx1.26$.)"
+        },
+        {
+            q: "La utilidad de una empresa es $\\Pi(q)=-q^2+80q-100$. Sabiendo que $\\Pi(0)=-100$ y $\\Pi(40)=1500$, ¿existe alguna cantidad $q$ en $(0,40)$ donde $\\Pi(q)=0$ (punto de equilibrio)?",
+            options: ["Sí, por el Teorema del Valor Intermedio, ya que $0$ está entre $-100$ y $1500$", "No, porque la utilidad solo aumenta", "Sí, pero solo si la función es lineal", "No se puede determinar"],
+            correct: 0,
+            explanation: "Por el TVI, como $\\Pi$ es continua (es polinomio) en $[0,40]$ y $0$ está entre $\\Pi(0)=-100$ y $\\Pi(40)=1500$, existe al menos un $c\\in(0,40)$ con $\\Pi(c)=0$. Efectivamente $q\\approx15.51$ es un punto de equilibrio."
+        },
+        {
+            q: "Una función continua en $[0,10]$ con $f(0)=-5$ y $f(10)=8$. ¿Cruza el eje $x$ en algún punto del intervalo?",
+            options: ["Sí, por el Teorema del Valor Intermedio", "No, porque la función podría saltarse el 0", "Sí, solo si es derivable", "No se puede determinar"],
+            correct: 0,
+            explanation: "El TVI garantiza que como $0$ está entre $-5$ y $8$, y $f$ es continua en $[0,10]$, existe al menos un $c\\in(0,10)$ con $f(c)=0$. Es decir, la función cruza el eje $x$."
+        }
+    ];
+
+    let currentQ = 0;
+    let correctCount = 0;
+    let errorCount = 0;
+    let studentName = "";
+    let answered = false;
+    const MAX_ERRORS = 10;
+    const OPTION_LABELS = ['a', 'b', 'c', 'd'];
+
+    // Establecer fecha de hoy por defecto
+    const fechaInput = document.getElementById('fecha');
+    if (fechaInput) {
+        const hoy = new Date();
+        const año = hoy.getFullYear();
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        fechaInput.value = `${año}-${mes}-${dia}`;
+    }
+
+    // Mezcla las opciones de una pregunta (Fisher-Yates) y actualiza el índice correcto
+    function shuffleOptions(q) {
+        // Construye arreglo temporal marcando cuál opción es la correcta
+        const opts = q.options.map((text, i) => ({ text, isCorrect: i === q.correct }));
+        for (let i = opts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        q.options = opts.map(o => o.text);
+        q.correct = opts.findIndex(o => o.isCorrect);
+    }
+
+    function startQuiz() {
+        const nameInput = document.getElementById('nombre').value.trim();
+        const dateInput = document.getElementById('fecha').value;
+        if(!nameInput || !dateInput) {
+            alert("Por favor, ingresa tu nombre y la fecha.");
+            return;
+        }
+        studentName = nameInput;
+        // Aleatoriza el orden de las opciones para cada pregunta (la respuesta correcta
+        // aparecerá en una posición distinta: a, b, c o d)
+        questions.forEach(shuffleOptions);
+        document.getElementById('registro').classList.add('hidden');
+        document.getElementById('actividad').classList.remove('hidden');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        answered = false;
+        const q = questions[currentQ];
+        document.getElementById('q-text').innerHTML = `<strong>Pregunta ${currentQ + 1}:</strong><br>${q.q}`;
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        q.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            const label = OPTION_LABELS[i];
+            btn.innerHTML = `<span class="option-label">${label})</span><span class="option-text">${opt}</span>`;
+            btn.onclick = () => selectOption(i, btn);
+            container.appendChild(btn);
+        });
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('btn-next').disabled = true;
+        updateStats();
+        
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise();
+        }
+    }
+
+    function selectOption(index, btn) {
+        if(answered) return;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('btn-next').disabled = false;
+        btn.dataset.index = index;
+    }
+
+    function nextQuestion() {
+        if(!answered) {
+            const selected = document.querySelector('.option-btn.selected');
+            if(!selected) {
+                alert("Por favor, selecciona una respuesta antes de continuar.");
+                return;
+            }
+            const idx = parseInt(selected.dataset.index);
+            checkAnswer(idx);
+            answered = true;
+            document.getElementById('btn-next').innerText = (currentQ < questions.length - 1) ? "Siguiente Pregunta" : "Finalizar";
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        } else {
+            currentQ++;
+            if(currentQ < questions.length) {
+                loadQuestion();
+                document.getElementById('btn-next').innerText = "Siguiente";
+            } else {
+                showResults();
+            }
+        }
+    }
+
+    function checkAnswer(selectedIdx) {
+        const q = questions[currentQ];
+        const isCorrect = selectedIdx === q.correct;
+        const feedback = document.getElementById('feedback');
+        const btns = document.querySelectorAll('.option-btn');
+
+        btns.forEach(b => b.classList.add('disabled'));
+        btns[q.correct].classList.add('correct');
+
+        if(isCorrect) {
+            correctCount++;
+            feedback.className = "feedback correct";
+            feedback.innerHTML = "<strong>¡Excelente!</strong> " + q.explanation;
+        } else {
+            errorCount++;
+            btns[selectedIdx].classList.add('incorrect');
+            feedback.className = "feedback incorrect";
+            const selectedLabel = OPTION_LABELS[selectedIdx];
+            const correctLabel = OPTION_LABELS[q.correct];
+            feedback.innerHTML = `<strong>Incorrecto.</strong> Tu respuesta fue <strong>${selectedLabel})</strong>, pero la correcta es <strong>${correctLabel})</strong>. ` + q.explanation;
+            
+            if(errorCount >= MAX_ERRORS) {
+                setTimeout(() => {
+                    alert(`Has alcanzado el límite de ${MAX_ERRORS} errores. Te recomendamos repasar: cálculo de límites (factorización, sustitución, conjugado), continuidad (3 condiciones), tipos de discontinuidad, asíntotas y el Teorema del Valor Intermedio.`);
+                    location.reload();
+                }, 1500);
+            }
+        }
+        feedback.style.display = 'block';
+        updateStats();
+    }
+
+    function updateStats() {
+        document.getElementById('correct-count').innerText = correctCount;
+        document.getElementById('error-count').innerText = errorCount;
+        const prog = Math.round((currentQ / questions.length) * 100);
+        document.getElementById('progress-pct').innerText = prog + "%";
+        document.getElementById('progress-bar').style.width = prog + "%";
+    }
+
+    function showResults() {
+        document.getElementById('actividad').classList.add('hidden');
+        document.getElementById('resultados').classList.remove('hidden');
+        document.getElementById('student-name-display').innerText = studentName;
+        const score = Math.round((correctCount / questions.length) * 100);
+        document.getElementById('final-score').innerText = score + "%";
+        
+        let msg = score >= 80 ? 
+            "¡Excelente trabajo! Dominas los conceptos de continuidad y límites: cálculo por factorización y sustitución, continuidad en un punto y a trozos, tipos de discontinuidad, asíntotas y el Teorema del Valor Intermedio en contexto financiero." : 
+            "Buen esfuerzo. Te sugerimos repasar: las técnicas de cálculo de límites (sustitución, factorización, conjugado, al infinito), las tres condiciones de continuidad, los tipos de discontinuidad (removible, salto, infinita), el análisis de asíntotas verticales/horizontales/oblicuas y el Teorema del Valor Intermedio.";
+        document.getElementById('personal-message').innerText = msg;
+    }
+</script>
+</body>
+</html>
