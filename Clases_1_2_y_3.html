@@ -1,0 +1,2056 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matemáticas para la Economía I · UNII · Curso-Taller Interactivo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+:root{
+  --primary:#4a4a4a;--primary-dark:#2a2a2a;--primary-light:#e0e0e0;
+  --accent:#6a6a6a;--accent-light:#f0f0f0;
+  --success:#3a3a3a;--success-light:#e8e8e8;
+  --danger:#6a6a6a;--danger-light:#f2f2f2;
+  --warning:#7a7a7a;--warning-light:#f5f5f5;
+  --bg:#f5f5f5;--surface:#ffffff;--surface-2:#ebebeb;
+  --text:#1a1a1a;--text-muted:#707070;--border:#d4d4d4;
+  --btn-text:#ffffff;
+  --shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);
+  --shadow-lg:0 10px 25px -5px rgba(0,0,0,.12),0 8px 10px -6px rgba(0,0,0,.08);
+  --radius:14px;--radius-sm:8px;
+  --font:'Segoe UI',Roboto,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+}
+html[data-theme="dark"]{
+  --primary:#666666;--primary-dark:#444444;--primary-light:#333333;
+  --accent:#888888;--accent-light:#2a2a2a;
+  --success:#555555;--success-light:#2a2a2a;
+  --danger:#888888;--danger-light:#2a2a2a;
+  --warning:#777777;--warning-light:#2a2a2a;
+  --bg:#1a1a1a;--surface:#252525;--surface-2:#303030;
+  --text:#e8e8e8;--text-muted:#999999;--border:#383838;
+  --btn-text:#ffffff;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+  --shadow-lg:0 10px 25px -5px rgba(0,0,0,.5),0 8px 10px -6px rgba(0,0,0,.3);
+}
+html[data-theme="dark"] .katex{color:var(--text)}
+html[data-theme="dark"] .formula-box{background:var(--surface-2)!important}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;font-size:16px;padding:0}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:1rem}
+a{color:var(--primary);text-decoration:none}
+
+/* ===== Layout ===== */
+.app{max-width:1100px;margin:0 auto;padding:16px}
+header.topbar{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:var(--btn-text);padding:18px 20px;border-radius:var(--radius);box-shadow:var(--shadow-lg);position:relative;z-index:100}
+.topbar-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.topbar h1{font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.topbar h1 .logo{font-size:1.4rem}
+.topbar-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-sm);font-size:.9rem;font-weight:600;transition:all .15s;background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.btn:hover{background:var(--surface-2);transform:translateY(-1px)}
+.btn-primary{background:var(--primary);color:var(--btn-text);border-color:var(--primary)}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-success{background:var(--success);color:var(--btn-text);border-color:var(--success)}
+.btn-success:hover{background:var(--primary-dark)}
+.btn-accent{background:var(--accent);color:var(--btn-text);border-color:var(--accent)}
+.btn-accent:hover{background:var(--primary-dark)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text-muted)}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text)}
+.btn-sm{padding:6px 10px;font-size:.82rem}
+.btn-lg{padding:12px 20px;font-size:1rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-download{background:linear-gradient(135deg,var(--accent),var(--primary-dark));color:var(--btn-text);border:none;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.btn-download:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.35)}
+
+/* ===== Progress ===== */
+.progress-global{margin:14px 0;background:var(--surface);padding:12px 16px;border-radius:var(--radius-sm);box-shadow:var(--shadow)}
+.progress-global-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:.9rem}
+.progress-bar{height:10px;background:var(--surface-2);border-radius:50px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--success));border-radius:50px;transition:width .6s ease;width:0}
+
+/* ===== Dashboard ===== */
+.welcome{background:var(--surface);padding:20px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px}
+.welcome h2{font-size:1.3rem;margin-bottom:8px;color:var(--primary-dark)}
+.welcome p{color:var(--text-muted);font-size:.95rem}
+.welcome .motiv{margin-top:10px;padding:10px 14px;background:var(--accent-light);border-left:4px solid var(--accent);border-radius:6px;color:var(--text);font-size:.9rem}
+
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:16px}
+.module-card{background:var(--surface);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:2px solid var(--border);transition:all .2s;position:relative;overflow:hidden;cursor:pointer}
+.module-card:hover:not(.locked){border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.module-card.locked{opacity:.55;cursor:not-allowed;background:var(--surface-2)}
+.module-card.completed{border-color:var(--success)}
+.module-card .m-num{font-size:.75rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.module-card .m-title{font-size:1.05rem;font-weight:700;margin:4px 0 8px;color:var(--text)}
+.module-card .m-icon{font-size:1.6rem;position:absolute;top:12px;right:14px;opacity:.9}
+.module-card .m-status{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;padding:3px 8px;border-radius:12px;font-weight:600;margin-top:6px}
+.m-status.available{background:var(--primary-light);color:var(--primary-dark)}
+.m-status.locked{background:var(--surface-2);color:var(--text-muted)}
+.m-status.in-progress{background:var(--accent-light);color:var(--text)}
+.m-status.completed{background:var(--success-light);color:var(--text)}
+.module-card .m-progress{margin-top:10px}
+.mini-bar{height:6px;background:var(--surface-2);border-radius:50px;overflow:hidden;margin-top:4px}
+.mini-bar-fill{height:100%;background:var(--primary);border-radius:50px;transition:width .4s}
+
+/* ===== Module view ===== */
+.view{display:none}
+.view.active{display:block}
+.module-header{background:var(--surface);padding:20px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px}
+.module-header h2{font-size:1.4rem;color:var(--primary-dark);display:flex;align-items:center;gap:10px}
+.objetivo{margin-top:8px;padding:10px 14px;background:var(--primary-light);border-radius:8px;color:var(--primary-dark);font-size:.92rem}
+.objetivo strong{color:var(--primary-dark)}
+
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-muted);margin-bottom:12px}
+.breadcrumb a{color:var(--primary);cursor:pointer}
+.breadcrumb span.sep{opacity:.5}
+
+.section{background:var(--surface);padding:18px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px}
+.section h3{font-size:1.1rem;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--border);padding-bottom:8px}
+.section h3 .badge{font-size:.7rem;background:var(--accent);color:var(--btn-text);padding:2px 8px;border-radius:10px;font-weight:700}
+
+/* Accordion */
+.accordion{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.acc-head{padding:12px 16px;background:var(--surface-2);font-weight:600;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+.acc-head:hover{background:var(--surface-2)}
+.acc-head .arrow{transition:transform .2s}
+.acc-head.open .arrow{transform:rotate(90deg)}
+.acc-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+.acc-body.open{padding:16px;max-height:3000px}
+
+.teoria-content{font-size:.95rem;line-height:1.7}
+.teoria-content h4{color:var(--primary-dark);margin:10px 0 6px;font-size:1rem}
+.teoria-content p{margin-bottom:8px}
+.teoria-content .formula-box{background:var(--surface-2);border-left:4px solid var(--primary);padding:10px 14px;border-radius:6px;margin:10px 0;font-size:1.05rem;text-align:center}
+.teoria-content .analogia{background:var(--accent-light);border-left:4px solid var(--accent);padding:10px 14px;border-radius:6px;margin:10px 0;font-size:.9rem}
+.teoria-content .analogia strong{color:var(--text)}
+
+/* Example steps */
+.ejemplo-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.paso-display{flex:1;background:var(--surface-2);border-radius:var(--radius-sm);padding:14px;min-height:80px}
+.paso-display .paso-num{font-size:.75rem;color:var(--primary);font-weight:700;text-transform:uppercase}
+.paso-display .paso-titulo{font-size:1rem;font-weight:700;margin:2px 0 6px}
+.paso-display .paso-content{font-size:.95rem}
+.paso-display .paso-regla{margin-top:8px;font-size:.82rem;color:var(--success);font-style:italic}
+.ejemplo-dots{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s}
+.dot.active{background:var(--primary);transform:scale(1.3)}
+
+/* Activities */
+.actividad{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:14px;transition:all .2s}
+.actividad.respondida-correcta{border-color:var(--success);background:linear-gradient(0deg,var(--success-light) 0%,var(--surface) 40%)}
+.actividad.respondida-incorrecta{border-color:var(--danger)}
+.act-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--primary);color:var(--btn-text);border-radius:50%;font-weight:700;font-size:.85rem;margin-right:8px}
+.act-enunciado{font-size:.98rem;margin-bottom:12px;line-height:1.6}
+.act-enunciado .math{font-family:'Cambria Math','Times New Roman',serif;font-style:italic}
+.opciones{display:flex;flex-direction:column;gap:8px}
+.opcion{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+.opcion:hover{border-color:var(--primary);background:var(--primary-light)}
+.opcion.selected{border-color:var(--primary);background:var(--primary-light)}
+.opcion.correct{border-color:var(--success);background:var(--success-light)}
+.opcion.incorrect{border-color:var(--danger);background:var(--danger-light)}
+.opcion .marker{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
+.opcion.selected .marker{border-color:var(--primary);background:var(--primary);color:var(--btn-text)}
+.opcion.correct .marker{border-color:var(--success);background:var(--success);color:var(--btn-text)}
+.opcion.incorrect .marker{border-color:var(--danger);background:var(--danger);color:var(--btn-text)}
+
+.input-line{padding:8px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);width:100%;max-width:280px;font-size:1rem}
+.input-line:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+
+.feedback{margin-top:10px;padding:10px 12px;border-radius:var(--radius-sm);font-size:.9rem;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:var(--success-light);color:var(--text);border-left:4px solid var(--success)}
+.feedback.err{background:var(--danger-light);color:var(--text);border-left:4px solid var(--danger)}
+
+.hints{margin-top:8px}
+.hint-btn{font-size:.78rem;color:var(--accent);font-weight:600;padding:4px 8px;border-radius:6px}
+.hint-btn:hover{background:var(--accent-light)}
+.hint-content{margin-top:6px;padding:8px 12px;background:var(--warning-light);border-left:3px solid var(--warning);border-radius:6px;font-size:.88rem;color:var(--text);display:none}
+.hint-content.show{display:block}
+.hint-content .hint-level{font-weight:700;color:var(--warning);font-size:.75rem;text-transform:uppercase;margin-right:6px}
+
+.act-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.act-stats{font-size:.75rem;color:var(--text-muted);margin-top:8px}
+
+/* Ordenar pasos */
+.orden-list{display:flex;flex-direction:column;gap:6px}
+.orden-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.orden-item .pos{font-weight:700;color:var(--primary);min-width:24px}
+.orden-item .txt{flex:1;font-size:.92rem}
+.orden-item .up,.orden-item .down{padding:4px 8px;border-radius:4px;background:var(--surface);border:1px solid var(--border)}
+.orden-item .up:hover,.orden-item .down:hover{background:var(--primary-light)}
+
+/* Emparejar */
+.emparejar-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.emp-col{display:flex;flex-direction:column;gap:6px}
+.emp-item{padding:8px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;text-align:center;font-size:.9rem;transition:all .15s}
+.emp-item:hover{border-color:var(--primary)}
+.emp-item.selected{border-color:var(--primary);background:var(--primary-light)}
+.emp-item.matched{opacity:.4;cursor:not-allowed}
+.emp-item.correct{border-color:var(--success);background:var(--success-light)}
+
+/* Numérica */
+.numerica-input{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.numerica-input .input-line{max-width:200px}
+
+/* Practice generator */
+.practice-gen{background:linear-gradient(135deg,var(--primary-light),var(--surface));padding:16px;border-radius:var(--radius);border:2px dashed var(--primary);margin-bottom:16px}
+.practice-gen h3{color:var(--primary-dark);margin-bottom:8px;border:none}
+.gen-display{background:var(--surface);padding:14px;border-radius:var(--radius-sm);margin-top:10px;border:1px solid var(--border)}
+.gen-problem{font-size:1.05rem;text-align:center;margin:8px 0;font-family:'Cambria Math',serif}
+.gen-controls{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+/* Consolidación */
+.consolidacion{background:linear-gradient(135deg,var(--accent-light),var(--surface));padding:16px;border-radius:var(--radius);border:2px solid var(--accent);margin-bottom:16px}
+.consolidacion h3{color:var(--text);border:none}
+.autoeval{margin-top:12px;background:var(--surface);padding:12px;border-radius:var(--radius-sm)}
+.autoeval label{display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.9rem;cursor:pointer}
+
+/* Insignia */
+.insignia{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:linear-gradient(135deg,var(--accent),var(--primary));color:var(--btn-text);border-radius:20px;font-weight:700;font-size:.85rem;box-shadow:0 4px 12px rgba(0,0,0,.25);animation:pop .4s}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius);padding:20px;max-width:500px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal h3{color:var(--primary-dark);margin-bottom:12px;font-size:1.2rem}
+.modal .field{margin-bottom:12px}
+.modal .field label{display:block;font-size:.85rem;font-weight:600;margin-bottom:4px;color:var(--text-muted)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+
+/* Panel lateral */
+.side-panel{position:fixed;top:0;right:-340px;width:330px;max-width:90vw;height:100vh;background:var(--surface);box-shadow:-4px 0 20px rgba(0,0,0,.15);transition:right .3s;z-index:150;overflow-y:auto;padding:16px}
+.side-panel.open{right:0}
+.side-panel h3{color:var(--primary-dark);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.side-panel-close{position:absolute;top:12px;right:12px;font-size:1.4rem;color:var(--text-muted);cursor:pointer}
+.overlay-bg{position:fixed;inset:0;background:rgba(0,0,0,.3);display:none;z-index:140}
+.overlay-bg.show{display:block}
+
+.formula-ref{font-size:.88rem}
+.formula-ref table{width:100%;border-collapse:collapse}
+.formula-ref td{padding:6px 8px;border-bottom:1px solid var(--border)}
+.formula-ref td:first-child{font-family:'Cambria Math',serif;font-size:1rem;background:var(--surface-2);font-weight:600;width:45%}
+.formula-ref td:last-child{color:var(--text-muted)}
+
+.errores-list{font-size:.88rem}
+.err-item{padding:8px;background:var(--danger-light);border-radius:6px;margin-bottom:6px;border-left:3px solid var(--danger)}
+.err-item .err-mod{font-weight:700;color:var(--text);font-size:.78rem}
+.err-item .err-q{font-size:.85rem;color:var(--text)}
+.err-item .err-date{font-size:.72rem;color:var(--text-muted);margin-top:2px}
+
+/* M0 Diagnóstico */
+.diag-result{padding:14px;border-radius:var(--radius-sm);margin-top:14px}
+.diag-result.bajo{background:var(--danger-light);border-left:4px solid var(--danger)}
+.diag-result.medio{background:var(--accent-light);border-left:4px solid var(--accent)}
+.diag-result.alto{background:var(--success-light);border-left:4px solid var(--success)}
+.diag-rec{margin-top:8px;font-size:.88rem}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:var(--bg);padding:12px 20px;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);z-index:300;opacity:0;transition:all .3s;font-size:.9rem}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+.toast.info{background:var(--primary)}
+
+/* Responsive */
+@media(max-width:640px){
+  .app{padding:8px}
+  .topbar{padding:12px}
+  .topbar h1{font-size:1rem}
+  .topbar-actions .btn-label{display:none}
+  .modules-grid{grid-template-columns:1fr}
+  .emparejar-grid{grid-template-columns:1fr}
+  .module-header h2{font-size:1.15rem}
+  .btn{padding:7px 11px;font-size:.85rem}
+}
+
+/* Math helpers */
+sub,sup{font-size:.7em}
+.math-block{font-family:'Cambria Math','Times New Roman',serif;background:var(--surface-2);padding:8px 14px;border-radius:6px;text-align:center;margin:8px 0;font-size:1.05rem}
+.frac{display:inline-block;vertical-align:middle;text-align:center}
+.frac .num{display:block;border-bottom:1px solid currentColor;padding:0 4px}
+.frac .den{display:block;padding:0 4px}
+.sqrt{border-top:1px solid currentColor;padding:0 2px}
+
+footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="topbar-row">
+      <h1><span LPID</span> Matemáticas para la Economía I · UNII</h1>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost btn-sm" onclick="toggleDarkMode()" id="btn-dark-mode" title="Cambiar modo claro/oscuro">🌙 <span class="btn-label">Modo oscuro</span></button>
+        <button class="btn btn-ghost btn-sm" onclick="openPanel('panel-formulas')" title="Tabla de fórmulas">📐 <span class="btn-label">Fórmulas</span></button>
+        <button class="btn btn-ghost btn-sm" onclick="openPanel('panel-errores')" title="Mis errores frecuentes">⚠️ <span class="btn-label">Errores</span></button>
+        <button class="btn btn-ghost btn-sm" onclick="openPanel('panel-progreso')" title="Mi progreso detallado">📊 <span class="btn-label">Progreso</span></button>
+        <button class="btn btn-ghost btn-sm" onclick="editarDatos()" title="Editar mis datos">👤 <span class="btn-label">Mis datos</span></button>
+        <button class="btn btn-download btn-sm" onclick="descargarEvidenciaVisual()">📦 <span class="btn-label">Descargar evidencia</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard -->
+  <section id="view-dashboard" class="view active">
+    <div class="welcome">
+      <h2>Bienvenido de vuelta a tu recuperación 🎯</h2>
+      <p>Esta plataforma-taller cubre las primeras 3 clases de Matemáticas para la Economía I (Ingeniería Financiera, UNII): propiedades de funciones, continuidad y límites, y derivadas. Avanza a tu ritmo, en sesiones cortas, desde tu celular o computadora. Empezamos de donde estás y avanzamos juntos, paso a paso.</p>
+      <div class="motiv">💡 <strong>Regla de oro:</strong> equivocarse aquí en esta plataforma no te penaliza ni te califica con menos puntos. Cada error se registra para repaso y te ayuda a aprender. Lo único que importa es no rendirse, si se comete un error primero lo reconoces aprendes de él y después simplemente ya no caes en el mismo error, por el contrario avanzas con mayor seguridad.</div>
+    </div>
+
+    <div class="progress-global">
+      <div class="progress-global-top">
+        <strong>Progreso global del curso</strong>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="modules-grid" id="modules-grid"></div>
+
+    <div class="section">
+      <h3>🗂️ Diagnóstico inicial (Módulo 0)</h3>
+      <p style="font-size:.92rem;color:var(--text-muted);margin-bottom:10px">Antes de empezar, contesta estas preguntas rápidas para identificar qué prerrequisitos necesitas reforzar. <strong>No bloquea ningún módulo</strong>, solo te da recomendaciones personalizadas.</p>
+      <button class="btn btn-primary" onclick="abrirModulo('m0')">Iniciar diagnóstico (8 preguntas)</button>
+    </div>
+
+    <div class="section">
+      <h3>📂 Opciones</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="importarEvidencias()">📥 Importar evidencias previas</button>
+        <button class="btn" onclick="reiniciarProgreso()">🔄 Reiniciar progreso</button>
+        <button class="btn" onclick="editarDatos()">✏️ Editar mis datos</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Module view -->
+  <section id="view-module" class="view">
+    <div class="breadcrumb">
+      <a onclick="irDashboard()">← Dashboard</a>
+      <span class="sep">/</span>
+      <span id="bc-modulo">Módulo</span>
+    </div>
+    <div id="module-content"></div>
+    <div style="text-align:center;margin:20px 0">
+      <button class="btn btn-primary btn-lg" id="btn-dominar" onclick="marcarDominado()" disabled>🎓 Marcar módulo como dominado</button>
+      <div id="dominar-msg" style="margin-top:8px;font-size:.85rem;color:var(--text-muted)"></div>
+    </div>
+  </section>
+
+  <footer>
+    Matemáticas para la Economía I · Ingeniería Financiera UNII · Diseñado para aprendizaje autosuficiente<br>
+    Tus datos se guardan solo en este navegador (localStorage). Descarga tu portafolio para enviarlo al docente.
+  </footer>
+</div>
+
+<!-- Side panels -->
+<div class="overlay-bg" id="overlay-bg" onclick="closePanels()"></div>
+
+<aside class="side-panel" id="panel-formulas">
+  <span class="side-panel-close" onclick="closePanels()">×</span>
+  <h3>📐 Fórmulas clave</h3>
+  <div class="formula-ref" id="formula-ref-content"></div>
+</aside>
+
+<aside class="side-panel" id="panel-errores">
+  <span class="side-panel-close" onclick="closePanels()">×</span>
+  <h3>⚠️ Mis errores frecuentes</h3>
+  <div class="errores-list" id="errores-list"></div>
+  <p style="font-size:.8rem;color:var(--text-muted);margin-top:10px">Los errores se guardan automáticamente para que los repases. No afectan tu calificación.</p>
+</aside>
+
+<aside class="side-panel" id="panel-progreso">
+  <span class="side-panel-close" onclick="closePanels()">×</span>
+  <h3>📊 Mi progreso detallado</h3>
+  <div id="progreso-detallado"></div>
+</aside>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ESTADO Y PERSISTENCIA
+   ============================================================ */
+const STORAGE_KEY = 'mate_economia_unii_v1';
+
+let ESTADO = {
+  usuario: { nombre: '', grupo: '', correo: '', fechaInicio: new Date().toISOString() },
+  m0: { completado: false, score: 0, max: 8, recomendaciones: [], intentos: [] },
+  modulos: {},
+  errores: [],
+  evidencias: [],
+  ultimoAcceso: new Date().toISOString()
+};
+
+// Inicializar estado de módulos
+function initModulosEstado() {
+  MODULES.forEach(m => {
+    if (!ESTADO.modulos[m.id]) {
+      ESTADO.modulos[m.id] = {
+        desbloqueado: true,
+        completado: false,
+        dominado: false,
+        actividades: {},
+        scoreActividades: 0,
+        totalActividades: 0,
+        consolidacionHecha: false,
+        intentosConsolidacion: 0,
+        insignia: false,
+        repasoHecho: false,
+        primerAcceso: null,
+        ultimoAcceso: null
+      };
+    }
+    // contar actividades
+    ESTADO.modulos[m.id].totalActividades = m.actividades.length;
+  });
+}
+
+function saveState() {
+  try {
+    ESTADO.ultimoAcceso = new Date().toISOString();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ESTADO));
+  } catch(e) { console.warn('No se pudo guardar:', e); }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      ESTADO = Object.assign(ESTADO, parsed);
+      // ensure modulos structure
+      initModulosEstado();
+    }
+  } catch(e) { console.warn('No se pudo cargar:', e); }
+}
+
+/* ============================================================
+   DATOS: MÓDULOS
+   ============================================================ */
+const MODULES = [
+/* ===== MÓDULO 0: DIAGNÓSTICO ===== */
+{
+  id:"m0", num:0, titulo:"Diagnóstico inicial", icono:"🧭",
+  objetivo:"Identificar prerrequisitos (funciones, álgebra, exponentes, logaritmos, porcentajes) para que las 3 clases se adapten a tu nivel real.",
+  esDiagnostico:true,
+  teoria:`<p>Contesta con honestidad. Estas preguntas NO te califican, solo nos ayudan a recomendarte por dónde empezar a reforzar antes de la Clase 1 (31 oct).</p>`,
+  actividades:[
+    {tipo:"opcion_multiple", enunciado:"Si $f(x)=2x+3$, ¿cuánto vale $f(5)$?", opciones:["$13$","$10$","$8$","$15$"], correcta:0, cat:"funciones",
+      feedback:{correcto:"Bien: $2(5)+3=13$.",errores:{1:"Olvidaste sumar 3.",2:"Calculaste $2\\cdot 5$ sin el $+3$.",3:"Sumaste $5+3$ sin multiplicar."}}},
+    {tipo:"opcion_multiple", enunciado:"Resuelve la ecuación lineal $3x-6=0$.", opciones:["$x=2$","$x=-2$","$x=6$","$x=3$"], correcta:0, cat:"algebra",
+      feedback:{correcto:"Sí: $3x=6 \\Rightarrow x=2$.",errores:{1:"Error de signo al despejar.",2:"No se divide entre 3.",3:"Confundiste coeficiente con solución."}}},
+    {tipo:"opcion_multiple", enunciado:"Simplifica $x^{-2}$.", opciones:["$\\frac{1}{x^{2}}$","$-x^{2}$","$x\\cdot x$","$-2x$"], correcta:0, cat:"exponentes",
+      feedback:{correcto:"Bien: exponente negativo significa recíproco.",errores:{1:"No cambia el signo de $x$.",2:"$x^{2}$ es positivo.",3:"No se mezcla con coeficiente."}}},
+    {tipo:"opcion_multiple", enunciado:"Factoriza $x^{2}-9$.", opciones:["$(x-3)(x+3)$","$(x-9)(x+1)$","$(x-3)^{2}$","$(x+3)^{2}$"], correcta:0, cat:"algebra",
+      feedback:{correcto:"Bien: diferencia de cuadrados $a^{2}-b^{2}=(a-b)(a+b)$.",errores:{1:"Revisa: $9$ no es $9\\cdot 1$.",2:"Eso daría $x^{2}-6x+9$.",3:"Eso daría $x^{2}+6x+9$."}}},
+    {tipo:"opcion_multiple", enunciado:"¿Cuál es la pendiente de la recta $y=3x-2$?", opciones:["$3$","$-2$","$1$","$\\frac{1}{3}$"], correcta:0, cat:"lineales",
+      feedback:{correcto:"Sí: en $y=mx+b$, $m$ es la pendiente.",errores:{1:"Ese es el intercepto $b$.",2:"No es 1.",3:"No es el recíproco."}}},
+    {tipo:"opcion_multiple", enunciado:"¿Qué es el $10\\%$ de $200$?", opciones:["$20$","$2$","$10$","$2000$"], correcta:0, cat:"porcentaje",
+      feedback:{correcto:"Sí: $\\frac{10}{100}\\cdot 200=20$.",errores:{1:"Cuidado con la coma decimal.",2:"Ese sería el $5\\%$.",3:"Es un porcentaje, no una multiplicación directa."}}},
+    {tipo:"opcion_multiple", enunciado:"$\\log_{10}(100)=\\,?$", opciones:["$2$","$10$","$100$","$\\frac{1}{2}$"], correcta:0, cat:"logaritmos",
+      feedback:{correcto:"Sí: $10^{2}=100$, por tanto $\\log_{10}(100)=2$.",errores:{1:"No es la base.",2:"No es el argumento.",3:"No es fracción."}}},
+    {tipo:"opcion_multiple", enunciado:"$e^{0}=\\,?$", opciones:["$1$","$0$","$e$","$\\infty$"], correcta:0, cat:"exponentes",
+      feedback:{correcto:"Sí: cualquier base (excepto $0$) elevada a $0$ es $1$.",errores:{1:"No es $0$.",2:"No es $e$.",3:"No tiende a infinito."}}}
+  ]
+},
+
+/* ===== MÓDULO 1 · CLASE 1 (31 oct): PROPIEDADES DE LAS FUNCIONES ===== */
+{
+  id:"m1", num:1, titulo:"Clase 1 · 31 oct: Propiedades de las funciones", icono:"📥",
+  objetivo:"Al terminar podrás identificar funciones, su dominio y rango, y reconocer inversas, periodicidad, monotonía y simetría (par/impar), aplicándolo a valor presente y demanda.",
+  repaso:[],
+  teoria:`
+    <h4>¿Qué es una función?</h4>
+    <p>Una <strong>función</strong> asigna a cada elemento del dominio (entrada, $x$) <em>exactamente un</em> elemento del recorrido (salida, $f(x)$). Escribimos $x \\;\\xrightarrow{\\;f\\;}\\; f(x)$.</p>
+    <div class="formula-box">$$f:\\;D \\longrightarrow R,\\qquad x \\mapsto f(x)$$</div>
+    <h4>Dominio y rango</h4>
+    <p>El <strong>dominio</strong> son las $x$ para las que $f$ está definida; el <strong>rango</strong> son los valores $f(x)$ que se obtienen. Restricciones: denominador $\\neq 0$, radicando $\\geq 0$, argumento de logaritmo $>0$.</p>
+    <h4>Función inversa</h4>
+    <p>Si $f$ es inyectiva (uno a uno), existe $f^{-1}$ tal que $f^{-1}(f(x))=x$. <strong>Ejemplo financiero:</strong> la demanda $q=120-3p$ se puede invertir: $p=40-\\dfrac{q}{3}$ es la <em>demanda inversa</em> (precio en función de la cantidad).</p>
+    <div class="formula-box">$$q(p)=120-3p \\quad\\Longleftrightarrow\\quad p(q)=40-\\tfrac{q}{3}$$</div>
+    <h4>Periodicidad</h4>
+    <p>$f$ es periódica de periodo $T$ si $f(t+T)=f(t)$ para todo $t$. <strong>Ventas estacionales:</strong> $V(t)=50+20\\,\\operatorname{sen}\\!\\left(\\dfrac{\\pi t}{6}\\right)$ tiene periodo $T=\\dfrac{2\\pi}{\\pi/6}=12$ meses.</p>
+    <h4>Monotonía</h4>
+    <p><strong>Creciente</strong> si $x_1<x_2 \\Rightarrow f(x_1)<f(x_2)$; <strong>decreciente</strong> si $x_1<x_2 \\Rightarrow f(x_1)>f(x_2)$. La demanda $q=120-3p$ es decreciente: a mayor precio, menor cantidad.</p>
+    <h4>Simetría: par e impar</h4>
+    <p><strong>Par:</strong> $f(-x)=f(x)$ (simétrica al eje $y$), ej. $f(x)=x^{2}$. <strong>Impar:</strong> $f(-x)=-f(x)$ (simétrica al origen), ej. $f(x)=x^{3}$ y $\\operatorname{sen}(x)$.</p>
+    <h4>Contexto financiero</h4>
+    <p>• <strong>Valor presente:</strong> $VP(t)=\\dfrac{C}{(1+r)^{t}}$ (descuento compuesto).<br>• <strong>Demanda:</strong> $q=120-3p$ e inversa $p=40-\\tfrac{q}{3}$.<br>• <strong>Paridad put-call:</strong> $C-P=S-Ke^{-rT}$, relación entre prima de call ($C$), prima de put ($P$), subyacente ($S$) y strike ($K$) descontado.</p>
+    <div class="analogia"><strong>Intuición:</strong> una función es como una máquina expendedora: cada moneda (entrada) da un producto (salida). La demanda inversa es el "precio de cartel": cuánto cobrar para vender $q$ unidades.</div>
+  `,
+  ejemplo:[
+    {num:1,titulo:"Plantear la demanda directa",contenido:"Sea $q(p)=120-3p$ la cantidad demandada según el precio $p$.",regla:"Función de demanda"},
+    {num:2,titulo:"Despejar la variable precio",contenido:"$3p=120-q \\;\\Rightarrow\\; p=40-\\dfrac{q}{3}$. Esta es la demanda inversa $p(q)$.",regla:"Invertir (función inyectiva)"},
+    {num:3,titulo:"Evaluar en un valor",contenido:"Para $p=20$: $q=120-3(20)=120-60=60$ unidades.",regla:"Sustitución"},
+    {num:4,titulo:"Verificar con la inversa",contenido:"$p(60)=40-\\dfrac{60}{3}=40-20=20$ ✓ Coincide con el precio de partida.",regla:"Verificación $f^{-1}(f(x))=x$"}
+  ],
+  actividades:[
+    {tipo:"opcion_multiple", enunciado:"¿Cuál de las siguientes NO es una función de $x$ (falla la prueba de la línea vertical)?", opciones:["$y=x^{2}$","$x^{2}+y^{2}=1$ (circunferencia)","$y=2x+1$","$y=\\frac{1}{x}$"], correcta:1,
+      feedback:{correcto:"Correcto: la circunferencia da dos valores de $y$ para algunos $x$, por lo que no es función.",errores:{0:"$y=x^{2}$ sí es función.",2:"$y=2x+1$ sí es función.",3:"$y=\\frac{1}{x}$ sí es función (con $x\\neq 0$)."}}},
+    {tipo:"verdadero_falso", enunciado:"La función inversa de la demanda $q=120-3p$ es $p=40-\\dfrac{q}{3}$.", correcta:true,
+      feedback:{correcto:"Sí: despejando $p$ se obtiene $p(q)=40-\\tfrac{q}{3}$, y $p(q(p))=p$.",errores:{0:"Despeja $3p=120-q \\Rightarrow p=40-\\tfrac{q}{3}$."}}},
+    {tipo:"completar_hueco", enunciado:"Si la demanda es $q=120-3p$, entonces cuando $p=20$ se demandan $q=\\,$<input class='input-line' id='ch1-3' placeholder='número'> unidades.", respuesta:["60"], feedbackCorrecto:"Sí: $120-3(20)=60$.", feedbackError:"Sustituye $p=20$: $q=120-3(20)=120-60=60$."},
+    {tipo:"seleccion_multiple", enunciado:"¿Cuáles de las siguientes son funciones inyectivas (uno a uno), y por tanto tienen inversa global?", opciones:["$f(x)=x^{3}$","$f(x)=x^{2}$","$f(x)=2x+1$","$f(x)=|x|$","$f(x)=\\operatorname{sen}(x)$ en toda $\\mathbb{R}$"], correctas:[0,2],
+      feedback:{correcto:"Perfecto: $x^{3}$ y $2x+1$ son estrictamente monótonas, luego inyectivas.",errores:{1:"$x^{2}$ da el mismo valor para $x$ y $-x$ (no es inyectiva en $\\mathbb{R}$).",3:"$|x|=|{-x}|$, no es inyectiva.",4:"$\\operatorname{sen}(x)$ es periódica, repite valores."}}},
+    {tipo:"ordenar_pasos", enunciado:"Ordena los pasos para hallar la demanda inversa de $q=120-3p$:",
+      pasos:[
+        {texto:"Escribir $q=120-3p$ y reconocer que es inyectiva (lineal decreciente)", orden:1},
+        {texto:"Despejar $p$: $3p=120-q$", orden:2},
+        {texto:"Dividir entre 3: $p=40-\\dfrac{q}{3}$", orden:3},
+        {texto:"Verificar: $p(q(p))=p$", orden:4}
+      ],
+      feedback:{correcto:"Secuencia correcta: identificar, despejar, simplificar y verificar.",errores:"Primero identificas la función, luego despejas la variable $p$, divides entre 3 y finalmente verificas."}},
+    {tipo:"emparejar", enunciado:"Empareja cada función con su propiedad:",
+      parejas:[
+        {izq:"$f(x)=x^{2}$", der:"Par"},
+        {izq:"$f(x)=x^{3}$", der:"Impar"},
+        {izq:"$\\operatorname{sen}(x)$", der:"Impar"},
+        {izq:"$V(t)=50+20\\operatorname{sen}\\!\\left(\\tfrac{\\pi t}{6}\\right)$", der:"Periódica (T=12)"}
+      ],
+      feedback:{correcto:"Todas correctas.",errores:"Par: $f(-x)=f(x)$; impar: $f(-x)=-f(x)$; periódica: $f(t+T)=f(t)$."}},
+    {tipo:"numerica", enunciado:"Un bono paga $\\$12100$ dentro de $2$ años. Con tasa $r=10\\%$, el valor presente es $VP(t)=\\dfrac{12100}{(1.10)^{t}}$. Calcula $VP(2)$.", respuesta:10000, tolerancia:0.5, feedbackCorrecto:"Sí: $\\dfrac{12100}{1.21}=10000$.", feedbackError:"$VP(2)=\\dfrac{12100}{(1.10)^{2}}=\\dfrac{12100}{1.21}=10000$."},
+    {tipo:"opcion_multiple", enunciado:"La función $f(x)=x^{2}+1$ es:", opciones:["Par","Impar","Ni par ni impar","Periódica"], correcta:0,
+      feedback:{correcto:"Sí: $f(-x)=(-x)^{2}+1=x^{2}+1=f(x)$, luego es par.",errores:{1:"$f(-x)\\neq -f(x)$, no es impar.",2:"Si $f(-x)=f(x)$ es par.",3:"No se repite: los polinomios no son periódicos."}}}
+  ],
+  criterioDominio:0.8
+},
+
+/* ===== MÓDULO 2 · CLASE 2 (7 nov): CONTINUIDAD Y LÍMITES ===== */
+{
+  id:"m2", num:2, titulo:"Clase 2 · 7 nov: Continuidad y límites", icono:"🎯",
+  objetivo:"Al terminar podrás calcular límites (sustitución, factorización, infinito), decidir continuidad, clasificar discontinuidades y hallar asíntotas e intersecciones, con aplicaciones a costos marginales y valor presente.",
+  repaso:[
+    {tipo:"opcion_multiple", enunciado:"(Repaso M1) Si la demanda es $q=120-3p$, ¿cuál es la demanda inversa?", opciones:["$p=40-\\dfrac{q}{3}$","$p=120-3q$","$p=40+\\dfrac{q}{3}$","$p=3q-40$"], correcta:0, feedback:{correcto:"Bien: despejando $p=40-\\tfrac{q}{3}$.",errores:{1:"No se intercambian $p$ y $q$ así.",2:"Error de signo.",3:"Inversión incorrecta."}}}
+  ],
+  teoria:`
+    <h4>Idea de límite</h4>
+    <p>El <strong>límite</strong> $\\displaystyle\\lim_{x\\to a}f(x)=L$ significa que $f(x)$ se acerca a $L$ cuando $x$ se acerca a $a$ (sin importar el valor exacto en $a$).</p>
+    <div class="formula-box">$$\\lim_{x\\to a} f(x)=L \\;\\Longleftrightarrow\\; \\forall\\,\\varepsilon>0\\;\\exists\\,\\delta>0:\\;0<|x-a|<\\delta \\Rightarrow |f(x)-L|<\\varepsilon$$</div>
+    <h4>Técnicas de cálculo</h4>
+    <ul>
+      <li><strong>Sustitución directa:</strong> si $f$ es continua en $a$, $\\lim_{x\\to a}f(x)=f(a)$.</li>
+      <li><strong>Factorización:</strong> para la forma $\\tfrac{0}{0}$, factoriza y simplifica. Ej: $\\lim_{x\\to 2}\\dfrac{x^{2}-4}{x-2}=\\lim_{x\\to 2}(x+2)=4$.</li>
+      <li><strong>Conjugado:</strong> para raíces del tipo $\\sqrt{\\cdot}-\\sqrt{\\cdot}$.</li>
+      <li><strong>Infinito:</strong> $\\lim_{x\\to\\infty}\\dfrac{ax^{n}+\\dots}{bx^{n}+\\dots}=\\dfrac{a}{b}$ (mismo grado).</li>
+    </ul>
+    <h4>Continuidad</h4>
+    <p>$f$ es <strong>continua en $a$</strong> si cumple las 3 condiciones:</p>
+    <div class="formula-box">$$1)\\;f(a)\\text{ existe}\\quad 2)\\;\\lim_{x\\to a}f(x)\\text{ existe}\\quad 3)\\;\\lim_{x\\to a}f(x)=f(a)$$</div>
+    <h4>Tipos de discontinuidad</h4>
+    <p>• <strong>Evitable:</strong> existe el límite pero no coincide con $f(a)$ (o $f(a)$ no existe). Ej: $\\dfrac{x^{2}-1}{x-1}$ en $x=1$.<br>• <strong>Salto:</strong> los límites laterales existen pero difieren. Ej: tarifas por tramos.<br>• <strong>Infinita:</strong> la función crece/decrece sin límite. Ej: $\\dfrac{1}{x}$ en $x=0$.</p>
+    <h4>Asíntotas e intersecciones</h4>
+    <p><strong>Vertical:</strong> $x=a$ si $\\lim_{x\\to a}f(x)=\\pm\\infty$. <strong>Horizontal:</strong> $y=L$ si $\\lim_{x\\to\\pm\\infty}f(x)=L$. <strong>Oblicua:</strong> si el grado del numerador excede al del denominador en uno. <strong>Intersecciones:</strong> con eje $y$ en $x=0$; con eje $x$ donde $f(x)=0$. <strong>Vértice</strong> de $ax^{2}+bx+c$: $x_{v}=-\\dfrac{b}{2a}$.</p>
+    <h4>Contexto financiero</h4>
+    <p>• <strong>Costo marginal</strong> como límite del costo medio: $C'(q)=\\lim_{\\Delta q\\to 0}\\dfrac{C(q+\\Delta q)-C(q)}{\\Delta q}$.<br>• <strong>Utilidad:</strong> $\\Pi(q)=-q^{2}+80q-100$, máximo en $q^{*}=40$.<br>• <strong>Tarifas escalonadas:</strong> discontinuidades de salto en cada cambio de tramo.<br>• <strong>Valor presente al infinito:</strong> $\\lim_{t\\to\\infty}\\dfrac{C}{(1+r)^{t}}=0$.</p>
+    <div class="analogia"><strong>Intuición:</strong> el límite es como acercarte a la taquilla de un cine: no necesitas llegar a la ventanilla para saber cuál es el precio; basta con acercarte y leerlo. Si al llegar el precio cambia bruscamente, hay una "discontinuidad de salto".</div>
+  `,
+  ejemplo:[
+    {num:1,titulo:"Intentar sustitución directa",contenido:"$\\lim_{x\\to 2}\\dfrac{x^{2}-4}{x-2}$. Al sustituir $x=2$ aparece $\\dfrac{0}{0}$ (indeterminado).",regla:"Detectar la indeterminación"},
+    {num:2,titulo:"Factorizar el numerador",contenido:"$x^{2}-4=(x-2)(x+2)$ (diferencia de cuadrados).",regla:"Factorización"},
+    {num:3,titulo:"Simplificar",contenido:"$\\dfrac{(x-2)(x+2)}{x-2}=x+2$ para $x\\neq 2$.",regla:"Simplificar la indeterminación"},
+    {num:4,titulo:"Sustituir y concluir",contenido:"$\\lim_{x\\to 2}(x+2)=4$. (El límite existe aunque $f(2)$ no.)",regla:"Sustitución final"}
+  ],
+  actividades:[
+    {tipo:"opcion_multiple", enunciado:"Calcula $\\lim_{x\\to 3}(2x+1)$ por sustitución directa.", opciones:["$7$","$6$","$5$","$\\infty$"], correcta:0,
+      feedback:{correcto:"Bien: $2(3)+1=7$ (función continua).",errores:{1:"Olvidaste el $+1$.",2:"Calculaste $2x$ sin $+1$.",3:"No tiende a infinito."}}},
+    {tipo:"verdadero_falso", enunciado:"Una función $f$ es continua en $a$ si $\\lim_{x\\to a}f(x)=f(a)$.", correcta:true,
+      feedback:{correcto:"Sí: esa igualdad resume las 3 condiciones (incluye que ambos existen).",errores:{0:"Esa es precisamente la definición: el límite coincide con el valor."}}},
+    {tipo:"completar_hueco", enunciado:"Calcula $\\lim_{x\\to 2}\\dfrac{x^{2}-4}{x-2}=\\,$<input class='input-line' id='ch2-3' placeholder='número'>.", respuesta:["4"], feedbackCorrecto:"Sí: tras factorizar queda $x+2=4$.", feedbackError:"Factoriza $x^{2}-4=(x-2)(x+2)$, simplifica y sustituye: $2+2=4$."},
+    {tipo:"seleccion_multiple", enunciado:"Marca las 3 condiciones necesarias para que $f$ sea continua en $a$:", opciones:["$f(a)$ existe","$\\lim_{x\\to a}f(x)$ existe","$\\lim_{x\\to a}f(x)=f(a)$","$f$ es derivable en $a$","$f(a)=0$"], correctas:[0,1,2],
+      feedback:{correcto:"Perfecto: esas son las 3 condiciones de continuidad.",errores:{3:"La derivabilidad implica continuidad, pero no es necesaria.",4:"No es necesario que $f(a)=0$."}}},
+    {tipo:"ordenar_pasos", enunciado:"Ordena el cálculo de $\\lim_{x\\to 3}\\dfrac{x^{2}-9}{x-3}$:",
+      pasos:[
+        {texto:"Sustituir $x=3$: aparece $\\dfrac{0}{0}$ (indeterminado)", orden:1},
+        {texto:"Factorizar $x^{2}-9=(x-3)(x+3)$", orden:2},
+        {texto:"Simplificar: $\\dfrac{(x-3)(x+3)}{x-3}=x+3$", orden:3},
+        {texto:"Sustituir $x=3$: el límite es $6$", orden:4}
+      ],
+      feedback:{correcto:"Secuencia correcta.",errores:"Primero detectas la indeterminación, luego factorizas, simplificas y finalmente sustituyes."}},
+    {tipo:"emparejar", enunciado:"Empareja cada situación con el tipo de discontinuidad:",
+      parejas:[
+        {izq:"$\\dfrac{x^{2}-1}{x-1}$ en $x=1$", der:"Evitable"},
+        {izq:"$\\dfrac{1}{x}$ en $x=0$", der:"Infinita"},
+        {izq:"Tarifa eléctrica por tramos en el límite de consumo", der:"Salto"},
+        {izq:"$\\operatorname{sen}(x)$ en $x=0$", der:"Continua"}
+      ],
+      feedback:{correcto:"Todas correctas.",errores:"Evitable: existe el límite pero no $f$; infinita: crece sin cota; salto: límites laterales difieren; continua: cumple las 3 condiciones."}},
+    {tipo:"numerica", enunciado:"Calcula $\\lim_{x\\to\\infty}\\dfrac{3x^{2}+2x}{5x^{2}-1}$.", respuesta:0.6, tolerancia:0.01, feedbackCorrecto:"Sí: $\\dfrac{3}{5}=0.6$.", feedbackError:"Mismo grado en numerador y denominador: el límite es el cociente de coeficientes principales $\\dfrac{3}{5}=0.6$."},
+    {tipo:"opcion_multiple", enunciado:"¿Cuál es la asíntota horizontal de $f(x)=\\dfrac{2x+1}{x-3}$?", opciones:["$y=2$","$y=3$","$y=0$","$x=3$"], correcta:0,
+      feedback:{correcto:"Sí: $\\lim_{x\\to\\infty}\\dfrac{2x+1}{x-3}=2$, asíntota $y=2$.",errores:{1:"Ese es el polo (asíntota vertical $x=3$).",2:"Solo si el numerador fuera constante.",3:"Esa es la asíntota vertical $x=3$, no horizontal."}}}
+  ],
+  criterioDominio:0.8
+},
+
+/* ===== MÓDULO 3 · CLASE 3 (14 nov): DERIVADAS Y SU CÁLCULO ===== */
+{
+  id:"m3", num:3, titulo:"Clase 3 · 14 nov: Derivadas y su cálculo", icono:"⚡",
+  objetivo:"Al terminar podrás derivar con las reglas (potencia, producto, cociente, cadena), hallar puntos críticos, clasificar extremos y optimizar utilidad económica igualando ingreso marginal y costo marginal.",
+  repaso:[
+    {tipo:"opcion_multiple", enunciado:"(Repaso M2) Calcula $\\lim_{x\\to 2}\\dfrac{x^{2}-4}{x-2}$.", opciones:["$4$","$0$","$2$","$\\infty$"], correcta:0, feedback:{correcto:"Bien: factorizando, $x+2=4$.",errores:{1:"No es $0$.",2:"Revisa la factorización.",3:"El límite sí existe."}}}
+  ],
+  teoria:`
+    <h4>Definición de derivada</h4>
+    <p>La <strong>derivada</strong> mide la tasa instantánea de cambio de $f$ en $x$:</p>
+    <div class="formula-box">$$f'(x)=\\lim_{h\\to 0}\\frac{f(x+h)-f(x)}{h}$$</div>
+    <p>Geométricamente es la <strong>pendiente de la recta tangente</strong> a la gráfica en $x$. Si existe, $f$ es derivable (y por tanto continua).</p>
+    <h4>Reglas de derivación</h4>
+    <ul>
+      <li><strong>Potencia:</strong> $\\dfrac{d}{dx}\\,x^{n}=n\\,x^{n-1}$.</li>
+      <li><strong>Constante:</strong> $\\dfrac{d}{dx}\\,c=0$. <strong>Suma:</strong> $(f+g)'=f'+g'$.</li>
+      <li><strong>Producto:</strong> $(fg)'=f'g+fg'$. <strong>Cociente:</strong> $\\left(\\dfrac{f}{g}\\right)'=\\dfrac{f'g-fg'}{g^{2}}$.</li>
+      <li><strong>Cadena:</strong> $\\dfrac{d}{dx}f(g(x))=f'(g(x))\\cdot g'(x)$.</li>
+      <li><strong>Notables:</strong> $(e^{x})'=e^{x}$, $(\\ln x)'=\\dfrac{1}{x}$, $(\\operatorname{sen} x)'=\\cos x$, $(\\cos x)'=-\\operatorname{sen} x$.</li>
+    </ul>
+    <h4>Derivada implícita</h4>
+    <p>Si $y$ está definida implícitamente por $F(x,y)=0$ (p.ej. curvas de indiferencia $U(x,y)=k$), se deriva ambos lados respecto a $x$ tratando $y$ como función de $x$ y se despeja $\\dfrac{dy}{dx}$.</p>
+    <h4>Monotonía y puntos críticos</h4>
+    <p>Si $f'(x)>0$ en un intervalo, $f$ es <strong>creciente</strong>; si $f'(x)<0$, <strong>decreciente</strong>. Un <strong>punto crítico</strong> cumple $f'(c)=0$ o $f'(c)$ no existe.</p>
+    <h4>Criterios de clasificación</h4>
+    <p>• <strong>Primera derivada:</strong> si $f'$ cambia de $+$ a $-$ en $c$, hay máximo; de $-$ a $+$, mínimo.<br>• <strong>Segunda derivada:</strong> si $f''(c)<0$, máximo local; si $f''(c)>0$, mínimo local.</p>
+    <h4>Optimización económica</h4>
+    <p>La utilidad es $\\Pi(q)=I(q)-C(q)$ (ingreso menos costo). El máximo cumple:</p>
+    <div class="formula-box">$$\\Pi'(q)=0 \\;\\Longleftrightarrow\\; I'(q)=C'(q) \\quad\\text{(Img. marginal = Costo marginal)}$$</div>
+    <p>Aquí $C'(q)$ es el <strong>costo marginal</strong> (costo de producir una unidad más) e $I'(q)$ el <strong>ingreso marginal</strong>. También $VP'(t)$ mide cuánto se pierde de valor presente por esperar un año más.</p>
+    <div class="analogia"><strong>Intuición:</strong> la derivada es la "velocidad" de la función. En economía, el costo marginal es la "velocidad" a la que crece el costo: si producir una silla más cuesta $\\$8$ extra, $C'(q)=8$. Maximizar utilidad es igualar cuánto ingresas por una unidad extra (Img. marginal) con cuánto te cuesta (Costo marginal).</div>
+  `,
+  ejemplo:[
+    {num:1,titulo:"Plantear y derivar la utilidad",contenido:"$\\Pi(q)=-q^{2}+80q-100$. Derivando: $\\Pi'(q)=-2q+80$.",regla:"Regla de la potencia y suma"},
+    {num:2,titulo:"Igualar a cero (punto crítico)",contenido:"$\\Pi'(q)=0 \\Rightarrow -2q+80=0$.",regla:"Condición de primer orden"},
+    {num:3,titulo:"Resolver",contenido:"$2q=80 \\Rightarrow q^{*}=40$ unidades.",regla:"Álgebra"},
+    {num:4,titulo:"Verificar máximo y calcular",contenido:"$\\Pi''(q)=-2<0$, luego es máximo. $\\Pi(40)=-1600+3200-100=1500$.",regla:"Criterio de la segunda derivada"}
+  ],
+  actividades:[
+    {tipo:"opcion_multiple", enunciado:"Usando la regla de la potencia, $\\dfrac{d}{dx}\\,x^{5}=\\,?$", opciones:["$5x^{4}$","$x^{4}$","$5x^{6}$","$\\frac{x^{6}}{6}$"], correcta:0,
+      feedback:{correcto:"Sí: baja el exponente y multiplica: $\\dfrac{d}{dx}x^{5}=5x^{4}$.",errores:{1:"Olvidaste multiplicar por $5$.",2:"Sumaste en lugar de restar al exponente.",3:"Eso es integrar, no derivar."}}},
+    {tipo:"verdadero_falso", enunciado:"El costo marginal $C'(q)$ es la derivada del costo total $C(q)$ respecto a la cantidad.", correcta:true,
+      feedback:{correcto:"Sí: $C'(q)$ mide cuánto aumenta el costo al producir una unidad más.",errores:{0:"Esa es exactamente la definición de costo marginal como tasa de cambio."}}},
+    {tipo:"completar_hueco", enunciado:"Calcula $\\dfrac{d}{dx}(x^{3}+2x)=\\,$<input class='input-line' id='ch3-3' placeholder='expresión'>.", respuesta:["3x^2+2","3x^{2}+2"], feedbackCorrecto:"Sí: $3x^{2}+2$.", feedbackError:"Deriva término a término: $\\dfrac{d}{dx}x^{3}=3x^{2}$ y $\\dfrac{d}{dx}2x=2$."},
+    {tipo:"seleccion_multiple", enunciado:"Marca las derivadas que son correctas:", opciones:["$\\dfrac{d}{dx}x^{3}=3x^{2}$","$\\dfrac{d}{dx}e^{x}=x\\,e^{x-1}$","$\\dfrac{d}{dx}\\ln x=\\dfrac{1}{x}$","$\\dfrac{d}{dx}\\cos x=\\operatorname{sen}\\, x$","$\\dfrac{d}{dx}\\sqrt{x}=\\dfrac{1}{2\\sqrt{x}}$"], correctas:[0,2,4],
+      feedback:{correcto:"Perfecto: potencia, logaritmo y raíz correctas.",errores:{1:"$(e^{x})'=e^{x}$, no $x\\,e^{x-1}$.",3:"$(\\cos x)'=-\\operatorname{sen} x$, con signo negativo."}}},
+    {tipo:"ordenar_pasos", enunciado:"Ordena la maximización de $\\Pi(q)=-q^{2}+80q-100$:",
+      pasos:[
+        {texto:"Derivar: $\\Pi'(q)=-2q+80$", orden:1},
+        {texto:"Igualar a cero: $-2q+80=0$", orden:2},
+        {texto:"Resolver: $q^{*}=40$", orden:3},
+        {texto:"Verificar máximo con $\\Pi''(q)=-2<0$ y calcular $\\Pi(40)=1500$", orden:4}
+      ],
+      feedback:{correcto:"Secuencia correcta de optimización.",errores:"Primero derivas, luego igualas a cero (condición de primer orden), resuelves y finalmente verificas con la segunda derivada."}},
+    {tipo:"emparejar", enunciado:"Empareja cada función con su derivada:",
+      parejas:[
+        {izq:"$f(x)=x^{2}$", der:"$f'(x)=2x$"},
+        {izq:"$f(x)=e^{x}$", der:"$f'(x)=e^{x}$"},
+        {izq:"$f(x)=\\ln x$", der:"$f'(x)=\\dfrac{1}{x}$"},
+        {izq:"$f(x)=\\dfrac{1}{x}$", der:"$f'(x)=-\\dfrac{1}{x^{2}}$"}
+      ],
+      feedback:{correcto:"Todas correctas.",errores:"$x^{2}\\to 2x$; $e^{x}\\to e^{x}$; $\\ln x\\to 1/x$; $1/x=-x^{-1}\\to -(-1)x^{-2}=-1/x^{2}$."}},
+    {tipo:"numerica", enunciado:"El costo total es $C(q)=q^{2}+10q+100$. Calcula el costo marginal $C'(5)$.", respuesta:20, tolerancia:0.01, feedbackCorrecto:"Sí: $C'(q)=2q+10$, $C'(5)=20$.", feedbackError:"$C'(q)=2q+10$. En $q=5$: $C'(5)=2(5)+10=20$."},
+    {tipo:"opcion_multiple", enunciado:"Con la regla de la cadena, $\\dfrac{d}{dx}\\big[(2x+1)^{4}\\big]=\\,?$", opciones:["$8(2x+1)^{3}$","$4(2x+1)^{3}$","$12(2x+1)^{3}$","$(2x+1)^{3}$"], correcta:0,
+      feedback:{correcto:"Sí: $f'(g)\\cdot g'=4(2x+1)^{3}\\cdot 2=8(2x+1)^{3}$.",errores:{1:"Olvidaste multiplicar por $g'=2$.",2:"Calculaste $4\\cdot 2$ dos veces.",3:"Olvidaste ambos factores."}}}
+  ],
+  criterioDominio:0.8
+}
+];
+
+const FORMULAS_REFERENCIA = [
+  {f:"$f(x)=mx+b$", r:"Función lineal ($m$=pendiente, $b$=intercepto)"},
+  {f:"$q(p)=120-3p$", r:"Demanda lineal (Clase 1)"},
+  {f:"$p(q)=40-\\tfrac{q}{3}$", r:"Demanda inversa (despeje de precio)"},
+  {f:"$VP(t)=\\dfrac{C}{(1+r)^{t}}$", r:"Valor presente a tasa compuesta $r$"},
+  {f:"$C-P=S-Ke^{-rT}$", r:"Paridad put-call (opciones europeas)"},
+  {f:"$f^{-1}(f(x))=x$", r:"Propiedad de la función inversa"},
+  {f:"$f(-x)=f(x)$", r:"Función par (simétrica al eje $y$)"},
+  {f:"$f(-x)=-f(x)$", r:"Función impar (simétrica al origen)"},
+  {f:"$\\displaystyle\\lim_{x\\to a}f(x)=L$", r:"Definición intuitiva de límite"},
+  {f:"$\\displaystyle\\lim_{x\\to 0}\\dfrac{\\operatorname{sen}\\, x}{x}=1$", r:"Límite notable trigonométrico"},
+  {f:"$\\displaystyle\\lim_{x\\to\\infty}\\dfrac{ax^{n}}{bx^{n}}=\\dfrac{a}{b}$", r:"Límite al infinito (mismo grado)"},
+  {f:"$\\lim_{x\\to a}f(x)=f(a)$", r:"Continuidad en $a$ (resumen de 3 condiciones)"},
+  {f:"$x_{v}=\\dfrac{-b}{2a}$", r:"Vértice de $ax^{2}+bx+c$ (máx/mín)"},
+  {f:"$f'(x)=\\displaystyle\\lim_{h\\to 0}\\dfrac{f(x+h)-f(x)}{h}$", r:"Definición de derivada"},
+  {f:"$\\dfrac{d}{dx}\\,x^{n}=n\\,x^{n-1}$", r:"Regla de la potencia"},
+  {f:"$\\dfrac{d}{dx}[f\\cdot g]=f'g+fg'$", r:"Regla del producto"},
+  {f:"$\\dfrac{d}{dx}\\!\\left[\\dfrac{f}{g}\\right]=\\dfrac{f'g-fg'}{g^{2}}$", r:"Regla del cociente"},
+  {f:"$\\dfrac{d}{dx}[f(g(x))]=f'(g(x))\\cdot g'(x)$", r:"Regla de la cadena"},
+  {f:"$\\Pi(q)=I(q)-C(q)$", r:"Utilidad = Ingreso − Costo"},
+  {f:"$\\Pi'(q)=0\\;\\Leftrightarrow\\; I'(q)=C'(q)$", r:"Optimización: Img. marginal = Costo marginal"}
+];
+
+
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+function $(id){return document.getElementById(id)}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+/* Render LaTeX math in an element using KaTeX auto-render */
+function renderMath(el){
+  if(typeof renderMathInElement==='function'){
+    try{
+      renderMathInElement(el,{
+        delimiters:[
+          {left:'$$',right:'$$',display:true},
+          {left:'$',right:'$',display:false}
+        ],
+        throwOnError:false,
+        errorColor:'#888888'
+      });
+    }catch(e){/* KaTeX not ready */}
+  }
+}
+/* Set innerHTML and render LaTeX math (data already has $...$ delimiters) */
+function setHTML(el,html){
+  el.innerHTML=html;
+  renderMath(el);
+}
+
+/* Convert HTML/Unicode math notation to LaTeX with $...$ delimiters */
+function htmlToLatex(text){
+  return text
+    .replace(/<sup>(.*?)<\/sup>/g,function(m,c){return '^{'+htmlToLatex(c)+'}'})
+    .replace(/<sub>(.*?)<\/sub>/g,function(m,c){return '_{'+htmlToLatex(c)+'}'})
+    .replace(/<span class="frac"><span class="num">(.*?)<\/span><span class="den">(.*?)<\/span><\/span>/g,function(m,n,d){return '\\frac{'+n+'}{'+d+'}'})
+    .replace(/∫/g,'\\int ')
+    .replace(/√/g,'\\sqrt ')
+    .replace(/²/g,'^{2}').replace(/³/g,'^{3}').replace(/⁴/g,'^{4}')
+    .replace(/⁵/g,'^{5}').replace(/⁶/g,'^{6}')
+    .replace(/⁻¹/g,'^{-1}').replace(/⁻²/g,'^{-2}').replace(/⁻³/g,'^{-3}')
+    .replace(/π/g,'\\pi ').replace(/≠/g,'\\neq ').replace(/≤/g,'\\leq ')
+    .replace(/≥/g,'\\geq ').replace(/→/g,'\\to ').replace(/≈/g,'\\approx ')
+    .replace(/∞/g,'\\infty ').replace(/×/g,'\\times ').replace(/·/g,'\\cdot ')
+    .replace(/Σ/g,'\\sum ').replace(/Δ/g,'\\Delta ').replace(/½/g,'\\frac{1}{2}')
+    .replace(/₁/g,'_{1}').replace(/₂/g,'_{2}').replace(/₃/g,'_{3}')
+    .replace(/₄/g,'_{4}').replace(/₅/g,'_{5}').replace(/₆/g,'_{6}')
+    .replace(/₀/g,'_{0}').replace(/ᵢ/g,'_{i}')
+    .replace(/′/g,"'").replace(/⟺/g,'\\iff ').replace(/•/g,'')
+    .replace(/\bsen\b/g,'\\operatorname{sen}')
+    .replace(/\bcos\b/g,'\\cos').replace(/\btan\b/g,'\\tan')
+    .replace(/\bsec\b/g,'\\sec').replace(/\bln\b/g,'\\ln');
+}
+
+var MATH_WORDS_JS={sen:1,cos:1,tan:1,sec:1,cot:1,csc:1,sin:1,ln:1,log:1,dx:1,du:1,dv:1,dt:1,pi:1,infty:1,exp:1,lim:1,int:1,sum:1,frac:1,sqrt:1,Delta:1,cdot:1,times:1,neq:1,leq:1,geq:1,to:1,approx:1,iff:1};
+var MATH_CHARS_JS='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-*/=()|,\\^_\'{} ';
+
+function isMathChar(c){return MATH_CHARS_JS.indexOf(c)>=0}
+
+function extendLeftMath(text,pos){
+  var i=pos;
+  while(i>0){
+    var c=text[i-1];
+    // Stop at ) preceded by digit (e.g., M3) from "(Repaso M3)")
+    if(c===')' && i>=2 && /[0-9]/.test(text[i-2])) return i;
+    // Stop at ( preceded by space or text (opening paren of text)
+    if(c==='(' && i>=2 && /[a-záéíóúñ.]/.test(text[i-2])) return i;
+    if(/[a-zA-Z]/.test(c)){
+      var wordEnd=i;
+      while(i>0 && /[a-zA-Z]/.test(text[i-1])) i--;
+      var word=text.substring(i,wordEnd);
+      if(word.length>1 && !MATH_WORDS_JS[word.toLowerCase()]) return wordEnd;
+    }else if(isMathChar(c)){i--}
+    else return i;
+  }
+  return i;
+}
+
+function extendRightMath(text,pos){
+  var i=pos, n=text.length;
+  while(i<n){
+    var c=text[i];
+    if(/[a-zA-Z]/.test(c)){
+      var wordStart=i;
+      while(i<n && /[a-zA-Z]/.test(text[i])) i++;
+      var word=text.substring(wordStart,i);
+      if(word.length>1 && !MATH_WORDS_JS[word.toLowerCase()]) return wordStart;
+    }else if(isMathChar(c)){i++}
+    else return i;
+  }
+  return i;
+}
+
+function wrapInlineMath(text){
+  // Find math anchors: \command, ^{, _{
+  var anchors=[];
+  var cmdRe=/\\(operatorname\{sen\}|int|sqrt|pi|sum|Delta|frac|ln|cos|tan|sec|neq|leq|geq|to|approx|infty|times|cdot|iff|bullet)\b/g;
+  var m;
+  while((m=cmdRe.exec(text))!==null) anchors.push([m.index,m.index+m[0].length]);
+  var supRe=/\^\{/g;
+  while((m=supRe.exec(text))!==null) anchors.push([m.index,m.index+m[0].length]);
+  var subRe=/_\{/g;
+  while((m=subRe.exec(text))!==null) anchors.push([m.index,m.index+m[0].length]);
+  
+  if(anchors.length===0) return text;
+  
+  // Extend each anchor
+  var segments=[];
+  for(var a=0;a<anchors.length;a++){
+    var left=extendLeftMath(text,anchors[a][0]);
+    var right=extendRightMath(text,anchors[a][1]);
+    segments.push([left,right]);
+  }
+  
+  // Sort by start
+  segments.sort(function(a,b){return a[0]-b[0]});
+  
+  // Merge overlapping
+  var merged=[];
+  for(var s=0;s<segments.length;s++){
+    if(merged.length>0 && segments[s][0]<=merged[merged.length-1][1]+1){
+      merged[merged.length-1][1]=Math.max(merged[merged.length-1][1],segments[s][1]);
+    }else{
+      merged.push([segments[s][0],segments[s][1]]);
+    }
+  }
+  
+  // Build result
+  var result='';
+  var lastEnd=0;
+  for(var s=0;s<merged.length;s++){
+    result+=text.substring(lastEnd,merged[s][0]);
+    var mathText=text.substring(merged[s][0],merged[s][1]).trim();
+    if(mathText.length>0){
+      if(mathText.charAt(0)==='{') result+='$ '+mathText+'$';
+      else result+='$'+mathText+'$';
+    }
+    lastEnd=merged[s][1];
+  }
+  result+=text.substring(lastEnd);
+  return result;
+}
+
+function convertMathToLatex(html){
+  // 1. Convert formula boxes to $$...$$ display math
+  html=html.replace(/<div class="formula-box">([\s\S]*?)<\/div>/g,function(m,content){
+    var latex=htmlToLatex(content).trim();
+    return '<div class="formula-box">$$'+latex+'$$</div>';
+  });
+  
+  // 2. Protect $$...$$ blocks from double processing
+  var mathBlocks=[];
+  html=html.replace(/\$\$([\s\S]*?)\$\$/g,function(m,content){
+    mathBlocks.push(content);
+    return '\x00MATH'+(mathBlocks.length-1)+'\x00';
+  });
+  
+  // 3. Convert remaining math notation (outside $$ blocks)
+  html=htmlToLatex(html);
+  
+  // 4. Restore $$ blocks
+  html=html.replace(/\x00MATH(\d+)\x00/g,function(m,idx){
+    return '$$'+mathBlocks[parseInt(idx)]+'$$';
+  });
+  
+  // 5. Split by HTML tags and wrap inline math (skip $$ blocks)
+  var parts=html.split(/(<[^>]+>)/);
+  var result='';
+  for(var i=0;i<parts.length;i++){
+    if(parts[i].length===0) continue;
+    if(parts[i].charAt(0)==='<' && parts[i].charAt(parts[i].length-1)==='>'){
+      result+=parts[i];
+    }else if(parts[i].indexOf('$$')!==-1){
+      // Already display math - don't wrap
+      result+=parts[i];
+    }else{
+      result+=wrapInlineMath(parts[i]);
+    }
+  }
+  return result;
+}
+
+
+function normalizeStr(s){
+  return String(s).toLowerCase().replace(/\s+/g,'').replace(/×/g,'*').replace(/·/g,'*')
+    .replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4').replace(/⁵/g,'^5').replace(/⁶/g,'^6')
+    .replace(/⁻¹/g,'^-1').replace(/⁻²/g,'^-2').replace(/⁻³/g,'^-3')
+    .replace(/√/g,'sqrt').replace(/π/g,'pi');
+}
+function getModulo(id){return MODULES.find(m=>m.id===id)}
+function siguienteModulo(id){
+  const idx = MODULES.findIndex(m=>m.id===id);
+  if(idx<0||idx>=MODULES.length-1) return null;
+  // Skip m0
+  for(let i=idx+1;i<MODULES.length;i++){
+    if(MODULES[i].id!=='m0') return MODULES[i];
+  }
+  return null;
+}
+function toast(msg,type='info'){
+  const t=$('toast');t.textContent=msg;t.className='toast '+type+' show';
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function hoy(){
+  const d=new Date();
+  return d.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
+}
+function fechaHora(){
+  return new Date().toLocaleString('es-MX');
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function renderDashboard(){
+  const grid=$('modules-grid');
+  grid.innerHTML='';
+  MODULES.filter(m=>m.id!=='m0').forEach(m=>{
+    const est=ESTADO.modulos[m.id];
+    let estadoClase='locked',estadoTxt='🔒 Bloqueado',icono='🔒';
+    if(est.dominado){estadoClase='completed';estadoTxt='✅ Completado';icono=m.icono}
+    else if(est.completado){estadoClase='in-progress';estadoTxt='🎯 En curso';icono=m.icono}
+    else if(est.desbloqueado){estadoClase='available';estadoTxt='📖 Disponible';icono=m.icono}
+    const pct=Math.round((est.scoreActividades/est.totalActividades)*100);
+    const card=document.createElement('div');
+    card.className='module-card '+estadoClase;
+    setHTML(card,`
+      <div class="m-icon">${icono}</div>
+      <div class="m-num">Módulo ${m.num}</div>
+      <div class="m-title">${m.titulo}</div>
+      <div class="m-status ${estadoClase}">${estadoTxt}</div>
+      <div class="m-progress">
+        <div style="font-size:.75rem;color:var(--text-muted)">Avance: ${pct}%</div>
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%"></div></div>
+      </div>`);
+    if(!card.classList.contains('locked')){
+      card.onclick=()=>abrirModulo(m.id);
+    }
+    grid.appendChild(card);
+  });
+  // Update global progress
+  const mods=MODULES.filter(m=>m.id!=='m0');
+  let totalDone=0,totalAct=0;
+  mods.forEach(m=>{
+    const e=ESTADO.modulos[m.id];
+    totalDone+=e.scoreActividades;
+    totalAct+=e.totalActividades;
+  });
+  // Add consolidation bonus
+  let dominatedCount=mods.filter(m=>ESTADO.modulos[m.id].dominado).length;
+  let pct=Math.round(((totalDone/totalAct)*0.7 + (dominatedCount/mods.length)*0.3)*100);
+  if(isNaN(pct))pct=0;
+  $('progress-pct').textContent=pct+'%';
+  $('progress-fill').style.width=pct+'%';
+  // Render side panels
+  renderFormulaRef();
+  renderErroresList();
+  renderProgresoDetallado();
+  saveState();
+}
+
+/* ============================================================
+   VISTA DE MÓDULO
+   ============================================================ */
+let moduloActual=null;
+function irDashboard(){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-dashboard').classList.add('active');
+  moduloActual=null;
+  renderDashboard();
+  window.scrollTo(0,0);
+}
+/* ============================================================
+   SELECCIÓN DE ACTIVIDADES POR SESIÓN
+   ============================================================ */
+// Semilla de sesión: cambia cada vez que se abre el archivo
+var SESSION_SEED = Math.floor(Math.random()*1000000);
+
+// Shuffle determinista con semilla (para que las 3 actividades no cambien al navegar dentro de la misma sesión)
+function shuffleWithSeed(arr,seed){
+  var s=seed;
+  for(var i=arr.length-1;i>0;i--){
+    s=(s*9301+49297)%233280;
+    var j=Math.floor((s/233280)*(i+1));
+    var tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;
+  }
+  return arr;
+}
+
+// Devuelve los índices de TODAS las actividades del módulo
+function getActividadesVisibles(modId){
+  var m=getModulo(modId);
+  if(!m||m.esDiagnostico) return m.actividades.map(function(_,i){return i});
+  // Mostrar todas las actividades de una vez
+  return m.actividades.map(function(_,i){return i});
+}
+
+function abrirModulo(id){
+  const m=getModulo(id);
+  if(!m)return;
+  moduloActual=id;
+  const est=ESTADO.modulos[id];
+  if(!est.primerAcceso)est.primerAcceso=fechaHora();
+  est.ultimoAcceso=fechaHora();
+  $('bc-modulo').textContent='Módulo '+m.num+': '+m.titulo;
+  renderModuloContenido(id);
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-module').classList.add('active');
+  window.scrollTo(0,0);
+  saveState();
+}
+function renderModuloContenido(id){
+  const m=getModulo(id);
+  const cont=$('module-content');
+  const est=ESTADO.modulos[id];
+  let html=`
+    <div class="module-header">
+      <h2><span style="font-size:1.6rem">${m.icono}</span> Módulo ${m.num}: ${m.titulo}</h2>
+      <div class="objetivo"><strong>Objetivo:</strong> ${m.objetivo}</div>
+    </div>`;
+  // M0: diagnóstico
+  if(m.esDiagnostico){
+    html+=`<div class="section"><h3>🧭 Preguntas de diagnóstico</h3>`;
+    if(ESTADO.m0.completado){
+      html+=`<div class="diag-result ${ESTADO.m0.score>=5?'alto':ESTADO.m0.score>=3?'medio':'bajo'}">
+        <strong>Resultado: ${ESTADO.m0.score}/${ESTADO.m0.max}</strong><br>
+        ${ESTADO.m0.recomendaciones.map(r=>`<div class="diag-rec">• ${r}</div>`).join('')}
+      </div>`;
+      html+=`<button class="btn" onclick="repetirDiagnostico()">🔄 Repetir diagnóstico</button>`;
+    }
+    m.actividades.forEach((a,i)=>html+=renderActividad(a,id,i));
+    html+=`</div>`;
+    setHTML(cont,html);
+    attachActividadHandlers(id);
+    return;
+  }
+  // Repaso espaciado
+  if(m.repaso && m.repaso.length>0 && !est.repasoHecho){
+    html+=`<div class="section"><h3>🔁 Repaso espaciado <span class="badge">repaso</span></h3>
+      <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:10px">Antes de empezar, repasamos conceptos de módulos anteriores.</p>`;
+    m.repaso.forEach((a,i)=>{
+      const rId='repaso-'+i;
+      html+=renderActividadSimple(a,id,rId);
+    });
+    html+=`<button class="btn btn-primary" onclick="marcarRepasoHecho('${id}')">✓ Repaso completado, continuar</button></div>`;
+  }
+  // Teoría
+  html+=`<div class="section">
+    <h3>📚 Mini-teoría</h3>
+    <div class="accordion">
+      <div class="acc-head" onclick="toggleAcc(this)"><span>Ver teoría (click para desplegar)</span><span class="arrow">▶</span></div>
+      <div class="acc-body"><div class="teoria-content">${m.teoria}</div></div>
+    </div>
+  </div>`;
+  // Ejemplo resuelto
+  if(m.ejemplo && m.ejemplo.length>0){
+    html+=`<div class="section"><h3>🧩 Ejemplo resuelto paso a paso</h3><div id="ejemplo-display"></div></div>`;
+  }
+  // Generador de práctica (M3-M8)
+  if(['m2','m3'].includes(id)){
+    html+=`<div class="practice-gen">
+      <h3>🎲 Generador de práctica infinita</h3>
+      <p style="font-size:.88rem">Genera ejercicios aleatorios con verificación automática. Practica cuantas veces quieras.</p>
+      <div class="gen-controls">
+        <button class="btn btn-primary" onclick="generarPractica('${id}')">🔄 Generar otro ejercicio</button>
+        <button class="btn btn-ghost" onclick="mostrarSolucionGen()">💡 Ver solución</button>
+      </div>
+      <div class="gen-display" id="gen-display" style="display:none"></div>
+    </div>`;
+  }
+  // Actividades (todas a la vez)
+  var visibles=getActividadesVisibles(id);
+  var totalMod=m.actividades.length;
+  html+=`<div class="section"><h3>✏️ Actividades <span class="badge">${visibles.length}</span></h3>`;
+  visibles.forEach(function(idx){
+    html+=renderActividad(m.actividades[idx],id,idx);
+  });
+  html+=`</div>`;
+  // Consolidación
+  html+=`<div class="consolidacion">
+    <h3>🏆 Consolidación: resuélvelo tú</h3>
+    <p>${getConsolidacion(id)}</p>
+    <div class="autoeval">
+      <p style="font-weight:600;margin-bottom:6px">Autoevaluación guiada:</p>
+      <label><input type="checkbox" id="auto-1"> Identifiqué qué regla aplicar</label>
+      <label><input type="checkbox" id="auto-2"> Verifiqué mi respuesta</label>
+      <label><input type="checkbox" id="auto-3"> Identifiqué restricciones</label>
+      <label><input type="checkbox" id="auto-4"> Mi respuesta coincide con la esperada</label>
+    </div>
+    <div class="act-actions" style="margin-top:12px">
+      <button class="btn btn-success" onclick="guardarConsolidacion('${id}')">✓ Marcar consolidación como hecha</button>
+    </div>
+    <div id="cons-feedback" style="margin-top:8px"></div>
+  </div>`;
+  setHTML(cont,html);
+  attachActividadHandlers(id);
+  if(m.ejemplo && m.ejemplo.length>0)renderEjemplo(m.ejemplo,0);
+  actualizarEstadoDominar(id);
+}
+
+function getConsolidacion(id){
+  const consolidaciones={
+    m1:'Dada la demanda $q=120-3p$ (unidades en miles): (a) halla la función de demanda inversa $p(q)$; (b) calcula $q$ cuando $p=15$; (c) determina si la demanda es monótona y de qué tipo, justificando. Verifica con la función inversa.',
+    m2:'Calcula tres límites mostrando el procedimiento: $\\lim_{x\\to 3}\\dfrac{x^{2}-9}{x-3}$, $\\lim_{x\\to\\infty}\\dfrac{3x^{2}+2x}{5x^{2}-1}$ y $\\lim_{t\\to\\infty}VP(t)$ donde $VP(t)=\\dfrac{1000}{(1.10)^{t}}$. Clasifica el comportamiento del valor presente al infinito.',
+    m3:'Maximiza la utilidad $\\Pi(q)=-q^{2}+80q-100$: halla $q^{*}$ igualando $\\Pi\'(q)=0$, verifica que es máximo con $\\Pi\'\'(q)$, calcula $\\Pi(q^{*})$ e interpreta el resultado en términos de ingreso marginal y costo marginal.'
+  }
+  return consolidaciones[id]||'Resuelve el ejercicio final del módulo.';
+}
+
+function toggleAcc(head){
+  head.classList.toggle('open');
+  head.nextElementSibling.classList.toggle('open');
+}
+
+/* Ejemplo paso a paso */
+let ejemploIdx=0;
+function renderEjemplo(pasos,idx){
+  ejemploIdx=idx;
+  const disp=$('ejemplo-display');
+  if(!disp)return;
+  const p=pasos[idx];
+  let dots=pasos.map((_,i)=>`<span class="dot ${i===idx?'active':''}" onclick="renderEjemplo(MODULES.find(m=>m.id===moduloActual).ejemplo,${i})"></span>`).join('');
+  setHTML(disp,`
+    <div class="paso-display">
+      <div class="paso-num">Paso ${p.num} de ${pasos.length}</div>
+      <div class="paso-titulo">${p.titulo}</div>
+      <div class="paso-content">${p.contenido}</div>
+      <div class="paso-regla">📌 Regla: ${p.regla}</div>
+    </div>
+    <div class="ejemplo-nav">
+      <button class="btn btn-sm" onclick="renderEjemplo(MODULES.find(m=>m.id===moduloActual).ejemplo,${Math.max(0,idx-1)})" ${idx===0?'disabled':''}>← Anterior</button>
+      <div class="ejemplo-dots">${dots}</div>
+      <button class="btn btn-sm" onclick="renderEjemplo(MODULES.find(m=>m.id===moduloActual).ejemplo,${Math.min(pasos.length-1,idx+1)})" ${idx===pasos.length-1?'disabled':''}>Siguiente →</button>
+    </div>`);
+}
+
+function marcarRepasoHecho(id){
+  ESTADO.modulos[id].repasoHecho=true;
+  renderModuloContenido(id);
+  toast('Repaso completado. ¡A seguir!','success');
+}
+
+/* ============================================================
+   RENDERIZADORES DE ACTIVIDADES
+   ============================================================ */
+function renderActividadSimple(act,modId,rId){
+  // Simplified renderer for repaso (no tracking)
+  if(act.tipo==='opcion_multiple'){
+    let opts=act.opciones.map((o,i)=>`<div class="opcion" onclick="seleccionarSimple(this,'${rId}',${i},${act.correcta})"><div class="marker">${String.fromCharCode(65+i)}</div><div>${o}</div></div>`).join('');
+    return `<div class="actividad" id="${rId}"><div class="act-enunciado">${act.enunciado}</div><div class="opciones">${opts}</div><div class="feedback" id="fb-${rId}"></div></div>`;
+  }
+  return `<div class="actividad"><div class="act-enunciado">${act.enunciado}</div><p style="font-size:.85rem;color:var(--text-muted)">(Pregunta de repaso)</p></div>`;
+}
+function seleccionarSimple(el,rId,sel,correcta){
+  const cont=$(rId);
+  cont.querySelectorAll('.opcion').forEach(o=>o.classList.remove('selected','correct','incorrect'));
+  const opts=cont.querySelectorAll('.opcion');
+  const fb=$('fb-'+rId);
+  if(sel===correcta){
+    el.classList.add('correct');
+    fb.className='feedback show ok';
+    setHTML(fb,'✓ ¡Correcto! Buen repaso.');
+  }else{
+    el.classList.add('incorrect');
+    opts[correcta].classList.add('correct');
+    fb.className='feedback show err';
+    setHTML(fb,'La respuesta correcta está resaltada en verde. Revisa este concepto antes de continuar.');
+  }
+}
+
+function renderActividad(act,modId,idx){
+  const aId=`act-${modId}-${idx}`;
+  const est=ESTADO.modulos[modId];
+  const estadoAct=est.actividades[idx]||{intentos:0,correcta:false,primerIntento:null};
+  let html=`<div class="actividad ${estadoAct.correcta?'respondida-correcta':''}" id="${aId}" data-tipo="${act.tipo}" data-mod="${modId}" data-idx="${idx}">
+    <div class="act-enunciado"><span class="act-num">${idx+1}</span>${act.enunciado}</div>`;
+  switch(act.tipo){
+    case 'opcion_multiple':
+    case 'verdadero_falso':{
+      // For verdadero_falso: ensure opciones exist and convert boolean correcta to index
+      const opciones = act.opciones || ['Verdadero','Falso'];
+      const correctIdx = (act.tipo==='verdadero_falso') ? (act.correcta?0:1) : act.correcta;
+      let opts=opciones.map((o,i)=>{
+        let cls='';
+        if(estadoAct.correcta){
+          cls=i===correctIdx?'correct':'';
+        }
+        return `<div class="opcion ${cls}" onclick="seleccionarOpcion('${aId}',${i})"><div class="marker">${String.fromCharCode(65+i)}</div><div>${o}</div></div>`;
+      }).join('');
+      html+=`<div class="opciones">${opts}</div>`;
+      break;
+    }
+    case 'seleccion_multiple':
+      html+=`<div class="opciones">${act.opciones.map((o,i)=>`<div class="opcion" onclick="toggleMulti('${aId}',${i})"><div class="marker">☐</div><div>${o}</div></div>`).join('')}</div>
+        <div class="act-actions"><button class="btn btn-primary btn-sm" onclick="verificarMulti('${aId}')">Verificar</button></div>`;
+      break;
+    case 'completar_hueco':
+      // enunciado already rendered above (contains the input)
+      html+=`<div class="act-actions"><button class="btn btn-primary btn-sm" onclick="verificarHueco('${aId}',${idx})">Verificar</button></div>`;
+      break;
+    case 'ordenar_pasos':
+      html+=`<div class="orden-list" id="orden-${aId}">${renderOrdenItems(act.pasos,aId)}</div>
+        <div class="act-actions"><button class="btn btn-primary btn-sm" onclick="verificarOrden('${aId}',${idx})">Verificar orden</button></div>`;
+      break;
+    case 'emparejar':
+      html+=renderEmparejar(act.parejas,aId);
+      html+=`<div class="act-actions"><button class="btn btn-primary btn-sm" onclick="verificarEmparejar('${aId}',${idx})">Verificar emparejamientos</button></div>`;
+      break;
+    case 'numerica':
+      // enunciado already rendered above (contains the input)
+      html+=`<div class="act-actions"><button class="btn btn-primary btn-sm" onclick="verificarNumerica('${aId}',${idx})">Verificar</button></div>`;
+      break;
+  }
+  // Hints (always show — generic hints generated if no explicit pistas)
+  {
+    html+=`<div class="hints">
+      <button class="hint-btn" onclick="mostrarPista('${aId}',1)">💡 Pista 1</button>
+      <button class="hint-btn" onclick="mostrarPista('${aId}',2)">💡 Pista 2</button>
+      <button class="hint-btn" onclick="mostrarPista('${aId}',3)">💡 Pista 3 (pista fuerte)</button>
+    </div>
+    <div class="hint-content" id="hint-${aId}"></div>`;
+  }
+  html+=`<div class="feedback" id="fb-${aId}"></div>`;
+  if(estadoAct.intentos>0){
+    html+=`<div class="act-stats">Intentos: ${estadoAct.intentos} ${estadoAct.correcta?'✓':'· Sigue intentando'}</div>`;
+  }
+  html+=`</div>`;
+  return html;
+}
+
+function renderOrdenItems(pasos,aId){
+  // Shuffle
+  let shuffled=[...pasos].sort(()=>Math.random()-0.5);
+  return shuffled.map((p,i)=>`<div class="orden-item" data-orden="${p.orden}">
+    <span class="pos">${i+1}</span>
+    <span class="txt">${p.texto}</span>
+    <button class="up" onclick="moverOrden('${aId}',this,-1)">↑</button>
+    <button class="down" onclick="moverOrden('${aId}',this,1)">↓</button>
+  </div>`).join('');
+}
+function moverOrden(aId,btn,dir){
+  const list=$('orden-'+aId);
+  if(!list)return;
+  // Find the .orden-item that contains this button
+  var item=btn.closest('.orden-item');
+  if(!item)return;
+  // Get all items in current DOM order
+  const items=[...list.querySelectorAll('.orden-item')];
+  // Find current index of this item
+  var i=items.indexOf(item);
+  if(i<0)return;
+  const j=i+dir;
+  if(j<0||j>=items.length)return;
+  // Swap: move this item before/after the adjacent one
+  if(dir<0){
+    // Move up: insert before the previous item
+    list.insertBefore(item,items[j]);
+  }else{
+    // Move down: insert after the next item
+    list.insertBefore(items[j],item);
+  }
+  // Update pos numbers
+  [...list.querySelectorAll('.orden-item')].forEach((it,k)=>it.querySelector('.pos').textContent=k+1);
+}
+function renderEmparejar(parejas,aId){
+  let lefts=parejas.map((p,i)=>`<div class="emp-item" data-side="L" data-idx="${i}" onclick="selEmp('${aId}','L',${i})">${p.izq}</div>`).join('');
+  let rights=[...parejas].sort(()=>Math.random()-0.5).map(p=>`<div class="emp-item" data-side="R" data-val="${p.der}" onclick="selEmp('${aId}','R',this)">${p.der}</div>`).join('');
+  return `<div class="emparejar-grid">
+    <div class="emp-col">${lefts}</div>
+    <div class="emp-col" id="emp-right-${aId}">${rights}</div>
+  </div>
+  <div id="emp-status-${aId}" style="font-size:.8rem;margin-top:6px;color:var(--text-muted)"></div>`;
+}
+let empSel={};
+function selEmp(aId,side,idx){
+  const cont=$(aId);
+  if(!empSel[aId])empSel[aId]={};
+  cont.querySelectorAll(`.emp-item[data-side="${side}"]`).forEach(e=>e.classList.remove('selected'));
+  if(side==='L'){
+    empSel[aId].L=idx;
+    cont.querySelectorAll(`.emp-item[data-side="L"]`)[idx].classList.add('selected');
+  }else{
+    // idx is the element
+    idx.classList.add('selected');
+    empSel[aId].Relem=idx;
+  }
+  if(empSel[aId].L!==undefined && empSel[aId].Relem){
+    // Match
+    const act=getActFromElem(aId);
+    const pareja=act.parejas[empSel[aId].L];
+    const rightVal=empSel[aId].Relem.getAttribute('data-val');
+    if(pareja.der===rightVal){
+      const leftElem=cont.querySelectorAll('.emp-item[data-side="L"]')[empSel[aId].L];
+      leftElem.classList.add('correct','matched');
+      leftElem.classList.remove('selected');
+      empSel[aId].Relem.classList.add('correct','matched');
+      empSel[aId].Relem.classList.remove('selected');
+      empSel[aId]={};
+      const matched=cont.querySelectorAll('.emp-item.matched').length;
+      $('emp-status-'+aId).textContent=`${matched}/${act.parejas.length} emparejados`;
+    }else{
+      const leftElem=cont.querySelectorAll('.emp-item[data-side="L"]')[empSel[aId].L];
+      leftElem.classList.add('incorrect');
+      empSel[aId].Relem.classList.add('incorrect');
+      setTimeout(()=>{
+        leftElem.classList.remove('incorrect','selected');
+        empSel[aId].Relem.classList.remove('incorrect','selected');
+        empSel[aId]={};
+      },800);
+    }
+  }
+}
+function getActFromElem(aId){
+  const parts=aId.split('-');
+  const modId=parts[1];
+  const idx=parseInt(parts[2]);
+  return getModulo(modId).actividades[idx];
+}
+
+/* ============================================================
+   VERIFICADORES
+   ============================================================ */
+function seleccionarOpcion(aId,sel){
+  const cont=$(aId);
+  if(cont.classList.contains('respondida-correcta'))return;
+  cont.querySelectorAll('.opcion').forEach(o=>o.classList.remove('selected'));
+  cont.querySelectorAll('.opcion')[sel].classList.add('selected');
+  cont.dataset.sel=sel;
+  // Auto-verify on selection
+  verificarOpcion(aId);
+}
+function attachActividadHandlers(modId){
+  // No-op; handlers are inline onclick
+}
+function verificarOpcion(aId){
+  const cont=$(aId);
+  const modId=cont.dataset.mod;
+  const idx=parseInt(cont.dataset.idx);
+  const act=getModulo(modId).actividades[idx];
+  const sel=parseInt(cont.dataset.sel);
+  if(sel===undefined||isNaN(sel)){toast('Selecciona una opción','info');return}
+  // For verdadero_falso, correcta is boolean: convert to index
+  const correctIdx=(act.tipo==='verdadero_falso')?(act.correcta?0:1):act.correcta;
+  const opciones=act.opciones||['Verdadero','Falso'];
+  const fb=$('fb-'+aId);
+  const isCorrect=sel===correctIdx;
+  registrarIntento(modId,idx,isCorrect);
+  if(isCorrect){
+    cont.classList.add('respondida-correcta');
+    cont.querySelectorAll('.opcion')[sel].classList.add('correct');
+    fb.className='feedback show ok';
+    setHTML(fb,act.feedback.correcto);
+  }else{
+    cont.querySelectorAll('.opcion')[sel].classList.add('incorrect');
+    cont.querySelectorAll('.opcion')[correctIdx].classList.add('correct');
+    fb.className='feedback show err';
+    let errMsg='Respuesta incorrecta. ';
+    if(act.feedback.errores){
+      const errKey=act.tipo==='verdadero_falso'?(sel===0?true:false):sel;
+      errMsg=act.feedback.errores[errKey]||act.feedback.errores[sel]||'Respuesta incorrecta. Revisa la teoría.';
+    }
+    setHTML(fb,errMsg);
+    registrarError(modId,idx,act.enunciado,opciones[sel],opciones[correctIdx]);
+  }
+  actualizarEstadoDominar(modId);
+}
+
+function toggleMulti(aId,i){
+  const cont=$(aId);
+  if(cont.classList.contains('respondida-correcta'))return;
+  const opts=cont.querySelectorAll('.opcion');
+  const marker=opts[i].querySelector('.marker');
+  if(marker.textContent==='☐'){marker.textContent='☑';opts[i].classList.add('selected')}
+  else{marker.textContent='☐';opts[i].classList.remove('selected')}
+}
+function verificarMulti(aId){
+  const cont=$(aId);
+  const modId=cont.dataset.mod;
+  const idx=parseInt(cont.dataset.idx);
+  const act=getModulo(modId).actividades[idx];
+  const opts=cont.querySelectorAll('.opcion');
+  let selected=[];
+  opts.forEach((o,i)=>{if(o.querySelector('.marker').textContent==='☑')selected.push(i)});
+  if(selected.length===0){toast('Selecciona al menos una','info');return}
+  const correctSet=new Set(act.correctas);
+  const selSet=new Set(selected);
+  const isCorrect=correctSet.size===selSet.size&&[...correctSet].every(x=>selSet.has(x));
+  const fb=$('fb-'+aId);
+  registrarIntento(modId,idx,isCorrect);
+  if(isCorrect){
+    cont.classList.add('respondida-correcta');
+    opts.forEach((o,i)=>{if(correctSet.has(i))o.classList.add('correct')});
+    fb.className='feedback show ok';
+    setHTML(fb,act.feedback.correcto);
+    descargarEvidenciaActividad(modId,idx,true,act.enunciado,selected.map(i=>act.opciones[i]).join(', '));
+  }else{
+    opts.forEach((o,i)=>{
+      if(correctSet.has(i)&&selSet.has(i))o.classList.add('correct');
+      else if(selSet.has(i)&&!correctSet.has(i))o.classList.add('incorrect');
+      else if(correctSet.has(i))o.classList.add('correct');
+    });
+    fb.className='feedback show err';
+    let errTxt='Algunas selecciones son incorrectas. ';
+    if(act.feedback.errores){
+      selected.forEach(s=>{
+        if(act.feedback.errores[s]&&!correctSet.has(s))errTxt+=act.feedback.errores[s]+' ';
+      });
+    }
+    setHTML(fb,errTxt);
+    registrarError(modId,idx,act.enunciado,selected.map(i=>act.opciones[i]).join(','),act.correctas.map(i=>act.opciones[i]).join(','));
+  }
+  actualizarEstadoDominar(modId);
+}
+
+function verificarHueco(aId,idx){
+  const cont=$(aId);
+  const modId=cont.dataset.mod;
+  const act=getModulo(modId).actividades[idx];
+  const input=cont.querySelector('input.input-line');
+  if(!input)return;
+  const val=input.value.trim();
+  if(!val){toast('Escribe tu respuesta','info');return}
+  const norm=normalizeStr(val);
+  const correctas=act.respuesta.map(r=>normalizeStr(r));
+  const isCorrect=correctas.some(r=>r===norm);
+  const fb=$('fb-'+aId);
+  registrarIntento(modId,idx,isCorrect);
+  if(isCorrect){
+    cont.classList.add('respondida-correcta');
+    input.style.borderColor='var(--success)';
+    fb.className='feedback show ok';
+    setHTML(fb,act.feedbackCorrecto);
+  }else{
+    input.style.borderColor='var(--danger)';
+    fb.className='feedback show err';
+    setHTML(fb,act.feedbackError);
+    registrarError(modId,idx,act.enunciado,val,act.respuesta[0]);
+  }
+  actualizarEstadoDominar(modId);
+}
+
+function verificarOrden(aId,idx){
+  const cont=$(aId);
+  const modId=cont.dataset.mod;
+  const act=getModulo(modId).actividades[idx];
+  const list=$('orden-'+aId);
+  const items=[...list.querySelectorAll('.orden-item')];
+  const currentOrder=items.map(it=>parseInt(it.dataset.orden));
+  const expectedOrder=act.pasos.map(p=>p.orden);
+  const isCorrect=currentOrder.every((v,i)=>v===expectedOrder[i]);
+  const fb=$('fb-'+aId);
+  registrarIntento(modId,idx,isCorrect);
+  if(isCorrect){
+    cont.classList.add('respondida-correcta');
+    items.forEach(it=>it.style.borderColor='var(--success)');
+    fb.className='feedback show ok';
+    setHTML(fb,act.feedback.correcto);
+  }else{
+    fb.className='feedback show err';
+    setHTML(fb,act.feedback.errores||'El orden no es correcto. Revisa cuál paso debe ir primero.');
+    registrarError(modId,idx,act.enunciado,currentOrder.join(','),expectedOrder.join(','));
+  }
+  actualizarEstadoDominar(modId);
+}
+
+function verificarEmparejar(aId,idx){
+  const cont=$(aId);
+  const modId=cont.dataset.mod;
+  const act=getModulo(modId).actividades[idx];
+  const matched=cont.querySelectorAll('.emp-item.matched').length;
+  const isCorrect=matched===act.parejas.length;
+  const fb=$('fb-'+aId);
+  registrarIntento(modId,idx,isCorrect);
+  if(isCorrect){
+    cont.classList.add('respondida-correcta');
+    fb.className='feedback show ok';
+    setHTML(fb,act.feedback.correcto);
+  }else{
+    fb.className='feedback show err';
+    setHTML(fb,`Llevas ${matched}/${act.parejas.length} correctos. `+(act.feedback.errores||'Sigue intentando.'));
+    if(matched>0)registrarIntento(modId,idx,false);
+  }
+  actualizarEstadoDominar(modId);
+}
+
+function verificarNumerica(aId,idx){
+  const cont=$(aId);
+  const modId=cont.dataset.mod;
+  const act=getModulo(modId).actividades[idx];
+  const input=cont.querySelector('input.input-line');
+  if(!input)return;
+  const val=parseFloat(input.value.replace(',','.'));
+  if(isNaN(val)){toast('Escribe un número','info');return}
+  const isCorrect=Math.abs(val-act.respuesta)<=act.tolerancia;
+  const fb=$('fb-'+aId);
+  registrarIntento(modId,idx,isCorrect);
+  if(isCorrect){
+    cont.classList.add('respondida-correcta');
+    input.style.borderColor='var(--success)';
+    fb.className='feedback show ok';
+    setHTML(fb,act.feedbackCorrecto);
+  }else{
+    input.style.borderColor='var(--danger)';
+    fb.className='feedback show err';
+    setHTML(fb,act.feedbackError);
+    registrarError(modId,idx,act.enunciado,val,act.respuesta);
+  }
+  actualizarEstadoDominar(modId);
+}
+
+/* Pistas */
+function mostrarPista(aId,nivel){
+  const cont=$(aId);
+  const modId=cont.dataset.mod;
+  const idx=parseInt(cont.dataset.idx);
+  const act=getModulo(modId).actividades[idx];
+  const hintEl=$('hint-'+aId);
+  let label=nivel===1?'Recordatorio conceptual':nivel===2?'Paso clave':'Primer paso';
+  let pista;
+  if(act.pistas && act.pistas[nivel-1]){
+    pista=act.pistas[nivel-1];
+  }else{
+    // Generate generic hints based on activity type
+    pista=generarPistaGenerica(act,nivel,modId);
+  }
+  if(!pista)return;
+  setHTML(hintEl,`<span class="hint-level">${label}:</span>${pista}`);
+  hintEl.classList.add('show');
+}
+function generarPistaGenerica(act,nivel,modId){
+  const tipo=act.tipo;
+  const mod=getModulo(modId);
+  // Get the correct answer's text as a hint source (handle verdadero_falso and missing opciones)
+  let correctaTxt='';
+  if(act.tipo==='verdadero_falso'){
+    correctaTxt=act.correcta?'Verdadero':'Falso';
+  }else if(act.opciones && act.correcta!==undefined){
+    correctaTxt=act.opciones[act.correcta];
+  }else if(act.respuesta){
+    correctaTxt=Array.isArray(act.respuesta)?act.respuesta[0]:act.respuesta;
+  }
+  
+  if(nivel===1){
+    const reminders={
+      m1:'Piensa: ¿qué función, al derivarse, da el integrando? La antiderivada "deshace" la derivada.',
+      m2:'Aplica linealidad: separa término a término y usa las reglas básicas. No olvides +C.',
+      m3:'Regla de la potencia: sube el exponente en 1 (n→n+1) y divide entre el nuevo exponente. Cuidado con n=−1.',
+      m4:'∫sen x=−cos x (con signo menos); ∫cos x=sen x. Verifica derivando.',
+      m5:'Si el integrando es 1/x o f′/f, el resultado involucra ln|...|. Recuerda el valor absoluto.',
+      m6:'Para sumas de Riemann: calcula Δx=(b−a)/n, lista los puntos, evalúa f y multiplica por Δx.',
+      m7:'Para área entre curvas: encuentra intersecciones, decide qué va arriba, integra (superior−inferior).',
+      m8:'Elige u como la función interna. Calcula du. Si du aparece completo en el integrando, la sustitución funciona.'
+    };
+    return reminders[modId]||'Revisa la teoría del módulo y aplica la regla correspondiente.';
+  }
+  if(nivel===2){
+    if(tipo==='opcion_multiple'||tipo==='verdadero_falso'){
+      return 'Analiza cada opción: ¿cuál al derivarse o aplicarse correctamente da el resultado esperado?';
+    }
+    if(tipo==='completar_hueco'){
+      return 'El término que falta es parte de la respuesta correcta. Identifica qué operación falta.';
+    }
+    if(tipo==='ordenar_pasos'){
+      return 'El primer paso siempre es identificar o plantear; el último es simplificar o verificar.';
+    }
+    if(tipo==='numerica'){
+      return 'Identifica qué valores necesitas calcular y en qué orden. Cuidado con unidades y signos.';
+    }
+    return 'Identifica el paso clave que falta en tu razonamiento.';
+  }
+  if(nivel===3){
+    if(tipo==='opcion_multiple'||tipo==='verdadero_falso'){
+      return 'La respuesta correcta está relacionada con: '+String(correctaTxt).replace(/<[^>]+>/g,'').substring(0,60)+'...';
+    }
+    if(tipo==='completar_hueco'){
+      return 'La respuesta empieza con: '+String(correctaTxt).substring(0,4)+'...';
+    }
+    if(tipo==='numerica'){
+      return 'El resultado es aproximadamente '+act.respuesta+' (calcula los pasos intermedios).';
+    }
+    return 'Revisa el ejemplo resuelto del módulo para ver el primer paso aplicado.';
+  }
+  return '';
+}
+
+/* ============================================================
+   REGISTRO DE INTENTOS Y ERRORES
+   ============================================================ */
+function registrarIntento(modId,idx,correcto){
+  if(modId==='m0'){
+    if(!ESTADO.m0.intentos[idx])ESTADO.m0.intentos[idx]=0;
+    ESTADO.m0.intentos[idx]++;
+    if(correcto&&!ESTADO.m0.intentos[idx+'_ok']){
+      ESTADO.m0.intentos[idx+'_ok']=true;
+      ESTADO.m0.score++;
+    }
+    evalDiagnostico();
+    return;
+  }
+  const est=ESTADO.modulos[modId];
+  if(!est.actividades[idx])est.actividades[idx]={intentos:0,correcta:false,primerIntento:fechaHora()};
+  est.actividades[idx].intentos++;
+  if(correcto&&!est.actividades[idx].correcta){
+    est.actividades[idx].correcta=true;
+    est.scoreActividades++;
+  }
+  est.completado=est.scoreActividades>=Math.ceil(est.totalActividades*0.5);
+  saveState();
+}
+function registrarError(modId,idx,enunciado,dada,correcta){
+  ESTADO.errores.push({
+    mod:modId, idx:idx, enunciado:enunciado.substring(0,100),
+    respuestaDada:String(dada).substring(0,80),
+    respuestaCorrecta:String(correcta).substring(0,80),
+    fecha:fechaHora()
+  });
+  if(ESTADO.errores.length>100)ESTADO.errores=ESTADO.errores.slice(-100);
+  saveState();
+}
+
+function evalDiagnostico(){
+  const m0=ESTADO.m0;
+  m0.max=getModulo('m0').actividades.length;
+  m0.completado=m0.intentos.filter((_,i)=>typeof m0.intentos[i+'_ok']!=='undefined').length>=m0.max || Object.keys(m0.intentos).filter(k=>k.endsWith('_ok')).length>=m0.max;
+  // Generate recommendations based on categories
+  const cats={funciones:0,algebra:0,exponentes:0,lineales:0,porcentaje:0,logaritmos:0};
+  const acts=getModulo('m0').actividades;
+  Object.keys(m0.intentos).filter(k=>k.endsWith('_ok')).forEach(k=>{
+    const i=parseInt(k);
+    if(acts[i]&&acts[i].cat)cats[acts[i].cat]++;
+  });
+  m0.recomendaciones=[];
+  if(cats.funciones<1)m0.recomendaciones.push('Refuerza el concepto de función y su evaluación — es la base de la Clase 1 (propiedades de funciones).');
+  if(cats.algebra<2)m0.recomendaciones.push('Refuerza álgebra (factorización y ecuaciones lineales) — la usarás en la Clase 2 al resolver límites 0/0.');
+  if(cats.exponentes<2)m0.recomendaciones.push('Repasa leyes de exponentes y logaritmos — esenciales para el valor presente y la regla de la potencia en derivadas.');
+  if(cats.lineales<1)m0.recomendaciones.push('Repasa rectas y pendientes — son la base de la derivada como tasa de cambio marginal (Clase 3).');
+  if(m0.recomendaciones.length===0)m0.recomendaciones.push('¡Excelente base! Puedes avanzar con confianza por las 3 clases del curso.');
+  saveState();
+}
+function repetirDiagnostico(){
+  ESTADO.m0={completado:false,score:0,max:8,recomendaciones:[],intentos:[]};
+  saveState();
+  abrirModulo('m0');
+}
+
+/* ============================================================
+   ESTADO DOMINAR Y DESBLOQUEO
+   ============================================================ */
+function actualizarEstadoDominar(modId){
+  if(modId==='m0')return;
+  const est=ESTADO.modulos[modId];
+  const m=getModulo(modId);
+  const pct=est.scoreActividades/est.totalActividades;
+  const cumpleConsolidacion=est.consolidacionHecha;
+  const btn=$('btn-dominar');
+  const msg=$('dominar-msg');
+  if(!btn)return;
+  const cumplePct=pct>=m.criterioDominio;
+  if(cumplePct&&cumpleConsolidacion){
+    btn.disabled=false;
+    msg.textContent='¡Listo! Has alcanzado el criterio de dominio ('+Math.round(pct*100)+'% + consolidación).';
+  }else{
+    btn.disabled=true;
+    let faltan=[];
+    if(!cumplePct)faltan.push(`alcanzar ${Math.round(m.criterioDominio*100)}% de aciertos (vas ${est.scoreActividades}/${est.totalActividades} = ${Math.round(pct*100)}%)`);
+    if(!cumpleConsolidacion)faltan.push('completar la consolidación');
+    msg.textContent='Para marcar como dominado te falta: '+faltan.join(' y ')+'.';
+  }
+}
+function marcarDominado(){
+  if(!moduloActual||moduloActual==='m0')return;
+  const est=ESTADO.modulos[moduloActual];
+  est.dominado=true;
+  est.insignia=true;
+  // Unlock next
+  const next=siguienteModulo(moduloActual);
+  if(next){
+    ESTADO.modulos[next.id].desbloqueado=true;
+    toast(`¡Módulo dominado! Insignia obtenida 🏅. Desbloqueado: ${next.titulo}`,'success');
+  }else{
+    toast('¡Módulo dominado! Has completado el curso. 🎉','success');
+  }
+  
+  saveState();
+  setTimeout(()=>irDashboard(),500);
+}
+function guardarConsolidacion(modId){
+  const checks=['auto-1','auto-2','auto-3','auto-4'].map(id=>$(id)&&$(id).checked);
+  const allOk=checks.every(c=>c);
+  ESTADO.modulos[modId].consolidacionHecha=true;
+  ESTADO.modulos[modId].intentosConsolidacion++;
+  const fb=$('cons-feedback');
+  if(fb){
+    if(allOk){
+      setHTML(fb,'<div class="feedback show ok">¡Excelente autoevaluación! Marcaste todos los criterios. Ya puedes marcar el módulo como dominado.</div>');
+    }else{
+      setHTML(fb,'<div class="feedback show err">Revisa los criterios sin marcar. La consolidación se registra, pero asegúrate de entender cada paso.</div>');
+    }
+  }
+  actualizarEstadoDominar(modId);
+  saveState();
+  toast('Consolidación registrada','success');
+}
+
+/* ============================================================
+   GENERADORES DE PRÁCTICA
+   ============================================================ */
+let practicaActual=null;
+function generarPractica(modId){
+  var gen={m2:genLimites,m3:genDerivadas}[modId];
+  if(!gen){toast('No hay generador','info');return}
+  practicaActual=gen();var disp=$('gen-display');disp.style.display='block';
+  setHTML(disp,'<div class="gen-problem">'+practicaActual.problema+'</div><div class="numerica-input"><input class="input-line" id="gen-input" placeholder="Tu respuesta"><button class="btn btn-primary btn-sm" onclick="verificarPractica()">Verificar</button></div><div class="feedback" id="gen-feedback"></div>');
+}
+function mostrarSolucionGen(){if(!practicaActual){toast('Genera primero','info');return}var fb=$('gen-feedback');fb.className='feedback show ok';setHTML(fb,'<strong>Solución:</strong> '+practicaActual.solucion);}
+function verificarPractica(){if(!practicaActual)return;var input=$('gen-input'),val=input.value.trim();if(!val){toast('Escribe','info');return}var isCorrect;if(practicaActual.tipo==='numerica'){var num=parseFloat(val.replace(',','.'));isCorrect=!isNaN(num)&&Math.abs(num-practicaActual.respuesta)<=practicaActual.tolerancia;}else{var norm=normalizeStr(val);isCorrect=practicaActual.acepta.some(function(r){return normalizeStr(r)===norm});}var fb=$('gen-feedback');if(isCorrect){fb.className='feedback show ok';setHTML(fb,'Correcto! '+practicaActual.explicacion);input.style.borderColor='var(--success)';}else{fb.className='feedback show err';setHTML(fb,'Revisa. '+practicaActual.pista);input.style.borderColor='var(--danger)';}}
+
+function genOperaciones(){var t=Math.floor(Math.random()*3);if(t===0){var c=1+Math.floor(Math.random()*5),x=1+Math.floor(Math.random()*4),gx=x+c,fx=gx*gx;return{tipo:'numerica',problema:'Sean $f(x)=x^{2}$ y $g(x)=x+'+c+'$. Calcula $(f\\circ g)('+x+')$.',solucion:'$'+fx+'$',acepta:[],respuesta:fx,tolerancia:0.01,pista:'Primero $g('+x+')$.',explicacion:'$'+fx+'$'};}if(t===1){var a=1+Math.floor(Math.random()*4),b=1+Math.floor(Math.random()*4),co=a+1;return{tipo:'simbolica',problema:'$f(x)='+a+'x$, $g(x)=x+'+b+'$. Calcula $(f+g)(x)$.',solucion:'$'+co+'x+'+b+'$',acepta:[co+'x+'+b],pista:'Suma.',explicacion:'$'+co+'x+'+b+'$'};}var x1=Math.floor(Math.random()*4)+1,y1=Math.floor(Math.random()*5)+1,x2=x1+1+Math.floor(Math.random()*3),y2=y1+1+Math.floor(Math.random()*4),m=(y2-y1)/(x2-x1);return{tipo:'numerica',problema:'Pendiente por $('+x1+','+y1+')$ y $('+x2+','+y2+')$.',solucion:'$'+m+'$',acepta:[],respuesta:m,tolerancia:0.01,pista:'$m=\\frac{\\Delta y}{\\Delta x}$',explicacion:'$'+m+'$'};}
+function genExpLog(){var t=Math.floor(Math.random()*3);if(t===0){var bs=[2,3,10],b=bs[Math.floor(Math.random()*3)],e=2+Math.floor(Math.random()*3),v=Math.pow(b,e);return{tipo:'numerica',problema:'$\\log_{'+b+'}('+v+')$',solucion:'$'+e+'$',acepta:[],respuesta:e,tolerancia:0.01,pista:'$'+b+'^{?}='+v+'$',explicacion:'$'+e+'$'};}if(t===1){var m=2+Math.floor(Math.random()*3),n=2+Math.floor(Math.random()*3),b=2+Math.floor(Math.random()*3),s=m+n,v=Math.pow(b,s);return{tipo:'simbolica',problema:'Simplifica $'+b+'^{'+m+'}\\cdot '+b+'^{'+n+'}$',solucion:'$'+b+'^{'+s+'}='+v+'$',acepta:[b+'^'+s,String(v)],pista:'Suma exponentes.',explicacion:'$'+v+'$'};}var b=2+Math.floor(Math.random()*3),x=2+Math.floor(Math.random()*3),v=Math.pow(b,x);return{tipo:'numerica',problema:'Resuelve $'+b+'^{x}='+v+'$',solucion:'$x='+x+'$',acepta:[],respuesta:x,tolerancia:0.01,pista:'Potencia de '+b+'.',explicacion:'$x='+x+'$'};}
+function genTrig(){var a=[{d:0,s:'0',c:'1'},{d:30,s:'\\frac{1}{2}',c:'\\frac{\\sqrt{3}}{2}'},{d:45,s:'\\frac{\\sqrt{2}}{2}',c:'\\frac{\\sqrt{2}}{2}'},{d:60,s:'\\frac{\\sqrt{3}}{2}',c:'\\frac{1}{2}'},{d:90,s:'1',c:'0'}];var p=a[Math.floor(Math.random()*a.length)],isS=Math.random()<0.5,f=isS?'\\operatorname{sen}':'\\cos',v=isS?p.s:p.c;return{tipo:'simbolica',problema:'$'+f+'('+p.d+'^{\\circ})$',solucion:'$'+v+'$',acepta:[v],pista:'Valores notables.',explicacion:'$'+v+'$'};}
+function genLimites(){var t=Math.floor(Math.random()*4);if(t===0){var a=2+Math.floor(Math.random()*4),a2=a*a,r=2*a;return{tipo:'numerica',problema:'$\\lim_{x\\to '+a+'}\\frac{x^{2}-'+a2+'}{x-'+a+'}$',solucion:'$'+r+'$',acepta:[],respuesta:r,tolerancia:0.01,pista:'Aparece $0/0$. Factoriza diferencia de cuadrados.',explicacion:'$x^{2}-'+a2+'=(x-'+a+')(x+'+a+')$, al simplificar queda $x+'+a+'='+r+'$'};}if(t===1){var n=2+Math.floor(Math.random()*2),a=1+Math.floor(Math.random()*4),b=1+Math.floor(Math.random()*4);return{tipo:'numerica',problema:'$\\lim_{x\\to\\infty}\\frac{'+a+'x^{'+n+'}+3x}{'+b+'x^{'+n+'}-2}$',solucion:'$\\frac{'+a+'}{'+b+'}$',acepta:[],respuesta:a/b,tolerancia:0.001,pista:'Cuando $x\\to\\infty$ dominan los términos de mayor grado.',explicacion:'$\\frac{'+a+'}{'+b+'}='+(a/b).toFixed(4)+'$'};}if(t===2){var a=2+Math.floor(Math.random()*5),c=1+Math.floor(Math.random()*4),r=c*a+2;return{tipo:'numerica',problema:'$\\lim_{x\\to '+a+'}('+c+'x+2)$',solucion:'$'+r+'$',acepta:[],respuesta:r,tolerancia:0.01,pista:'Sustitución directa: la función es continua.',explicacion:'$'+c+'('+a+')+2='+r+'$'};}var C=(1+Math.floor(Math.random()*9))*1000;return{tipo:'numerica',problema:'El valor presente de un pago de $'+C+' a $t$ años (tasa $r=10\\%$) es $VP(t)=\\frac{'+C+'}{(1.10)^{t}}$. Calcula $\\lim_{t\\to\\infty}VP(t)$.',solucion:'$0$',acepta:[],respuesta:0,tolerancia:0.01,pista:'El denominador $(1.10)^{t}$ crece sin límite cuando $t\\to\\infty$.',explicacion:'$\\lim_{t\\to\\infty}\\frac{'+C+'}{(1.10)^{t}}=0$ — el valor presente de un pago muy lejano tiende a cero.'};}
+function genDerivadas(){var t=Math.floor(Math.random()*5);if(t===0){var n=2+Math.floor(Math.random()*5);return{tipo:'simbolica',problema:'$\\frac{d}{dx}[x^{'+n+'}]$',solucion:'$'+n+'x^{'+(n-1)+'}$',acepta:[n+'x^'+(n-1),n+'x^{'+(n-1)+'}'],pista:'Regla de la potencia: baja el exponente y multiplica.',explicacion:'$'+n+'x^{'+(n-1)+'}$'};}if(t===1){var a=1+Math.floor(Math.random()*3),b=1+Math.floor(Math.random()*4),c=Math.floor(Math.random()*3),co=2*a;return{tipo:'simbolica',problema:'$\\frac{d}{dx}['+a+'x^{2}+'+b+'x+'+c+']$',solucion:'$'+co+'x+'+b+'$',acepta:[co+'x+'+b],pista:'Deriva término a término con la regla de la potencia.',explicacion:'$'+co+'x+'+b+'$'};}if(t===2){var n=2+Math.floor(Math.random()*3),a=2+Math.floor(Math.random()*3),tc=n*Math.pow(a,n);return{tipo:'simbolica',problema:'$\\frac{d}{dx}[('+a+'x)^{'+n+'}]$',solucion:'$'+tc+'x^{'+(n-1)+'}$',acepta:[tc+'x^'+(n-1),tc+'x^{'+(n-1)+'}'],pista:'Regla de la cadena: $f\'(g)\\cdot g\'$.',explicacion:'$'+n+'('+a+'x)^{'+(n-1)+'}\\cdot '+a+'='+tc+'x^{'+(n-1)+'}$'};}if(t===3){var a=1+Math.floor(Math.random()*4),x0=1+Math.floor(Math.random()*3),d=2*a*x0-1;return{tipo:'numerica',problema:'Si $f(x)='+a+'x^{2}-x$, calcula $f\'('+x0+')$.',solucion:'$'+d+'$',acepta:[],respuesta:d,tolerancia:0.01,pista:'Primero halla $f\'(x)$ y luego sustituye.',explicacion:'$f\'(x)='+2*a+'x-1$, $f\'('+x0+')='+(2*a*x0)+'-1='+d+'$'};}var a=1+Math.floor(Math.random()*3),b=1+Math.floor(Math.random()*9),c=10*Math.floor(Math.random()*10),q=1+Math.floor(Math.random()*9),mc=2*a*q+b;return{tipo:'numerica',problema:'El costo total es $C(q)='+a+'q^{2}+'+b+'q+'+c+'$. Calcula el costo marginal $C\'('+q+')$.',solucion:'$'+mc+'$',acepta:[],respuesta:mc,tolerancia:0.01,pista:'$C\'(q)=2aq+b$, luego sustituye $q$.',explicacion:'$C\'(q)='+2*a+'q+'+b+'$, así que $C\'('+q+')='+(2*a*q)+'+'+b+'='+mc+'$'};}
+
+/* ============================================================
+   DESCARGAS DE EVIDENCIAS
+   ============================================================ */
+function descargarTexto(filename,content,mime='text/plain'){
+  const blob=new Blob([content],{type:mime+';charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+
+function descargarEvidenciaVisual(){
+  // Crear un div temporal con el resumen visual
+  var resumen=document.createElement('div');
+  resumen.style.cssText='position:fixed;left:-9999px;top:0;width:800px;padding:30px;background:#fff;font-family:Segoe UI,Arial,sans-serif;color:#1a1a1a;';
+  
+  var mods=MODULES.filter(function(m){return m.id!=='m0'});
+  var totalCorrect=0,totalAct=0,totalDom=0;
+  mods.forEach(function(m){var e=ESTADO.modulos[m.id];totalCorrect+=e.scoreActividades;totalAct+=e.totalActividades;if(e.dominado)totalDom++;});
+  var globalPct=Math.round(totalCorrect/totalAct*100);
+  
+  var htmlContent='<div style="text-align:center;margin-bottom:20px;">';
+  htmlContent+='<div style="font-size:22px;font-weight:bold;color:#2a2a2a;">Universidad Internacional de Innovación (UNII)</div>';
+  htmlContent+='<div style="font-size:16px;color:#666;margin-top:4px;">Matemáticas para la Economía I · Evidencia de Avance</div>';
+  htmlContent+='</div>';
+  htmlContent+='<div style="border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:16px;">';
+  htmlContent+='<div style="display:flex;justify-content:space-between;font-size:13px;">';
+  htmlContent+='<div><strong>Estudiante:</strong> '+(ESTADO.usuario.nombre||'(sin nombre)')+'</div>';
+  htmlContent+='<div><strong>Grupo:</strong> '+(ESTADO.usuario.grupo||'—')+'</div>';
+  htmlContent+='</div>';
+  htmlContent+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-top:6px;">';
+  htmlContent+='<div><strong>Fecha:</strong> '+fechaHora()+'</div>';
+  htmlContent+='<div><strong>Progreso:</strong> '+globalPct+'%</div>';
+  htmlContent+='</div></div>';
+  
+  // Diagnóstico
+  htmlContent+='<div style="margin-bottom:16px;">';
+  htmlContent+='<div style="font-size:15px;font-weight:bold;border-bottom:2px solid #ddd;padding-bottom:4px;margin-bottom:8px;">Diagnóstico inicial</div>';
+  htmlContent+='<div style="font-size:13px;">Resultado: '+ESTADO.m0.score+'/'+ESTADO.m0.max+'</div>';
+  if(ESTADO.m0.recomendaciones.length>0){
+    htmlContent+='<div style="font-size:12px;color:#666;margin-top:4px;">'+ESTADO.m0.recomendaciones.join('; ')+'</div>';
+  }
+  htmlContent+='</div>';
+  
+  // Por cada módulo
+  mods.forEach(function(m){
+    var e=ESTADO.modulos[m.id];
+    var pct=Math.round(e.scoreActividades/e.totalActividades*100);
+    var estadoTxt=e.dominado?'Completado':e.scoreActividades>0?'En curso':'Sin iniciar';
+    var estadoColor=e.dominado?'#3a3a3a':e.scoreActividades>0?'#6a6a6a':'#bbb';
+    
+    htmlContent+='<div style="margin-bottom:14px;border:1px solid #eee;border-radius:6px;padding:12px;">';
+    htmlContent+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+    htmlContent+='<div style="font-size:14px;font-weight:bold;">'+m.titulo+'</div>';
+    htmlContent+='<div style="font-size:12px;color:'+estadoColor+';">'+estadoTxt+'</div>';
+    htmlContent+='</div>';
+    
+    // Barra de progreso
+    htmlContent+='<div style="background:#eee;border-radius:10px;height:10px;margin-bottom:8px;"><div style="background:'+estadoColor+';height:10px;border-radius:10px;width:'+pct+'%;"></div></div>';
+    
+    htmlContent+='<div style="font-size:12px;color:#666;">Actividades: '+e.scoreActividades+'/'+e.totalActividades+' ('+pct+'%)';
+    if(e.consolidacionHecha)htmlContent+=' · Consolidación ✓';
+    htmlContent+='</div>';
+    
+    // Detalle de actividades
+    if(e.scoreActividades>0){
+      htmlContent+='<table style="width:100%;font-size:11px;margin-top:6px;border-collapse:collapse;">';
+      htmlContent+='<tr style="background:#f5f5f5;"><th style="padding:3px 6px;text-align:left;border:1px solid #eee;">#</th><th style="padding:3px 6px;text-align:left;border:1px solid #eee;">Estado</th><th style="padding:3px 6px;text-align:left;border:1px solid #eee;">Intentos</th></tr>';
+      m.actividades.forEach(function(a,i){
+        var aEst=e.actividades[i]||{intentos:0,correcta:false};
+        htmlContent+='<tr><td style="padding:2px 6px;border:1px solid #eee;">'+(i+1)+'</td>';
+        htmlContent+='<td style="padding:2px 6px;border:1px solid #eee;color:'+(aEst.correcta?'#3a3a3a':'#bbb')+';">'+(aEst.correcta?'✓ Correcta':'—')+'</td>';
+        htmlContent+='<td style="padding:2px 6px;border:1px solid #eee;">'+(aEst.intentos||0)+'</td></tr>';
+      });
+      htmlContent+='</table>';
+    }
+    
+    // Errores de este módulo
+    var modErrors=ESTADO.errores.filter(function(er){return er.mod===m.id;});
+    if(modErrors.length>0){
+      htmlContent+='<div style="font-size:11px;color:#999;margin-top:6px;">Errores registrados: '+modErrors.length+'</div>';
+    }
+    
+    htmlContent+='</div>';
+  });
+  
+  // Pie
+  htmlContent+='<div style="text-align:center;font-size:11px;color:#999;margin-top:16px;border-top:1px solid #eee;padding-top:10px;">';
+  htmlContent+='Evidencia generada automáticamente · '+fechaHora()+'<br>';
+  htmlContent+='Curso-Taller de Matemáticas para la Economía I · UNII';
+  htmlContent+='</div>';
+  
+  resumen.innerHTML=htmlContent;
+  document.body.appendChild(resumen);
+  
+  // Render KaTeX in the summary if needed
+  if(typeof renderMathInElement==='function'){
+    try{renderMathInElement(resumen,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});}catch(e){}
+  }
+  
+  // Convert to image with html2canvas
+  toast('Generando imagen de evidencia...','info');
+  
+  if(typeof html2canvas==='undefined'){
+    toast('Error: librería no cargada. Recarga la página.','error');
+    document.body.removeChild(resumen);
+    return;
+  }
+  
+  html2canvas(resumen,{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(function(canvas){
+    document.body.removeChild(resumen);
+    
+    // Download as PNG
+    var link=document.createElement('a');
+    var nombre=(ESTADO.usuario.nombre||'estudiante').replace(/\s+/g,'_');
+    link.download='evidencia_'+nombre+'_'+Date.now()+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    
+    toast('Evidencia descargada como imagen PNG','success');
+    ESTADO.evidencias.push({tipo:'imagen_png',fecha:fechaHora()});
+    saveState();
+  }).catch(function(err){
+    document.body.removeChild(resumen);
+    toast('Error al generar imagen: '+err.message,'error');
+  });
+}
+
+
+/* ============================================================
+   PANELES LATERALES
+   ============================================================ */
+function openPanel(id){
+  closePanels();
+  $(id).classList.add('open');
+  $('overlay-bg').classList.add('show');
+}
+function closePanels(){
+  document.querySelectorAll('.side-panel').forEach(p=>p.classList.remove('open'));
+  $('overlay-bg').classList.remove('show');
+}
+function renderFormulaRef(){
+  const c=$('formula-ref-content');
+  if(!c)return;
+  let html='<table>';
+  FORMULAS_REFERENCIA.forEach(f=>{
+    html+=`<tr><td>${f.f}</td><td>${f.r}</td></tr>`;
+  });
+  html+='</table>';
+  setHTML(c,html);
+}
+function renderErroresList(){
+  const c=$('errores-list');
+  if(!c)return;
+  if(ESTADO.errores.length===0){
+    c.innerHTML='<p style="color:var(--text-muted);font-size:.88rem">Aún no tienes errores registrados. ¡Sigue practicando!</p>';
+    return;
+  }
+  let html='';
+  ESTADO.errores.slice(-15).reverse().forEach(e=>{
+    html+=`<div class="err-item">
+      <div class="err-mod">Módulo ${e.mod} · Actividad ${e.idx+1}</div>
+      <div class="err-q">${e.enunciado}</div>
+      <div>Tu respuesta: <span style="color:#999">${e.respuestaDada}</span></div>
+      <div>Correcta: <span style="color:#333;font-weight:bold">${e.respuestaCorrecta}</span></div>
+      <div class="err-date">${e.fecha}</div>
+    </div>`;
+  });
+  setHTML(c,html);
+}
+function renderProgresoDetallado(){
+  const c=$('progreso-detallado');
+  if(!c)return;
+  const mods=MODULES.filter(m=>m.id!=='m0');
+  let html='<table style="width:100%;font-size:.85rem"><tr><th>Módulo</th><th>Aciertos</th><th>%</th><th>Estado</th></tr>';
+  mods.forEach(m=>{
+    const e=ESTADO.modulos[m.id];
+    const pct=Math.round((e.scoreActividades/e.totalActividades)*100);
+    const estado=e.dominado?'✅':e.desbloqueado?'📖':'🔒';
+    html+=`<tr><td>${estado} M${m.num}</td><td>${e.scoreActividades}/${e.totalActividades}</td><td>${pct}%</td><td>${e.dominado?'Dominado':e.desbloqueado?'Disponible':'Bloqueado'}</td></tr>`;
+  });
+  html+='</table>';
+  html+=`<div style="margin-top:14px;padding:10px;background:var(--surface-2);border-radius:8px;font-size:.85rem">
+    <strong>Diagnóstico:</strong> ${ESTADO.m0.completado?'Completado':'Pendiente'} (${ESTADO.m0.score}/${ESTADO.m0.max})<br>
+    <strong>Evidencias descargadas:</strong> ${ESTADO.evidencias.length}<br>
+    <strong>Errores registrados:</strong> ${ESTADO.errores.length}
+  </div>`;
+  setHTML(c,html);
+}
+
+/* ============================================================
+   MODAL: EDITAR DATOS
+   ============================================================ */
+function editarDatos(){
+  const m=$('modal-content');
+  setHTML(m,`
+    <h3>👤 Mis datos</h3>
+    <div class="field">
+      <label>Nombre completo</label>
+      <input class="input-line" id="dat-nombre" value="${escapeHtml(ESTADO.usuario.nombre)}" placeholder="Tu nombre" style="width:100%">
+    </div>
+    <div class="field">
+      <label>Grupo / sección</label>
+      <input class="input-line" id="dat-grupo" value="${escapeHtml(ESTADO.usuario.grupo)}" placeholder="Ej: Matemáticas para la Economía I - Ing. Financiera" style="width:100%">
+    </div>
+    <div class="field">
+      <label>Correo de contacto</label>
+      <input class="input-line" id="dat-correo" value="${escapeHtml(ESTADO.usuario.correo)}" placeholder="tu@correo.com" style="width:100%">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarDatos()">Guardar</button>
+    </div>`);
+  $('modal-overlay').classList.add('show');
+}
+function guardarDatos(){
+  ESTADO.usuario.nombre=$('dat-nombre').value.trim();
+  ESTADO.usuario.grupo=$('dat-grupo').value.trim();
+  ESTADO.usuario.correo=$('dat-correo').value.trim();
+  saveState();
+  cerrarModal();
+  toast('Datos guardados','success');
+  renderDashboard();
+}
+function cerrarModal(){
+  $('modal-overlay').classList.remove('show');
+}
+
+/* ============================================================
+   IMPORTAR / REINICIAR
+   ============================================================ */
+function importarEvidencias(){
+  const m=$('modal-content');
+  setHTML(m,`
+    <h3>📥 Importar evidencias previas</h3>
+    <p style="font-size:.9rem;margin-bottom:12px">Si descargaste anteriormente el archivo <code>portafolio_datos.json</code>, puedes importarlo aquí para restaurar tu progreso.</p>
+    <input type="file" id="import-file" accept=".json" style="margin-bottom:10px">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="procesarImport()">Importar</button>
+    </div>`);
+  $('modal-overlay').classList.add('show');
+}
+function procesarImport(){
+  const file=$('import-file').files[0];
+  if(!file){toast('Selecciona un archivo','error');return}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.estudiante)ESTADO.usuario=data.estudiante;
+      if(data.modulos){
+        Object.keys(data.modulos).forEach(mid=>{
+          if(ESTADO.modulos[mid]){
+            Object.assign(ESTADO.modulos[mid],data.modulos[mid]);
+          }
+        });
+      }
+      if(data.errores)ESTADO.errores=data.errores;
+      if(data.diagnostico)ESTADO.m0=Object.assign(ESTADO.m0,data.diagnostico);
+      saveState();
+      cerrarModal();
+      renderDashboard();
+      toast('Progreso importado correctamente','success');
+    }catch(err){
+      toast('Error: archivo inválido','error');
+    }
+  };
+  reader.readAsText(file);
+}
+function reiniciarProgreso(){
+  const m=$('modal-content');
+  setHTML(m,`
+    <h3>🔄 Reiniciar progreso</h3>
+    <p style="font-size:.9rem;margin-bottom:12px;color:var(--danger)">⚠️ Esto borrará TODO tu progreso, evidencias y errores. Esta acción no se puede deshacer.</p>
+    <p style="font-size:.88rem">Se recomienda descargar tu portafolio completo antes de reiniciar.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn" style="background:var(--danger);color:#fff" onclick="confirmarReset()">Sí, reiniciar todo</button>
+    </div>`);
+  $('modal-overlay').classList.add('show');
+}
+function confirmarReset(){
+  localStorage.removeItem(STORAGE_KEY);
+  ESTADO={
+    usuario:{nombre:'',grupo:'',correo:'',fechaInicio:new Date().toISOString()},
+    m0:{completado:false,score:0,max:8,recomendaciones:[],intentos:[]},
+    modulos:{},
+    errores:[],
+    evidencias:[],
+    ultimoAcceso:new Date().toISOString()
+  };
+  initModulosEstado();
+  cerrarModal();
+  irDashboard();
+  toast('Progreso reiniciado','info');
+}
+
+/* ============================================================
+   INICIALIZACIÓN
+   ============================================================ */
+function init(){
+  loadState();
+  initModulosEstado();
+  // Ensure m0 is always accessible
+  renderDashboard();
+  // First-time welcome
+  if(!ESTADO.usuario.nombre && !localStorage.getItem(STORAGE_KEY+'_welcomed')){
+    setTimeout(()=>{
+      editarDatos();
+      localStorage.setItem(STORAGE_KEY+'_welcomed','1');
+    },800);
+  }
+}
+/* Dark mode toggle */
+function toggleDarkMode(){
+  var html=document.documentElement;
+  var current=html.getAttribute('data-theme');
+  var newTheme=current==='dark'?'light':'dark';
+  html.setAttribute('data-theme',newTheme);
+  try{localStorage.setItem('calc_theme',newTheme)}catch(e){}
+  updateDarkModeButton(newTheme);
+}
+function updateDarkModeButton(theme){
+  var btn=document.getElementById('btn-dark-mode');
+  if(!btn)return;
+  if(theme==='dark'){
+    btn.innerHTML='☀️ <span class="btn-label">Modo claro</span>';
+  }else{
+    btn.innerHTML='🌙 <span class="btn-label">Modo oscuro</span>';
+  }
+}
+document.addEventListener('DOMContentLoaded',function(){
+  try{
+    var savedTheme=localStorage.getItem('calc_theme')||'light';
+    document.documentElement.setAttribute('data-theme',savedTheme);
+    updateDarkModeButton(savedTheme);
+  }catch(e){}
+  init();
+});
+</script>
+</body>
+</html>
