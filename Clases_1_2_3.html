@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,6 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 :root{
   --primary:#4a4a4a;--primary-dark:#2a2a2a;--primary-light:#e0e0e0;
@@ -290,7 +290,7 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
         <button class="btn btn-ghost btn-sm" onclick="openPanel('panel-errores')" title="Mis errores frecuentes">⚠️ <span class="btn-label">Errores</span></button>
         <button class="btn btn-ghost btn-sm" onclick="openPanel('panel-progreso')" title="Mi progreso detallado">📊 <span class="btn-label">Progreso</span></button>
         <button class="btn btn-ghost btn-sm" onclick="editarDatos()" title="Editar mis datos">👤 <span class="btn-label">Mis datos</span></button>
-        <button class="btn btn-download btn-sm" onclick="descargarPortafolioCompleto()">📦 <span class="btn-label">Descargar avance</span></button>
+        <button class="btn btn-download btn-sm" onclick="descargarEvidenciaVisual()">📦 <span class="btn-label">Descargar evidencia</span></button>
       </div>
     </div>
   </header>
@@ -338,7 +338,7 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
     </div>
     <div id="module-content"></div>
     <div style="text-align:center;margin:20px 0">
-      <button class="btn btn-primary btn-lg" id="btn-dominar" onclick="marcarDominado()" disabled>🎓 Marcar módulo como dominado y descargar reporte</button>
+      <button class="btn btn-primary btn-lg" id="btn-dominar" onclick="marcarDominado()" disabled>🎓 Marcar módulo como dominado</button>
       <div id="dominar-msg" style="margin-top:8px;font-size:.85rem;color:var(--text-muted)"></div>
     </div>
   </section>
@@ -399,7 +399,7 @@ function initModulosEstado() {
   MODULES.forEach(m => {
     if (!ESTADO.modulos[m.id]) {
       ESTADO.modulos[m.id] = {
-        desbloqueado: m.id === 'm1',
+        desbloqueado: true,
         completado: false,
         dominado: false,
         actividades: {},
@@ -985,10 +985,6 @@ function getActividadesVisibles(modId){
 function abrirModulo(id){
   const m=getModulo(id);
   if(!m)return;
-  if(id!=='m0' && !ESTADO.modulos[id].desbloqueado){
-    toast('Módulo bloqueado. Completa el anterior al 80%.','error');
-    return;
-  }
   moduloActual=id;
   const est=ESTADO.modulos[id];
   if(!est.primerAcceso)est.primerAcceso=fechaHora();
@@ -1225,16 +1221,31 @@ function renderOrdenItems(pasos,aId){
   return shuffled.map((p,i)=>`<div class="orden-item" data-orden="${p.orden}">
     <span class="pos">${i+1}</span>
     <span class="txt">${p.texto}</span>
-    <button class="up" onclick="moverOrden('${aId}',${i},-1)">↑</button>
-    <button class="down" onclick="moverOrden('${aId}',${i},1)">↓</button>
+    <button class="up" onclick="moverOrden('${aId}',this,-1)">↑</button>
+    <button class="down" onclick="moverOrden('${aId}',this,1)">↓</button>
   </div>`).join('');
 }
-function moverOrden(aId,i,dir){
+function moverOrden(aId,btn,dir){
   const list=$('orden-'+aId);
+  if(!list)return;
+  // Find the .orden-item that contains this button
+  var item=btn.closest('.orden-item');
+  if(!item)return;
+  // Get all items in current DOM order
   const items=[...list.querySelectorAll('.orden-item')];
+  // Find current index of this item
+  var i=items.indexOf(item);
+  if(i<0)return;
   const j=i+dir;
   if(j<0||j>=items.length)return;
-  list.insertBefore(items[j],items[i]);
+  // Swap: move this item before/after the adjacent one
+  if(dir<0){
+    // Move up: insert before the previous item
+    list.insertBefore(item,items[j]);
+  }else{
+    // Move down: insert after the next item
+    list.insertBefore(items[j],item);
+  }
   // Update pos numbers
   [...list.querySelectorAll('.orden-item')].forEach((it,k)=>it.querySelector('.pos').textContent=k+1);
 }
@@ -1326,7 +1337,6 @@ function verificarOpcion(aId){
     cont.querySelectorAll('.opcion')[sel].classList.add('correct');
     fb.className='feedback show ok';
     setHTML(fb,act.feedback.correcto);
-    descargarEvidenciaActividad(modId,idx,true,act.enunciado,opciones[sel]);
   }else{
     cont.querySelectorAll('.opcion')[sel].classList.add('incorrect');
     cont.querySelectorAll('.opcion')[correctIdx].classList.add('correct');
@@ -1407,7 +1417,6 @@ function verificarHueco(aId,idx){
     input.style.borderColor='var(--success)';
     fb.className='feedback show ok';
     setHTML(fb,act.feedbackCorrecto);
-    descargarEvidenciaActividad(modId,idx,true,act.enunciado,val);
   }else{
     input.style.borderColor='var(--danger)';
     fb.className='feedback show err';
@@ -1433,7 +1442,6 @@ function verificarOrden(aId,idx){
     items.forEach(it=>it.style.borderColor='var(--success)');
     fb.className='feedback show ok';
     setHTML(fb,act.feedback.correcto);
-    descargarEvidenciaActividad(modId,idx,true,act.enunciado,'Orden correcto');
   }else{
     fb.className='feedback show err';
     setHTML(fb,act.feedback.errores||'El orden no es correcto. Revisa cuál paso debe ir primero.');
@@ -1454,7 +1462,6 @@ function verificarEmparejar(aId,idx){
     cont.classList.add('respondida-correcta');
     fb.className='feedback show ok';
     setHTML(fb,act.feedback.correcto);
-    descargarEvidenciaActividad(modId,idx,true,act.enunciado,'Todos emparejados');
   }else{
     fb.className='feedback show err';
     setHTML(fb,`Llevas ${matched}/${act.parejas.length} correctos. `+(act.feedback.errores||'Sigue intentando.'));
@@ -1479,7 +1486,6 @@ function verificarNumerica(aId,idx){
     input.style.borderColor='var(--success)';
     fb.className='feedback show ok';
     setHTML(fb,act.feedbackCorrecto);
-    descargarEvidenciaActividad(modId,idx,true,act.enunciado,val);
   }else{
     input.style.borderColor='var(--danger)';
     fb.className='feedback show err';
@@ -1661,7 +1667,7 @@ function marcarDominado(){
   }else{
     toast('¡Módulo dominado! Has completado el curso. 🎉','success');
   }
-  descargarReporteModulo(moduloActual);
+  
   saveState();
   setTimeout(()=>irDashboard(),500);
 }
@@ -1714,195 +1720,125 @@ function descargarTexto(filename,content,mime='text/plain'){
   document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function descargarEvidenciaActividad(modId,idx,correcta,enunciado,respuesta){
-  const ts=fechaHora();
-  const m=getModulo(modId);
-  const content=`EVIDENCIA DE ACTIVIDAD
-======================
-Estudiante: ${ESTADO.usuario.nombre||'(sin nombre)'}
-Grupo: ${ESTADO.usuario.grupo||'(sin grupo)'}
-Fecha: ${ts}
 
-Módulo: ${m.num}. ${m.titulo} (ID: ${modId})
-Actividad #: ${idx+1}
 
-Enunciado:
-${enunciado.replace(/<[^>]+>/g,'')}
-
-Respuesta del estudiante: ${String(respuesta).replace(/<[^>]+>/g,'')}
-¿Correcta?: ${correcta?'SÍ':'NO'}
-
----
-Generado automáticamente por el Curso-Taller de Matemáticas para la Economía I · UNII.
-`;
-  const filename=`evidencia_${modId}_act${idx+1}_${Date.now()}.txt`;
-  descargarTexto(filename,content);
-  ESTADO.evidencias.push({tipo:'actividad',modId,idx,correcta,fecha:ts,filename});
-  saveState();
-}
-function descargarReporteModulo(modId){
-  const m=getModulo(modId);
-  const est=ESTADO.modulos[modId];
-  const ts=fechaHora();
-  const pct=Math.round((est.scoreActividades/est.totalActividades)*100);
-  let html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte ${m.titulo}</title>
-  <style>body{font-family:Arial,sans-serif;max-width:700px;margin:20px auto;padding:20px;color:#333;background:#fff}
-  h1{color:#333}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px}
-  .ok{color:#333;font-weight:bold}.err{color:#999}</style></head><body>
-  <h1>Reporte de módulo: ${m.titulo}</h1>
-  <p><strong>Estudiante:</strong> ${ESTADO.usuario.nombre||'(sin nombre)'}<br>
-  <strong>Grupo:</strong> ${ESTADO.usuario.grupo||'(sin grupo)'}<br>
-  <strong>Correo:</strong> ${ESTADO.usuario.correo||'—'}<br>
-  <strong>Fecha:</strong> ${ts}</p>
-  <h2>Resumen</h2>
-  <table>
-  <tr><th>Métrica</th><th>Valor</th></tr>
-  <tr><td>Actividades totales</td><td>${est.totalActividades}</td></tr>
-  <tr><td>Actividades correctas</td><td>${est.scoreActividades}</td></tr>
-  <tr><td>Porcentaje de aciertos</td><td>${pct}%</td></tr>
-  <tr><td>Consolidación completada</td><td>${est.consolidacionHecha?'Sí':'No'}</td></tr>
-  <tr><td>Módulo dominado</td><td>${est.dominado?'Sí ✓':'No'}</td></tr>
-  <tr><td>Insignia obtenida</td><td>${est.insignia?'Sí 🏅':'No'}</td></tr>
-  <tr><td>Primer acceso</td><td>${est.primerAcceso||'—'}</td></tr>
-  <tr><td>Último acceso</td><td>${est.ultimoAcceso||'—'}</td></tr>
-  </table>
-  <h2>Detalle de actividades</h2>
-  <table>
-  <tr><th>#</th><th>Intentos</th><th>Correcta</th></tr>`;
-  m.actividades.forEach((a,i)=>{
-    const aEst=est.actividades[i]||{intentos:0,correcta:false};
-    html+=`<tr><td>${i+1}</td><td>${aEst.intentos||0}</td><td class="${aEst.correcta?'ok':'err'}">${aEst.correcta?'✓':'—'}</td></tr>`;
+function descargarEvidenciaVisual(){
+  // Crear un div temporal con el resumen visual
+  var resumen=document.createElement('div');
+  resumen.style.cssText='position:fixed;left:-9999px;top:0;width:800px;padding:30px;background:#fff;font-family:Segoe UI,Arial,sans-serif;color:#1a1a1a;';
+  
+  var mods=MODULES.filter(function(m){return m.id!=='m0'});
+  var totalCorrect=0,totalAct=0,totalDom=0;
+  mods.forEach(function(m){var e=ESTADO.modulos[m.id];totalCorrect+=e.scoreActividades;totalAct+=e.totalActividades;if(e.dominado)totalDom++;});
+  var globalPct=Math.round(totalCorrect/totalAct*100);
+  
+  var htmlContent='<div style="text-align:center;margin-bottom:20px;">';
+  htmlContent+='<div style="font-size:22px;font-weight:bold;color:#2a2a2a;">Universidad Internacional de Innovación (UNII)</div>';
+  htmlContent+='<div style="font-size:16px;color:#666;margin-top:4px;">Matemáticas para la Economía I · Evidencia de Avance</div>';
+  htmlContent+='</div>';
+  htmlContent+='<div style="border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:16px;">';
+  htmlContent+='<div style="display:flex;justify-content:space-between;font-size:13px;">';
+  htmlContent+='<div><strong>Estudiante:</strong> '+(ESTADO.usuario.nombre||'(sin nombre)')+'</div>';
+  htmlContent+='<div><strong>Grupo:</strong> '+(ESTADO.usuario.grupo||'—')+'</div>';
+  htmlContent+='</div>';
+  htmlContent+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-top:6px;">';
+  htmlContent+='<div><strong>Fecha:</strong> '+fechaHora()+'</div>';
+  htmlContent+='<div><strong>Progreso:</strong> '+globalPct+'%</div>';
+  htmlContent+='</div></div>';
+  
+  // Diagnóstico
+  htmlContent+='<div style="margin-bottom:16px;">';
+  htmlContent+='<div style="font-size:15px;font-weight:bold;border-bottom:2px solid #ddd;padding-bottom:4px;margin-bottom:8px;">Diagnóstico inicial</div>';
+  htmlContent+='<div style="font-size:13px;">Resultado: '+ESTADO.m0.score+'/'+ESTADO.m0.max+'</div>';
+  if(ESTADO.m0.recomendaciones.length>0){
+    htmlContent+='<div style="font-size:12px;color:#666;margin-top:4px;">'+ESTADO.m0.recomendaciones.join('; ')+'</div>';
+  }
+  htmlContent+='</div>';
+  
+  // Por cada módulo
+  mods.forEach(function(m){
+    var e=ESTADO.modulos[m.id];
+    var pct=Math.round(e.scoreActividades/e.totalActividades*100);
+    var estadoTxt=e.dominado?'Completado':e.scoreActividades>0?'En curso':'Sin iniciar';
+    var estadoColor=e.dominado?'#3a3a3a':e.scoreActividades>0?'#6a6a6a':'#bbb';
+    
+    htmlContent+='<div style="margin-bottom:14px;border:1px solid #eee;border-radius:6px;padding:12px;">';
+    htmlContent+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+    htmlContent+='<div style="font-size:14px;font-weight:bold;">'+m.titulo+'</div>';
+    htmlContent+='<div style="font-size:12px;color:'+estadoColor+';">'+estadoTxt+'</div>';
+    htmlContent+='</div>';
+    
+    // Barra de progreso
+    htmlContent+='<div style="background:#eee;border-radius:10px;height:10px;margin-bottom:8px;"><div style="background:'+estadoColor+';height:10px;border-radius:10px;width:'+pct+'%;"></div></div>';
+    
+    htmlContent+='<div style="font-size:12px;color:#666;">Actividades: '+e.scoreActividades+'/'+e.totalActividades+' ('+pct+'%)';
+    if(e.consolidacionHecha)htmlContent+=' · Consolidación ✓';
+    htmlContent+='</div>';
+    
+    // Detalle de actividades
+    if(e.scoreActividades>0){
+      htmlContent+='<table style="width:100%;font-size:11px;margin-top:6px;border-collapse:collapse;">';
+      htmlContent+='<tr style="background:#f5f5f5;"><th style="padding:3px 6px;text-align:left;border:1px solid #eee;">#</th><th style="padding:3px 6px;text-align:left;border:1px solid #eee;">Estado</th><th style="padding:3px 6px;text-align:left;border:1px solid #eee;">Intentos</th></tr>';
+      m.actividades.forEach(function(a,i){
+        var aEst=e.actividades[i]||{intentos:0,correcta:false};
+        htmlContent+='<tr><td style="padding:2px 6px;border:1px solid #eee;">'+(i+1)+'</td>';
+        htmlContent+='<td style="padding:2px 6px;border:1px solid #eee;color:'+(aEst.correcta?'#3a3a3a':'#bbb')+';">'+(aEst.correcta?'✓ Correcta':'—')+'</td>';
+        htmlContent+='<td style="padding:2px 6px;border:1px solid #eee;">'+(aEst.intentos||0)+'</td></tr>';
+      });
+      htmlContent+='</table>';
+    }
+    
+    // Errores de este módulo
+    var modErrors=ESTADO.errores.filter(function(er){return er.mod===m.id;});
+    if(modErrors.length>0){
+      htmlContent+='<div style="font-size:11px;color:#999;margin-top:6px;">Errores registrados: '+modErrors.length+'</div>';
+    }
+    
+    htmlContent+='</div>';
   });
-  html+=`</table>
-  <h2>Objetivo del módulo</h2>
-  <p>${m.objetivo}</p>
-  <hr>
-  <p style="font-size:.8rem;color:#666">Generado por Curso-Taller de Matemáticas para la Economía I · UNII · ${ts}</p>
-  </body></html>`;
-  const filename=`reporte_${modId}_${(ESTADO.usuario.nombre||'estudiante').replace(/\s+/g,'_')}.html`;
-  descargarTexto(filename,html,'text/html');
-  ESTADO.evidencias.push({tipo:'reporte_modulo',modId,fecha:ts,filename});
-  saveState();
-  toast('Reporte del módulo descargado','success');
+  
+  // Pie
+  htmlContent+='<div style="text-align:center;font-size:11px;color:#999;margin-top:16px;border-top:1px solid #eee;padding-top:10px;">';
+  htmlContent+='Evidencia generada automáticamente · '+fechaHora()+'<br>';
+  htmlContent+='Curso-Taller de Matemáticas para la Economía I · UNII';
+  htmlContent+='</div>';
+  
+  resumen.innerHTML=htmlContent;
+  document.body.appendChild(resumen);
+  
+  // Render KaTeX in the summary if needed
+  if(typeof renderMathInElement==='function'){
+    try{renderMathInElement(resumen,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});}catch(e){}
+  }
+  
+  // Convert to image with html2canvas
+  toast('Generando imagen de evidencia...','info');
+  
+  if(typeof html2canvas==='undefined'){
+    toast('Error: librería no cargada. Recarga la página.','error');
+    document.body.removeChild(resumen);
+    return;
+  }
+  
+  html2canvas(resumen,{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(function(canvas){
+    document.body.removeChild(resumen);
+    
+    // Download as PNG
+    var link=document.createElement('a');
+    var nombre=(ESTADO.usuario.nombre||'estudiante').replace(/\s+/g,'_');
+    link.download='evidencia_'+nombre+'_'+Date.now()+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    
+    toast('Evidencia descargada como imagen PNG','success');
+    ESTADO.evidencias.push({tipo:'imagen_png',fecha:fechaHora()});
+    saveState();
+  }).catch(function(err){
+    document.body.removeChild(resumen);
+    toast('Error al generar imagen: '+err.message,'error');
+  });
 }
 
-function descargarPortafolioCompleto(){
-  const ts=fechaHora();
-  const mods=MODULES.filter(m=>m.id!=='m0');
-  let totalAct=0,totalCorrect=0,totalDom=0;
-  let htmlModulos='';
-  mods.forEach(m=>{
-    const e=ESTADO.modulos[m.id];
-    const pct=Math.round((e.scoreActividades/e.totalActividades)*100);
-    if(e.dominado)totalDom++;
-    totalAct+=e.totalActividades;
-    totalCorrect+=e.scoreActividades;
-    htmlModulos+=`<tr>
-      <td>M${m.num}: ${m.titulo}</td>
-      <td>${e.desbloqueado?'Sí':'No'}</td>
-      <td>${e.scoreActividades}/${e.totalActividades}</td>
-      <td>${pct}%</td>
-      <td>${e.consolidacionHecha?'✓':'—'}</td>
-      <td>${e.dominado?'✓🏅':'—'}</td>
-    </tr>`;
-  });
-  const globalPct=Math.round((totalCorrect/totalAct)*100);
-  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Portafolio - Matemáticas para la Economía I</title>
-  <style>
-  body{font-family:Arial,sans-serif;max-width:900px;margin:20px auto;padding:20px;color:#333;line-height:1.6}
-  h1{color:#333;border-bottom:3px solid #666;padding-bottom:8px}
-  h2{color:#333;margin-top:24px}
-  table{border-collapse:collapse;width:100%;margin:10px 0}
-  td,th{border:1px solid #ddd;padding:8px;text-align:left}
-  th{background:#e0e0e0}
-  .resumen{background:#f8fafc;padding:16px;border-radius:8px;margin:16px 0}
-  .ok{color:#333;font-weight:bold}.err{color:#999}
-  .badge{display:inline-block;background:#666;color:#fff;padding:2px 10px;border-radius:12px;font-size:.8rem}
-  </style></head><body>
-  <h1>📚 Portafolio de Avance</h1>
-  <p><strong>Curso:</strong> Matemáticas para la Economía I · UNII<br>
-  <strong>Estudiante:</strong> ${ESTADO.usuario.nombre||'(sin nombre)'}<br>
-  <strong>Grupo:</strong> ${ESTADO.usuario.grupo||'(sin grupo)'}<br>
-  <strong>Correo:</strong> ${ESTADO.usuario.correo||'—'}<br>
-  <strong>Fecha de inicio:</strong> ${new Date(ESTADO.usuario.fechaInicio).toLocaleDateString('es-MX')}<br>
-  <strong>Fecha de generación:</strong> ${ts}</p>
-  
-  <div class="resumen">
-  <h2>Resumen global</h2>
-  <table>
-  <tr><th>Métrica</th><th>Valor</th></tr>
-  <tr><td>Módulos dominados</td><td><strong>${totalDom} / ${mods.length}</strong></td></tr>
-  <tr><td>Actividades correctas</td><td>${totalCorrect} / ${totalAct}</td></tr>
-  <tr><td>Progreso global</td><td><strong>${globalPct}%</strong></td></tr>
-  <tr><td>Diagnóstico inicial</td><td>${ESTADO.m0.completado?'Completado':'Pendiente'} (${ESTADO.m0.score}/${ESTADO.m0.max})</td></tr>
-  <tr><td>Total de errores registrados</td><td>${ESTADO.errores.length}</td></tr>
-  </table>
-  </div>
-
-  ${ESTADO.m0.completado&&ESTADO.m0.recomendaciones.length>0?`<div class="resumen"><h2>Recomendaciones del diagnóstico</h2><ul>${ESTADO.m0.recomendaciones.map(r=>`<li>${r}</li>`).join('')}</ul></div>`:''}
-
-  <h2>Detalle por módulo</h2>
-  <table>
-  <tr><th>Módulo</th><th>Desbloqueado</th><th>Aciertos</th><th>%</th><th>Consolid.</th><th>Dominado</th></tr>
-  ${htmlModulos}
-  </table>
-
-  ${ESTADO.errores.length>0?`<h2>Errores frecuentes (para repaso)</h2>
-  <table>
-  <tr><th>Módulo</th><th>Pregunta</th><td>Tu respuesta</th><th>Correcta</th><th>Fecha</th></tr>
-  ${ESTADO.errores.slice(-20).map(e=>`<tr>
-    <td>${e.mod}</td><td>${e.enunciado}</td>
-    <td class="err">${e.respuestaDada}</td>
-    <td class="ok">${e.respuestaCorrecta}</td>
-    <td>${e.fecha}</td>
-  </tr>`).join('')}
-  </table>`:''}
-
-  <h2>Insignias obtenidas</h2>
-  <p>${mods.filter(m=>ESTADO.modulos[m.id].insignia).map(m=>`<span class="badge">${m.icono} ${m.titulo}</span>`).join(' ')||'<em>Aún no has obtenido insignias. ¡Sigue practicando!</em>'}</p>
-
-  <hr>
-  <p style="font-size:.85rem;color:#666">
-  Este portafolio se genera automáticamente a partir de tu actividad en el curso-taller interactivo.<br>
-  Envíalo a tu docente como evidencia de tu proceso de recuperación.<br>
-  Generado: ${ts}
-  </p>
-  </body></html>`;
-  
-  const filename=`portafolio_calculo_integral_${(ESTADO.usuario.nombre||'estudiante').replace(/\s+/g,'_')}.html`;
-  descargarTexto(filename,html,'text/html');
-  
-  // Also download JSON with raw data
-  const jsonData={
-    curso:'Matemáticas para la Economía I · UNII',
-    estudiante:ESTADO.usuario,
-    fechaGeneracion:ts,
-    diagnostico:ESTADO.m0,
-    modulos:{},
-    errores:ESTADO.errores.slice(-50),
-    evidencias:ESTADO.evidencias
-  };
-  mods.forEach(m=>{
-    const e=ESTADO.modulos[m.id];
-    jsonData.modulos[m.id]={
-      titulo:m.titulo,
-      objetivo:m.objetivo,
-      desbloqueado:e.desbloqueado,
-      completado:e.completado,
-      dominado:e.dominado,
-      insignia:e.insignia,
-      scoreActividades:e.scoreActividades,
-      totalActividades:e.totalActividades,
-      consolidacionHecha:e.consolidacionHecha,
-      actividades:e.actividades,
-      primerAcceso:e.primerAcceso,
-      ultimoAcceso:e.ultimoAcceso
-    };
-  });
-  descargarTexto('portafolio_datos.json',JSON.stringify(jsonData,null,2),'application/json');
-  
-  toast('Portafolio completo descargado (HTML + JSON)','success');
-}
 
 /* ============================================================
    PANELES LATERALES
