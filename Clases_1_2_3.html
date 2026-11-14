@@ -1,3 +1,5 @@
+
+matematicas_economia_unii.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -298,8 +300,8 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
   <section id="view-dashboard" class="view active">
     <div class="welcome">
       <h2>Bienvenido de vuelta a tu recuperación 🎯</h2>
-      <p>Esta plataforma-taller cubre las primeras 3 clases de Matemáticas para la Economía I (Ingeniería Financiera, UNII): propiedades de funciones, continuidad y límites, y derivadas. Puedes avanzar a tu ritmo, en sesiones cortas, desde tu celular o computadora. Empieza donde estás y avanza paso a paso.</p>
-      <div class="motiv">💡 <strong>Nota:</strong> equivocarse en esta plataforma no te penaliza ni te califica con menos puntos. Cada error se registra para repaso y te ayuda a aprender. Lo único que importa es no rendirse, si cometes un error primero lo reconoces aprendes de él y después simplemente ya no caes en el mismo error, por el contrario avanzas con mayor seguridad.</div>
+      <p>Esta plataforma-taller cubre las primeras 3 clases de Matemáticas para la Economía I (Ingeniería Financiera, UNII): propiedades de funciones, continuidad y límites, y derivadas. Avanza a tu ritmo, en sesiones cortas, desde tu celular o computadora. Empezamos de donde estás y avanzamos juntos, paso a paso.</p>
+      <div class="motiv">💡 <strong>Regla de oro:</strong> equivocarse aquí en esta plataforma no te penaliza ni te califica con menos puntos. Cada error se registra para repaso y te ayuda a aprender. Lo único que importa es no rendirse, si se comete un error primero lo reconoces aprendes de él y después simplemente ya no caes en el mismo error, por el contrario avanzas con mayor seguridad.</div>
     </div>
 
     <div class="progress-global">
@@ -344,7 +346,7 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
 
   <footer>
     Matemáticas para la Economía I · Ingeniería Financiera UNII · Diseñado para aprendizaje autosuficiente<br>
-    Tus datos se guardan solo en este navegador (localStorage) · Descarga tu portafolio para enviarlo al docente · Dr. J. Adrián Cerda.
+    Tus datos se guardan solo en este navegador (localStorage). Descarga tu portafolio para enviarlo al docente.
   </footer>
 </div>
 
@@ -483,7 +485,7 @@ const MODULES = [
     <h4>Periodicidad</h4>
     <p>$f$ es periódica de periodo $T$ si $f(t+T)=f(t)$ para todo $t$. <strong>Ventas estacionales:</strong> $V(t)=50+20\\,\\operatorname{sen}\\!\\left(\\dfrac{\\pi t}{6}\\right)$ tiene periodo $T=\\dfrac{2\\pi}{\\pi/6}=12$ meses.</p>
     <h4>Monotonía</h4>
-    <p><strong>Creciente</strong> si $x_1$ es menor que $x_2,$ implica $f(x_1)$ es menor que $f(x_2)$; entonces $f$ es <strong>creciente</strong>. si $x_1$ es menor que $x_2,$ implica $f(x_1)>f(x_2)$, entonces $f$ es <strong>decreciente</strong>. La demanda $q=120-3p$ es decreciente: a mayor precio, menor cantidad.</p>
+    <p><strong>Creciente</strong> si $x_1<x_2 \\Rightarrow f(x_1)<f(x_2)$; <strong>decreciente</strong> si $x_1<x_2 \\Rightarrow f(x_1)>f(x_2)$. La demanda $q=120-3p$ es decreciente: a mayor precio, menor cantidad.</p>
     <h4>Simetría: par e impar</h4>
     <p><strong>Par:</strong> $f(-x)=f(x)$ (simétrica al eje $y$), ej. $f(x)=x^{2}$. <strong>Impar:</strong> $f(-x)=-f(x)$ (simétrica al origen), ej. $f(x)=x^{3}$ y $\\operatorname{sen}(x)$.</p>
     <h4>Contexto financiero</h4>
@@ -973,26 +975,12 @@ function shuffleWithSeed(arr,seed){
   return arr;
 }
 
-// Devuelve los índices de las 3 actividades a mostrar en esta sesión
+// Devuelve los índices de TODAS las actividades del módulo
 function getActividadesVisibles(modId){
   var m=getModulo(modId);
   if(!m||m.esDiagnostico) return m.actividades.map(function(_,i){return i});
-  var est=ESTADO.modulos[modId];
-  var todas=m.actividades.map(function(a,i){return {idx:i,answered:est.actividades[i]&&est.actividades[i].correcta}});
-  var sinResponder=todas.filter(function(t){return !t.answered});
-  var respondidas=todas.filter(function(t){return t.answered});
-  // Barajar con la semilla de sesión + id del módulo
-  shuffleWithSeed(sinResponder,SESSION_SEED+modId.charCodeAt(1)*1000);
-  shuffleWithSeed(respondidas,SESSION_SEED+modId.charCodeAt(1)*1000+7);
-  // Priorizar sin responder, hasta 3
-  var visibles=sinResponder.slice(0,3);
-  // Rellenar con respondidas si faltan
-  if(visibles.length<3){
-    visibles=visibles.concat(respondidas.slice(0,3-visibles.length));
-  }
-  // Ordenar por índice original
-  visibles.sort(function(a,b){return a.idx-b.idx});
-  return visibles.map(function(v){return v.idx});
+  // Mostrar todas las actividades de una vez
+  return m.actividades.map(function(_,i){return i});
 }
 
 function abrirModulo(id){
@@ -1072,11 +1060,10 @@ function renderModuloContenido(id){
       <div class="gen-display" id="gen-display" style="display:none"></div>
     </div>`;
   }
-  // Actividades (3 por sesión, seleccionadas aleatoriamente)
+  // Actividades (todas a la vez)
   var visibles=getActividadesVisibles(id);
   var totalMod=m.actividades.length;
-  html+=`<div class="section"><h3>✏️ Actividades <span class="badge">${visibles.length} de ${totalMod}</span></h3>`;
-  html+=`<p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px">Esta sesión muestra ${visibles.length} actividades. Al reopening el archivo verás otras distintas. ¡Sigue practicando!</p>`;
+  html+=`<div class="section"><h3>✏️ Actividades <span class="badge">${visibles.length}</span></h3>`;
   visibles.forEach(function(idx){
     html+=renderActividad(m.actividades[idx],id,idx);
   });
