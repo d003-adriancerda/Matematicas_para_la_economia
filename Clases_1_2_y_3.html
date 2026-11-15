@@ -1,3 +1,5 @@
+HTML
+Matematicas_Economia_I_UNII.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -343,14 +345,14 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
       <div id="dominar-msg" style="margin-top:8px;font-size:.85rem;color:var(--text-muted)"></div>
       <div id="module-nav-buttons" style="margin-top:16px;display:none;gap:12px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-primary btn-lg" id="btn-next-module" onclick="irSiguienteModulo()">➡️ Siguiente módulo</button>
-        <button class="btn btn-download btn-lg" onclick="descargarEvidenciaVisual()">🖨️ Imprimir evidencia</button>
+        <button class="btn btn-download btn-lg" onclick="descargarEvidenciaVisual()">📥 Descargar evidencia</button>
       </div>
     </div>
   </section>
 
   <footer>
     Matemáticas para la Economía I · Ingeniería Financiera UNII · Diseñado para aprendizaje autosuficiente<br>
-    Tus datos se guardan solo en este navegador (localStorage) · Descarga tu portafolio para enviarlo al docente · Dr. J. Adrián Cerda.
+    Tus datos se guardan solo en este navegador (localStorage). Descarga tu portafolio para enviarlo al docente.
   </footer>
 </div>
 
@@ -418,6 +420,11 @@ function initModulosEstado() {
         ultimoAcceso: null
       };
     }
+    // Forzar desbloqueo de TODOS los módulos de contenido (m1, m2, m3).
+    // Esto resuelve el caso de estados guardados previamente con módulos bloqueados.
+    if (m.id !== 'm0') {
+      ESTADO.modulos[m.id].desbloqueado = true;
+    }
     // contar actividades
     ESTADO.modulos[m.id].totalActividades = m.actividades.length;
   });
@@ -482,14 +489,20 @@ const MODULES = [
     <p>Una <strong>función</strong> asigna a cada elemento del dominio (entrada, $x$) <em>exactamente un</em> elemento del recorrido (salida, $f(x)$). Escribimos $x \\;\\xrightarrow{\\;f\\;}\\; f(x)$.</p>
     <div class="formula-box">$$f:\\;D \\longrightarrow R,\\qquad x \\mapsto f(x)$$</div>
     <h4>Dominio y rango</h4>
-    <p>El <strong>dominio</strong> son las $x$ para las que $f$ está definida; el <strong>rango</strong> son los valores $f(x)$ que se obtienen. Restricciones: denominador $\\neq 0$, radicando $\\geq 0$, argumento de logaritmo $>0$.</p>
+    <p>El <strong>dominio</strong> son las $x$ para las que $f$ está definida; el <strong>rango</strong> son los valores $f(x)$ que se obtienen. Restricciones: denominador $\\neq 0$, radicando $\\geq 0$, argumento de logaritmo $\\gt 0$.</p>
+    <h4>Función inyectiva (uno a uno)</h4>
+    <p>Una función $f$ es <strong>inyectiva</strong> (o <em>uno a uno</em>) si a elementos distintos del dominio les corresponden elementos distintos del recorrido. Dicho de otra forma: si dos salidas son iguales, entonces las entradas también debieron ser iguales.</p>
+    <div class="formula-box">$$f \\text{ inyectiva} \\;\\Longleftrightarrow\\; f(x_1)=f(x_2) \\;\\Rightarrow\\; x_1=x_2$$</div>
+    <p>Equivalentemente, usando la contrapositiva: $x_1 \\neq x_2 \\;\\Rightarrow\\; f(x_1) \\neq f(x_2)$. Solo las funciones inyectivas tienen <em>función inversa</em> global, porque solo así cada salida puede "regresar" a una única entrada.</p>
+    <p><strong>Ejemplo de función inyectiva:</strong> $f(x)=2x+1$. A cada $x$ distinto le corresponde un valor distinto: $f(1)=3$, $f(2)=5$, $f(3)=7$. Si $2x_1+1=2x_2+1$, restando 1 y dividiendo entre 2 se obtiene $x_1=x_2$, así que es inyectiva. Toda función lineal con pendiente no nula es inyectiva.</p>
+    <p><strong>Ejemplo de función NO inyectiva:</strong> $f(x)=x^{2}$. Aquí $f(2)=4$ y $f(-2)=4$; dos entradas distintas ($2$ y $-2$) producen la misma salida. Por tanto, NO es inyectiva en $\\mathbb{R}$, y por eso no tiene inversa global (solo restringida a $x\\geq 0$ o a $x\\leq 0$).</p>
     <h4>Función inversa</h4>
-    <p>Si $f$ es inyectiva (uno a uno), existe $f^{-1}$ tal que $f^{-1}(f(x))=x$. <strong>Ejemplo financiero:</strong> la demanda $q=120-3p$ se puede invertir: $p=40-\\dfrac{q}{3}$ es la <em>demanda inversa</em> (precio en función de la cantidad).</p>
+    <p>Si $f$ es inyectiva (ver definición anterior), existe su <strong>función inversa</strong> $f^{-1}$ tal que $f^{-1}(f(x))=x$ y $f(f^{-1}(y))=y$. Es decir, la inversa "deshace" lo que hace $f$. <strong>Ejemplo financiero:</strong> la demanda $q=120-3p$ se puede invertir: $p=40-\\dfrac{q}{3}$ es la <em>demanda inversa</em> (precio en función de la cantidad).</p>
     <div class="formula-box">$$q(p)=120-3p \\quad\\Longleftrightarrow\\quad p(q)=40-\\tfrac{q}{3}$$</div>
     <h4>Periodicidad</h4>
     <p>$f$ es periódica de periodo $T$ si $f(t+T)=f(t)$ para todo $t$. <strong>Ventas estacionales:</strong> $V(t)=50+20\\,\\operatorname{sen}\\!\\left(\\dfrac{\\pi t}{6}\\right)$ tiene periodo $T=\\dfrac{2\\pi}{\\pi/6}=12$ meses.</p>
     <h4>Monotonía</h4>
-    <p><strong>Creciente</strong> si $$x_1<x_2 \\Rightarrow f(x_1)<f(x_2)$$; <strong>decreciente</strong> si $$x_1<x_2 \\Rightarrow f(x_1)>f(x_2)$$. La demanda $q=120-3p$ es decreciente: a mayor precio, menor cantidad.</p>
+    <p><strong>Creciente</strong> si $x_1 \\lt x_2 \\;\\Rightarrow\\; f(x_1) \\lt f(x_2)$; <strong>decreciente</strong> si $x_1 \\lt x_2 \\;\\Rightarrow\\; f(x_1) \\gt f(x_2)$. La demanda $q=120-3p$ es decreciente: a mayor precio, menor cantidad.</p>
     <h4>Simetría: par e impar</h4>
     <p><strong>Par:</strong> $f(-x)=f(x)$ (simétrica al eje $y$), ej. $f(x)=x^{2}$. <strong>Impar:</strong> $f(-x)=-f(x)$ (simétrica al origen), ej. $f(x)=x^{3}$ y $\\operatorname{sen}(x)$.</p>
     <h4>Contexto financiero</h4>
@@ -1649,30 +1662,53 @@ function actualizarEstadoDominar(modId){
   const navBtns=$('module-nav-buttons');
   if(!btn)return;
   const cumplePct=pct>=m.criterioDominio;
+  // Se consideran TODAS las actividades completadas cuando se han acertado todas.
+  // (cada actividad solo se marca correcta una vez al acertarla)
+  const todasCompletadas = est.scoreActividades >= est.totalActividades;
   if(cumplePct&&cumpleConsolidacion){
     btn.disabled=false;
     msg.textContent='¡Listo! Has alcanzado el criterio de dominio ('+Math.round(pct*100)+'% + consolidación).';
-    // Mostrar botones de navegación al completar
-    if(navBtns){
-      navBtns.style.display='flex';
-      // Configurar botón siguiente módulo
-      var nextBtn=$('btn-next-module');
-      var nextMod=siguienteModulo(modId);
-      if(nextBtn&&nextMod){
-        nextBtn.textContent='➡️ Ir a: '+nextMod.titulo.substring(0,30);
-        nextBtn.style.display='inline-flex';
-      }else if(nextBtn){
-        nextBtn.textContent='🏁 Curso completado';
-        nextBtn.onclick=function(){irDashboard();toast('¡Has completado todas las clases! 🎉','success');};
-      }
-    }
   }else{
     btn.disabled=true;
-    if(navBtns)navBtns.style.display='none';
     let faltan=[];
     if(!cumplePct)faltan.push(`alcanzar ${Math.round(m.criterioDominio*100)}% de aciertos (vas ${est.scoreActividades}/${est.totalActividades} = ${Math.round(pct*100)}%)`);
     if(!cumpleConsolidacion)faltan.push('completar la consolidación');
     msg.textContent='Para marcar como dominado te falta: '+faltan.join(' y ')+'.';
+  }
+
+  // Mostrar botones de navegación y descarga de evidencia cuando se completen TODAS las actividades.
+  if(navBtns){
+    // Limpia el mensaje motivacional previo (si existe) para evitar duplicados
+    var oldMsg=navBtns.querySelector('.completion-msg');
+    if(oldMsg) oldMsg.remove();
+
+    if(todasCompletadas){
+      navBtns.style.display='flex';
+      // Mensaje motivacional al completar todas las actividades
+      var msgDone=document.createElement('div');
+      msgDone.className='completion-msg';
+      msgDone.style.cssText='width:100%;text-align:center;font-size:.95rem;color:var(--success);font-weight:700;margin-bottom:6px;padding:8px 12px;background:var(--success-light);border-radius:8px;border-left:4px solid var(--success);';
+      msgDone.textContent='🎉 ¡Has completado todas las actividades del módulo!';
+      navBtns.insertBefore(msgDone, navBtns.firstChild);
+
+      // Configurar botón siguiente módulo
+      var nextBtn=$('btn-next-module');
+      var nextMod=siguienteModulo(modId);
+      if(nextBtn){
+        if(nextMod){
+          nextBtn.textContent='➡️ Avanzar al siguiente módulo';
+          nextBtn.style.display='inline-flex';
+          // Restaurar handler por si se reescribió antes
+          nextBtn.onclick=function(){irSiguienteModulo();};
+        }else{
+          // Último módulo: ir al dashboard y felicitar
+          nextBtn.textContent='🏁 Finalizar curso';
+          nextBtn.onclick=function(){irDashboard();toast('¡Has completado todas las clases! 🎉','success');};
+        }
+      }
+    }else{
+      navBtns.style.display='none';
+    }
   }
 }
 function irSiguienteModulo(){
