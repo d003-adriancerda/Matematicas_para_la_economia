@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -343,14 +344,14 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
       <div id="dominar-msg" style="margin-top:8px;font-size:.85rem;color:var(--text-muted)"></div>
       <div id="module-nav-buttons" style="margin-top:16px;display:none;gap:12px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-primary btn-lg" id="btn-next-module" onclick="irSiguienteModulo()">➡️ Siguiente módulo</button>
-        <button class="btn btn-download btn-lg" onclick="descargarEvidenciaVisual()">🖨️ Imprimir evidencia</button>
+        <button class="btn btn-download btn-lg" onclick="descargarEvidenciaVisual()">📥 Descargar evidencia</button>
       </div>
     </div>
   </section>
 
   <footer>
     Matemáticas para la Economía I · Ingeniería Financiera UNII · Diseñado para aprendizaje autosuficiente<br>
-    Tus datos se guardan solo en este navegador (localStorage). Descarga tu portafolio para enviarlo al docente.
+    Tus datos se guardan solo en este navegador (localStorage) · Descarga tu portafolio para enviarlo al docente · Dr. J. Adrián Cerda.
   </footer>
 </div>
 
@@ -417,6 +418,11 @@ function initModulosEstado() {
         primerAcceso: null,
         ultimoAcceso: null
       };
+    }
+    // Forzar desbloqueo de TODOS los módulos de contenido (m1, m2, m3).
+    // Esto resuelve el caso de estados guardados previamente con módulos bloqueados.
+    if (m.id !== 'm0') {
+      ESTADO.modulos[m.id].desbloqueado = true;
     }
     // contar actividades
     ESTADO.modulos[m.id].totalActividades = m.actividades.length;
@@ -1649,30 +1655,53 @@ function actualizarEstadoDominar(modId){
   const navBtns=$('module-nav-buttons');
   if(!btn)return;
   const cumplePct=pct>=m.criterioDominio;
+  // Se consideran TODAS las actividades completadas cuando se han acertado todas.
+  // (cada actividad solo se marca correcta una vez al acertarla)
+  const todasCompletadas = est.scoreActividades >= est.totalActividades;
   if(cumplePct&&cumpleConsolidacion){
     btn.disabled=false;
     msg.textContent='¡Listo! Has alcanzado el criterio de dominio ('+Math.round(pct*100)+'% + consolidación).';
-    // Mostrar botones de navegación al completar
-    if(navBtns){
-      navBtns.style.display='flex';
-      // Configurar botón siguiente módulo
-      var nextBtn=$('btn-next-module');
-      var nextMod=siguienteModulo(modId);
-      if(nextBtn&&nextMod){
-        nextBtn.textContent='➡️ Ir a: '+nextMod.titulo.substring(0,30);
-        nextBtn.style.display='inline-flex';
-      }else if(nextBtn){
-        nextBtn.textContent='🏁 Curso completado';
-        nextBtn.onclick=function(){irDashboard();toast('¡Has completado todas las clases! 🎉','success');};
-      }
-    }
   }else{
     btn.disabled=true;
-    if(navBtns)navBtns.style.display='none';
     let faltan=[];
     if(!cumplePct)faltan.push(`alcanzar ${Math.round(m.criterioDominio*100)}% de aciertos (vas ${est.scoreActividades}/${est.totalActividades} = ${Math.round(pct*100)}%)`);
     if(!cumpleConsolidacion)faltan.push('completar la consolidación');
     msg.textContent='Para marcar como dominado te falta: '+faltan.join(' y ')+'.';
+  }
+
+  // Mostrar botones de navegación y descarga de evidencia cuando se completen TODAS las actividades.
+  if(navBtns){
+    // Limpia el mensaje motivacional previo (si existe) para evitar duplicados
+    var oldMsg=navBtns.querySelector('.completion-msg');
+    if(oldMsg) oldMsg.remove();
+
+    if(todasCompletadas){
+      navBtns.style.display='flex';
+      // Mensaje motivacional al completar todas las actividades
+      var msgDone=document.createElement('div');
+      msgDone.className='completion-msg';
+      msgDone.style.cssText='width:100%;text-align:center;font-size:.95rem;color:var(--success);font-weight:700;margin-bottom:6px;padding:8px 12px;background:var(--success-light);border-radius:8px;border-left:4px solid var(--success);';
+      msgDone.textContent='🎉 ¡Has completado todas las actividades del módulo!';
+      navBtns.insertBefore(msgDone, navBtns.firstChild);
+
+      // Configurar botón siguiente módulo
+      var nextBtn=$('btn-next-module');
+      var nextMod=siguienteModulo(modId);
+      if(nextBtn){
+        if(nextMod){
+          nextBtn.textContent='➡️ Avanzar al siguiente módulo';
+          nextBtn.style.display='inline-flex';
+          // Restaurar handler por si se reescribió antes
+          nextBtn.onclick=function(){irSiguienteModulo();};
+        }else{
+          // Último módulo: ir al dashboard y felicitar
+          nextBtn.textContent='🏁 Finalizar curso';
+          nextBtn.onclick=function(){irDashboard();toast('¡Has completado todas las clases! 🎉','success');};
+        }
+      }
+    }else{
+      navBtns.style.display='none';
+    }
   }
 }
 function irSiguienteModulo(){
