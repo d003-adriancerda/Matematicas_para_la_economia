@@ -1,4 +1,5 @@
-
+HTML
+Matematicas_Economia_I_UNII.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -351,7 +352,7 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
 
   <footer>
     Matemáticas para la Economía I · Ingeniería Financiera UNII · Diseñado para aprendizaje autosuficiente<br>
-    Tus datos se guardan solo en este navegador (localStorage) · Descarga tu portafolio para enviarlo al docente · Dr. J. Adrián Cerda.
+    Tus datos se guardan solo en este navegador (localStorage). Descarga tu portafolio para enviarlo al docente.
   </footer>
 </div>
 
@@ -488,14 +489,20 @@ const MODULES = [
     <p>Una <strong>función</strong> asigna a cada elemento del dominio (entrada, $x$) <em>exactamente un</em> elemento del recorrido (salida, $f(x)$). Escribimos $x \\;\\xrightarrow{\\;f\\;}\\; f(x)$.</p>
     <div class="formula-box">$$f:\\;D \\longrightarrow R,\\qquad x \\mapsto f(x)$$</div>
     <h4>Dominio y rango</h4>
-    <p>El <strong>dominio</strong> son las $x$ para las que $f$ está definida; el <strong>rango</strong> son los valores $f(x)$ que se obtienen. Restricciones: denominador $\\neq 0$, radicando $\\geq 0$, argumento de logaritmo $>0$.</p>
+    <p>El <strong>dominio</strong> son las $x$ para las que $f$ está definida; el <strong>rango</strong> son los valores $f(x)$ que se obtienen. Restricciones: denominador $\\neq 0$, radicando $\\geq 0$, argumento de logaritmo $\\gt 0$.</p>
+    <h4>Función inyectiva (uno a uno)</h4>
+    <p>Una función $f$ es <strong>inyectiva</strong> (o <em>uno a uno</em>) si a elementos distintos del dominio les corresponden elementos distintos del recorrido. Dicho de otra forma: si dos salidas son iguales, entonces las entradas también debieron ser iguales.</p>
+    <div class="formula-box">$$f \\text{ inyectiva} \\;\\Longleftrightarrow\\; f(x_1)=f(x_2) \\;\\Rightarrow\\; x_1=x_2$$</div>
+    <p>Equivalentemente, usando la contrapositiva: $x_1 \\neq x_2 \\;\\Rightarrow\\; f(x_1) \\neq f(x_2)$. Solo las funciones inyectivas tienen <em>función inversa</em> global, porque solo así cada salida puede "regresar" a una única entrada.</p>
+    <p><strong>Ejemplo de función inyectiva:</strong> $f(x)=2x+1$. A cada $x$ distinto le corresponde un valor distinto: $f(1)=3$, $f(2)=5$, $f(3)=7$. Si $2x_1+1=2x_2+1$, restando 1 y dividiendo entre 2 se obtiene $x_1=x_2$, así que es inyectiva. Toda función lineal con pendiente no nula es inyectiva.</p>
+    <p><strong>Ejemplo de función NO inyectiva:</strong> $f(x)=x^{2}$. Aquí $f(2)=4$ y $f(-2)=4$; dos entradas distintas ($2$ y $-2$) producen la misma salida. Por tanto, NO es inyectiva en $\\mathbb{R}$, y por eso no tiene inversa global (solo restringida a $x\\geq 0$ o a $x\\leq 0$).</p>
     <h4>Función inversa</h4>
-    <p>Si $f$ es inyectiva (uno a uno), existe $f^{-1}$ tal que $f^{-1}(f(x))=x$. <strong>Ejemplo financiero:</strong> la demanda $q=120-3p$ se puede invertir: $p=40-\\dfrac{q}{3}$ es la <em>demanda inversa</em> (precio en función de la cantidad).</p>
+    <p>Si $f$ es inyectiva (ver definición anterior), existe su <strong>función inversa</strong> $f^{-1}$ tal que $f^{-1}(f(x))=x$ y $f(f^{-1}(y))=y$. Es decir, la inversa "deshace" lo que hace $f$. <strong>Ejemplo financiero:</strong> la demanda $q=120-3p$ se puede invertir: $p=40-\\dfrac{q}{3}$ es la <em>demanda inversa</em> (precio en función de la cantidad).</p>
     <div class="formula-box">$$q(p)=120-3p \\quad\\Longleftrightarrow\\quad p(q)=40-\\tfrac{q}{3}$$</div>
     <h4>Periodicidad</h4>
     <p>$f$ es periódica de periodo $T$ si $f(t+T)=f(t)$ para todo $t$. <strong>Ventas estacionales:</strong> $V(t)=50+20\\,\\operatorname{sen}\\!\\left(\\dfrac{\\pi t}{6}\\right)$ tiene periodo $T=\\dfrac{2\\pi}{\\pi/6}=12$ meses.</p>
     <h4>Monotonía</h4>
-    <p><strong>Creciente</strong> si $x_1< x_2$ $$\\Rightarrow$$ $f(x_1)< f(x_2)$; <strong>decreciente</strong> si $$x_1\\leq x_2 \\Rightarrow f(x_1)\\geq f(x_2)$$. La demanda $q=120-3p$ es decreciente: a mayor precio, menor cantidad.</p>
+    <p><strong>Creciente</strong> si $x_1 \\lt x_2 \\;\\Rightarrow\\; f(x_1) \\lt f(x_2)$; <strong>decreciente</strong> si $x_1 \\lt x_2 \\;\\Rightarrow\\; f(x_1) \\gt f(x_2)$. La demanda $q=120-3p$ es decreciente: a mayor precio, menor cantidad.</p>
     <h4>Simetría: par e impar</h4>
     <p><strong>Par:</strong> $f(-x)=f(x)$ (simétrica al eje $y$), ej. $f(x)=x^{2}$. <strong>Impar:</strong> $f(-x)=-f(x)$ (simétrica al origen), ej. $f(x)=x^{3}$ y $\\operatorname{sen}(x)$.</p>
     <h4>Contexto financiero</h4>
