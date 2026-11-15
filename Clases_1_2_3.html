@@ -285,6 +285,7 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
     <div class="topbar-row">
       <h1><span LPID</span> Matemáticas para la Economía I · UNII</h1>
       <div class="topbar-actions">
+        <button class="btn btn-ghost btn-sm" onclick="irDashboard()" title="Volver al dashboard">🏠 <span class="btn-label">Dashboard</span></button>
         <button class="btn btn-ghost btn-sm" onclick="toggleDarkMode()" id="btn-dark-mode" title="Cambiar modo claro/oscuro">🌙 <span class="btn-label">Modo oscuro</span></button>
         <button class="btn btn-ghost btn-sm" onclick="openPanel('panel-formulas')" title="Tabla de fórmulas">📐 <span class="btn-label">Fórmulas</span></button>
         <button class="btn btn-ghost btn-sm" onclick="openPanel('panel-errores')" title="Mis errores frecuentes">⚠️ <span class="btn-label">Errores</span></button>
@@ -340,12 +341,16 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
     <div style="text-align:center;margin:20px 0">
       <button class="btn btn-primary btn-lg" id="btn-dominar" onclick="marcarDominado()" disabled>🎓 Marcar módulo como dominado</button>
       <div id="dominar-msg" style="margin-top:8px;font-size:.85rem;color:var(--text-muted)"></div>
+      <div id="module-nav-buttons" style="margin-top:16px;display:none;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary btn-lg" id="btn-next-module" onclick="irSiguienteModulo()">➡️ Siguiente módulo</button>
+        <button class="btn btn-download btn-lg" onclick="descargarEvidenciaVisual()">🖨️ Imprimir evidencia</button>
+      </div>
     </div>
   </section>
 
   <footer>
     Matemáticas para la Economía I · Ingeniería Financiera UNII · Diseñado para aprendizaje autosuficiente<br>
-    Tus datos se guardan solo en este navegador (localStorage). Descarga tu portafolio para enviarlo al docente.
+    Tus datos se guardan solo en este navegador (localStorage) · Descarga tu portafolio para enviarlo al docente · Dr. J. Adrián Cerda.
   </footer>
 </div>
 
@@ -484,7 +489,7 @@ const MODULES = [
     <h4>Periodicidad</h4>
     <p>$f$ es periódica de periodo $T$ si $f(t+T)=f(t)$ para todo $t$. <strong>Ventas estacionales:</strong> $V(t)=50+20\\,\\operatorname{sen}\\!\\left(\\dfrac{\\pi t}{6}\\right)$ tiene periodo $T=\\dfrac{2\\pi}{\\pi/6}=12$ meses.</p>
     <h4>Monotonía</h4>
-    <p><strong>Creciente</strong> si $x_1<x_2 \\Rightarrow f(x_1)<f(x_2)$; <strong>decreciente</strong> si $x_1<x_2 \\Rightarrow f(x_1)>f(x_2)$. La demanda $q=120-3p$ es decreciente: a mayor precio, menor cantidad.</p>
+    <p><strong>Creciente</strong> si $$x_1<x_2 \\Rightarrow f(x_1)<f(x_2)$$; <strong>decreciente</strong> si $$x_1<x_2 \\Rightarrow f(x_1)>f(x_2)$$. La demanda $q=120-3p$ es decreciente: a mayor precio, menor cantidad.</p>
     <h4>Simetría: par e impar</h4>
     <p><strong>Par:</strong> $f(-x)=f(x)$ (simétrica al eje $y$), ej. $f(x)=x^{2}$. <strong>Impar:</strong> $f(-x)=-f(x)$ (simétrica al origen), ej. $f(x)=x^{3}$ y $\\operatorname{sen}(x)$.</p>
     <h4>Contexto financiero</h4>
@@ -1044,7 +1049,7 @@ function renderModuloContenido(id){
     html+=`<div class="section"><h3>🧩 Ejemplo resuelto paso a paso</h3><div id="ejemplo-display"></div></div>`;
   }
   // Generador de práctica (M3-M8)
-  if(['m2','m3'].includes(id)){
+  if(['m1','m2','m3'].includes(id)){
     html+=`<div class="practice-gen">
       <h3>🎲 Generador de práctica infinita</h3>
       <p style="font-size:.88rem">Genera ejercicios aleatorios con verificación automática. Practica cuantas veces quieras.</p>
@@ -1641,17 +1646,43 @@ function actualizarEstadoDominar(modId){
   const cumpleConsolidacion=est.consolidacionHecha;
   const btn=$('btn-dominar');
   const msg=$('dominar-msg');
+  const navBtns=$('module-nav-buttons');
   if(!btn)return;
   const cumplePct=pct>=m.criterioDominio;
   if(cumplePct&&cumpleConsolidacion){
     btn.disabled=false;
     msg.textContent='¡Listo! Has alcanzado el criterio de dominio ('+Math.round(pct*100)+'% + consolidación).';
+    // Mostrar botones de navegación al completar
+    if(navBtns){
+      navBtns.style.display='flex';
+      // Configurar botón siguiente módulo
+      var nextBtn=$('btn-next-module');
+      var nextMod=siguienteModulo(modId);
+      if(nextBtn&&nextMod){
+        nextBtn.textContent='➡️ Ir a: '+nextMod.titulo.substring(0,30);
+        nextBtn.style.display='inline-flex';
+      }else if(nextBtn){
+        nextBtn.textContent='🏁 Curso completado';
+        nextBtn.onclick=function(){irDashboard();toast('¡Has completado todas las clases! 🎉','success');};
+      }
+    }
   }else{
     btn.disabled=true;
+    if(navBtns)navBtns.style.display='none';
     let faltan=[];
     if(!cumplePct)faltan.push(`alcanzar ${Math.round(m.criterioDominio*100)}% de aciertos (vas ${est.scoreActividades}/${est.totalActividades} = ${Math.round(pct*100)}%)`);
     if(!cumpleConsolidacion)faltan.push('completar la consolidación');
     msg.textContent='Para marcar como dominado te falta: '+faltan.join(' y ')+'.';
+  }
+}
+function irSiguienteModulo(){
+  var next=siguienteModulo(moduloActual);
+  if(next){
+    abrirModulo(next.id);
+    toast('Avanzando a: '+next.titulo,'info');
+  }else{
+    irDashboard();
+    toast('¡Has completado todas las clases! 🎉','success');
   }
 }
 function marcarDominado(){
@@ -1659,17 +1690,15 @@ function marcarDominado(){
   const est=ESTADO.modulos[moduloActual];
   est.dominado=true;
   est.insignia=true;
-  // Unlock next
   const next=siguienteModulo(moduloActual);
   if(next){
-    ESTADO.modulos[next.id].desbloqueado=true;
-    toast(`¡Módulo dominado! Insignia obtenida 🏅. Desbloqueado: ${next.titulo}`,'success');
+    toast(`¡Clase dominada! Insignia obtenida 🏅`,'success');
   }else{
-    toast('¡Módulo dominado! Has completado el curso. 🎉','success');
+    toast('¡Clase dominada! Has completado el curso. 🎉','success');
   }
-  
   saveState();
-  setTimeout(()=>irDashboard(),500);
+  actualizarEstadoDominar(moduloActual);
+  renderDashboard();
 }
 function guardarConsolidacion(modId){
   const checks=['auto-1','auto-2','auto-3','auto-4'].map(id=>$(id)&&$(id).checked);
@@ -1694,7 +1723,7 @@ function guardarConsolidacion(modId){
    ============================================================ */
 let practicaActual=null;
 function generarPractica(modId){
-  var gen={m2:genLimites,m3:genDerivadas}[modId];
+  var gen={m1:genFunciones,m2:genLimites,m3:genDerivadas}[modId];
   if(!gen){toast('No hay generador','info');return}
   practicaActual=gen();var disp=$('gen-display');disp.style.display='block';
   setHTML(disp,'<div class="gen-problem">'+practicaActual.problema+'</div><div class="numerica-input"><input class="input-line" id="gen-input" placeholder="Tu respuesta"><button class="btn btn-primary btn-sm" onclick="verificarPractica()">Verificar</button></div><div class="feedback" id="gen-feedback"></div>');
@@ -1703,6 +1732,34 @@ function mostrarSolucionGen(){if(!practicaActual){toast('Genera primero','info')
 function verificarPractica(){if(!practicaActual)return;var input=$('gen-input'),val=input.value.trim();if(!val){toast('Escribe','info');return}var isCorrect;if(practicaActual.tipo==='numerica'){var num=parseFloat(val.replace(',','.'));isCorrect=!isNaN(num)&&Math.abs(num-practicaActual.respuesta)<=practicaActual.tolerancia;}else{var norm=normalizeStr(val);isCorrect=practicaActual.acepta.some(function(r){return normalizeStr(r)===norm});}var fb=$('gen-feedback');if(isCorrect){fb.className='feedback show ok';setHTML(fb,'Correcto! '+practicaActual.explicacion);input.style.borderColor='var(--success)';}else{fb.className='feedback show err';setHTML(fb,'Revisa. '+practicaActual.pista);input.style.borderColor='var(--danger)';}}
 
 function genOperaciones(){var t=Math.floor(Math.random()*3);if(t===0){var c=1+Math.floor(Math.random()*5),x=1+Math.floor(Math.random()*4),gx=x+c,fx=gx*gx;return{tipo:'numerica',problema:'Sean $f(x)=x^{2}$ y $g(x)=x+'+c+'$. Calcula $(f\\circ g)('+x+')$.',solucion:'$'+fx+'$',acepta:[],respuesta:fx,tolerancia:0.01,pista:'Primero $g('+x+')$.',explicacion:'$'+fx+'$'};}if(t===1){var a=1+Math.floor(Math.random()*4),b=1+Math.floor(Math.random()*4),co=a+1;return{tipo:'simbolica',problema:'$f(x)='+a+'x$, $g(x)=x+'+b+'$. Calcula $(f+g)(x)$.',solucion:'$'+co+'x+'+b+'$',acepta:[co+'x+'+b],pista:'Suma.',explicacion:'$'+co+'x+'+b+'$'};}var x1=Math.floor(Math.random()*4)+1,y1=Math.floor(Math.random()*5)+1,x2=x1+1+Math.floor(Math.random()*3),y2=y1+1+Math.floor(Math.random()*4),m=(y2-y1)/(x2-x1);return{tipo:'numerica',problema:'Pendiente por $('+x1+','+y1+')$ y $('+x2+','+y2+')$.',solucion:'$'+m+'$',acepta:[],respuesta:m,tolerancia:0.01,pista:'$m=\\frac{\\Delta y}{\\Delta x}$',explicacion:'$'+m+'$'};}
+function genFunciones(){
+  var t=Math.floor(Math.random()*4);
+  if(t===0){
+    // Evaluar funcion cuadratica f(x)=ax^2+bx+c en x=k
+    var a=1+Math.floor(Math.random()*3),b=1+Math.floor(Math.random()*5),c=Math.floor(Math.random()*4),k=1+Math.floor(Math.random()*4);
+    var val=a*k*k+b*k+c;
+    return{tipo:'numerica',problema:'Si $f(x)='+a+'x^{2}+'+b+'x+'+c+'$, calcula $f('+k+')$.',solucion:'$'+val+'$',acepta:[],respuesta:val,tolerancia:0.01,pista:'Sustituye $x='+k+'$ y calcula paso a paso.',explicacion:'$f('+k+')='+a+'('+k+')^{2}+'+b+'('+k+')+'+c+'='+a*k*k+'+'+b*k+'+'+c+'='+val+'$'};
+  }
+  if(t===1){
+    // Dominio: donde se anula el denominador de 1/(x-a)
+    var a=1+Math.floor(Math.random()*9);
+    return{tipo:'numerica',problema:'$f(x)=\\frac{1}{x-'+a+'}$ no está definida en $x=\\,?$',solucion:'$'+a+'$',acepta:[],respuesta:a,tolerancia:0.01,pista:'El denominador no puede ser $0$.',explicacion:'$x-'+a+'=0 \\Rightarrow x='+a+'$. El dominio es $\\mathbb{R}\\setminus\\{'+a+'\\}$.'};
+  }
+  if(t===2){
+    // Par o impar
+    var n=2+Math.floor(Math.random()*4);
+    var isEven=n%2===0;
+    var resp=isEven?'par':'impar';
+    return{tipo:'simbolica',problema:'Determina si $f(x)=x^{'+n+'}$ es par, impar o ninguna.',solucion:resp,acepta:[resp,'$'+resp+'$'],
+      pista:'Calcula $f(-x)=(-x)^{'+n+'}$ y compara con $f(x)$ y $-f(x)$.',explicacion:isEven?'$f(-x)=(-x)^{'+n+'}=x^{'+n+'}=f(x)$, por tanto es $\\text{par}$.'+'':'$f(-x)=(-x)^{'+n+'}=-x^{'+n+'}=-f(x)$, por tanto es $\\text{impar}$.'};
+  }
+  // Inversa de demanda lineal q=a-bp
+  var a=10+Math.floor(Math.random()*5)*10,b=1+Math.floor(Math.random()*4);
+  var pendiente=-1/b,intercepto=a/b;
+  var respIntercepto=Math.round(intercepto*100)/100;
+  return{tipo:'simbolica',problema:'La demanda es $q='+a+'-'+b+'p$. Despeja la demanda inversa $p(q)$.',solucion:'$p=\\frac{'+a+'-q}{'+b+'}$',acepta:['p=('+a+'-q)/'+b,'p=('+a+'-q)/'+b,'\\frac{'+a+'-q}{'+b+'}'],
+    pista:'Despeja $p$: primero $'+b+'p='+a+'-q$, luego divide entre $'+b+'$.',explicacion:'$'+b+'p='+a+'-q \\Rightarrow p=\\frac{'+a+'-q}{'+b+'}$'};
+}
 function genExpLog(){var t=Math.floor(Math.random()*3);if(t===0){var bs=[2,3,10],b=bs[Math.floor(Math.random()*3)],e=2+Math.floor(Math.random()*3),v=Math.pow(b,e);return{tipo:'numerica',problema:'$\\log_{'+b+'}('+v+')$',solucion:'$'+e+'$',acepta:[],respuesta:e,tolerancia:0.01,pista:'$'+b+'^{?}='+v+'$',explicacion:'$'+e+'$'};}if(t===1){var m=2+Math.floor(Math.random()*3),n=2+Math.floor(Math.random()*3),b=2+Math.floor(Math.random()*3),s=m+n,v=Math.pow(b,s);return{tipo:'simbolica',problema:'Simplifica $'+b+'^{'+m+'}\\cdot '+b+'^{'+n+'}$',solucion:'$'+b+'^{'+s+'}='+v+'$',acepta:[b+'^'+s,String(v)],pista:'Suma exponentes.',explicacion:'$'+v+'$'};}var b=2+Math.floor(Math.random()*3),x=2+Math.floor(Math.random()*3),v=Math.pow(b,x);return{tipo:'numerica',problema:'Resuelve $'+b+'^{x}='+v+'$',solucion:'$x='+x+'$',acepta:[],respuesta:x,tolerancia:0.01,pista:'Potencia de '+b+'.',explicacion:'$x='+x+'$'};}
 function genTrig(){var a=[{d:0,s:'0',c:'1'},{d:30,s:'\\frac{1}{2}',c:'\\frac{\\sqrt{3}}{2}'},{d:45,s:'\\frac{\\sqrt{2}}{2}',c:'\\frac{\\sqrt{2}}{2}'},{d:60,s:'\\frac{\\sqrt{3}}{2}',c:'\\frac{1}{2}'},{d:90,s:'1',c:'0'}];var p=a[Math.floor(Math.random()*a.length)],isS=Math.random()<0.5,f=isS?'\\operatorname{sen}':'\\cos',v=isS?p.s:p.c;return{tipo:'simbolica',problema:'$'+f+'('+p.d+'^{\\circ})$',solucion:'$'+v+'$',acepta:[v],pista:'Valores notables.',explicacion:'$'+v+'$'};}
 function genLimites(){var t=Math.floor(Math.random()*4);if(t===0){var a=2+Math.floor(Math.random()*4),a2=a*a,r=2*a;return{tipo:'numerica',problema:'$\\lim_{x\\to '+a+'}\\frac{x^{2}-'+a2+'}{x-'+a+'}$',solucion:'$'+r+'$',acepta:[],respuesta:r,tolerancia:0.01,pista:'Aparece $0/0$. Factoriza diferencia de cuadrados.',explicacion:'$x^{2}-'+a2+'=(x-'+a+')(x+'+a+')$, al simplificar queda $x+'+a+'='+r+'$'};}if(t===1){var n=2+Math.floor(Math.random()*2),a=1+Math.floor(Math.random()*4),b=1+Math.floor(Math.random()*4);return{tipo:'numerica',problema:'$\\lim_{x\\to\\infty}\\frac{'+a+'x^{'+n+'}+3x}{'+b+'x^{'+n+'}-2}$',solucion:'$\\frac{'+a+'}{'+b+'}$',acepta:[],respuesta:a/b,tolerancia:0.001,pista:'Cuando $x\\to\\infty$ dominan los términos de mayor grado.',explicacion:'$\\frac{'+a+'}{'+b+'}='+(a/b).toFixed(4)+'$'};}if(t===2){var a=2+Math.floor(Math.random()*5),c=1+Math.floor(Math.random()*4),r=c*a+2;return{tipo:'numerica',problema:'$\\lim_{x\\to '+a+'}('+c+'x+2)$',solucion:'$'+r+'$',acepta:[],respuesta:r,tolerancia:0.01,pista:'Sustitución directa: la función es continua.',explicacion:'$'+c+'('+a+')+2='+r+'$'};}var C=(1+Math.floor(Math.random()*9))*1000;return{tipo:'numerica',problema:'El valor presente de un pago de $'+C+' a $t$ años (tasa $r=10\\%$) es $VP(t)=\\frac{'+C+'}{(1.10)^{t}}$. Calcula $\\lim_{t\\to\\infty}VP(t)$.',solucion:'$0$',acepta:[],respuesta:0,tolerancia:0.01,pista:'El denominador $(1.10)^{t}$ crece sin límite cuando $t\\to\\infty$.',explicacion:'$\\lim_{t\\to\\infty}\\frac{'+C+'}{(1.10)^{t}}=0$ — el valor presente de un pago muy lejano tiende a cero.'};}
