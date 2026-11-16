@@ -273,7 +273,7 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
         <button class="btn btn-ghost btn-sm" onclick="openPanel('panel-errores')" title="Mis errores frecuentes">⚠️ <span class="btn-label">Errores</span></button>
         <button class="btn btn-ghost btn-sm" onclick="openPanel('panel-progreso')" title="Mi progreso detallado">📊 <span class="btn-label">Progreso</span></button>
         <button class="btn btn-ghost btn-sm" onclick="editarDatos()" title="Editar mis datos">👤 <span class="btn-label">Mis datos</span></button>
-        <button class="btn btn-download btn-sm" onclick="descargarEvidenciaVisual()">📦 <span class="btn-label">Descargar evidencia</span></button>
+        <button class="btn btn-download btn-sm" onclick="descargarPortafolio()" title="Descargar portafolio completo en PNG">📦 <span class="btn-label">Portafolio</span></button>
       </div>
     </div>
   </header>
@@ -304,7 +304,6 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
     <div class="section">
       <h3>📂 Opciones</h3>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" onclick="importarEvidencias()">📥 Importar evidencias previas</button>
         <button class="btn" onclick="reiniciarProgreso()">🔄 Reiniciar progreso</button>
         <button class="btn" onclick="editarDatos()">✏️ Editar mis datos</button>
       </div>
@@ -323,7 +322,7 @@ footer{padding:20px;text-align:center;color:var(--text-muted);font-size:.82rem}
       <div id="dominar-msg" style="margin-top:8px;font-size:.85rem;color:var(--text-muted)"></div>
       <div id="module-nav-buttons" style="margin-top:16px;display:none;gap:12px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-primary btn-lg" id="btn-next-module" onclick="irSiguienteModulo()">➡️ Siguiente módulo</button>
-        <button class="btn btn-download btn-lg" onclick="descargarEvidenciaVisual()">📥 Descargar evidencia</button>
+        <button class="btn btn-download btn-lg" onclick="descargarNotaModulo(moduloActual)">📥 Descargar reporte del módulo</button>
       </div>
     </div>
   </section>
@@ -671,7 +670,7 @@ function renderMath(el){
         throwOnError:false,
         errorColor:'#888888'
       });
-    }catch(e){/* KaTeX not ready */}
+    }catch(e){}
   }
 }
 function setHTML(el,html){
@@ -957,13 +956,8 @@ function renderActividad(act,modId,idx){
         <div class="act-actions"><button class="btn btn-primary btn-sm" onclick="verificarMulti('${aId}')">Verificar</button></div>`;
       break;
     case 'completar_hueco':
-      // El enunciado ya incluye el <input class="input-line"> incrustado
       html+=`<div class="act-actions"><button class="btn btn-primary btn-sm" onclick="verificarHueco('${aId}',${idx})">Verificar</button></div>`;
       break;
-    /* ============================================================
-       FIX: el caso "numerica" NO trae input en el enunciado,
-       hay que generarlo aquí dinámicamente.
-       ============================================================ */
     case 'numerica':{
       const valMostrar = estadoAct.correcta ? String(act.respuesta) : '';
       const extraStyle = estadoAct.correcta ? 'border-color:var(--success);background:var(--success-light);' : '';
@@ -1092,7 +1086,7 @@ function seleccionarOpcion(aId,sel){
   cont.dataset.sel=sel;
   verificarOpcion(aId);
 }
-function attachActividadHandlers(modId){/* handlers inline */}
+function attachActividadHandlers(modId){}
 function verificarOpcion(aId){
   const cont=$(aId);
   const modId=cont.dataset.mod;
@@ -1261,7 +1255,6 @@ function verificarNumerica(aId,idx){
     input.setAttribute('readonly','readonly');
     fb.className='feedback show ok';
     setHTML(fb,act.feedbackCorrecto);
-    // Opcional: quitar botón verificar
     const btn=cont.querySelector('.numerica-input .btn');
     if(btn)btn.remove();
   }else{
@@ -1273,7 +1266,6 @@ function verificarNumerica(aId,idx){
   actualizarEstadoDominar(modId);
 }
 
-/* Pistas */
 function mostrarPista(aId,nivel){
   const cont=$(aId);
   const modId=cont.dataset.mod;
@@ -1528,13 +1520,9 @@ function verificarPractica(){
   if(Math.abs(val-practicaActual.respuesta)<=tol){
     fb.className='feedback show ok';
     setHTML(fb,'✓ ¡Correcto! '+practicaActual.solucion);
-    ESTADO.evidencias.push({fecha:fechaHora(),tipo:'practica',mod:moduloActual,problema:practicaActual.problema,respuesta:val,correcto:true});
-    saveState();
   }else{
     fb.className='feedback show err';
     setHTML(fb,'✗ Incorrecto. Intenta de nuevo o revisa la solución.');
-    ESTADO.evidencias.push({fecha:fechaHora(),tipo:'practica',mod:moduloActual,problema:practicaActual.problema,respuesta:val,correcto:false});
-    saveState();
   }
 }
 
@@ -1569,7 +1557,7 @@ function genDerivadas(){
 }
 
 /* ============================================================
-   EVIDENCIA / IMPORTAR / REINICIAR / DATOS
+   EVIDENCIA INTERNA (solo registro, sin exportación JSON)
    ============================================================ */
 function descargarEvidenciaActividad(modId,idx,ok,enunciado,respuesta){
   ESTADO.evidencias.push({
@@ -1582,71 +1570,317 @@ function descargarEvidenciaActividad(modId,idx,ok,enunciado,respuesta){
   saveState();
 }
 
-function descargarEvidenciaVisual(){
-  toast('Generando evidencia...','info');
-  var ev={
-    usuario:ESTADO.usuario,
-    fecha:fechaHora(),
-    progreso:{},
-    errores:ESTADO.errores,
-    evidencias:ESTADO.evidencias
-  };
-  MODULES.forEach(function(m){
-    if(m.esDiagnostico){
-      ev.progreso[m.id]={score:ESTADO.m0.score,max:ESTADO.m0.max,completado:ESTADO.m0.completado};
-    }else{
-      var e=ESTADO.modulos[m.id];
-      ev.progreso[m.id]={aciertos:e.scoreActividades,total:e.totalActividades,dominado:e.dominado,consolidacion:e.consolidacionHecha};
-    }
-  });
-  function downloadJSON(){
-    var link=document.createElement('a');
-    link.download='evidencia_mate_economia_'+Date.now()+'.json';
-    var blob=new Blob([JSON.stringify(ev,null,2)],{type:'application/json'});
-    link.href=URL.createObjectURL(blob);
-    link.click();
-    toast('Evidencia JSON descargada ✓','success');
+/* ============================================================
+   REPORTES PNG (MÓDULO Y PORTAFOLIO)
+   ============================================================ */
+function _crearContenedorOculto(html){
+  var c = document.createElement('div');
+  c.style.cssText = 'position:absolute;left:-9999px;top:0;width:820px;background:#ffffff';
+  c.innerHTML = html;
+  document.body.appendChild(c);
+  return c;
+}
+
+function _renderizarYDescargar(container, filename, onDone){
+  if(typeof html2canvas !== 'function'){
+    toast('La librería de captura no está disponible. Intenta en unos segundos.','error');
+    if(container) container.remove();
+    return;
   }
-  if(typeof html2canvas==='function'){
-    var cont=document.querySelector('.app');
-    html2canvas(cont,{backgroundColor:getComputedStyle(document.body).backgroundColor,useCORS:true}).then(function(canvas){
-      var link=document.createElement('a');
-      link.download='evidencia_mate_economia_'+Date.now()+'.png';
-      link.href=canvas.toDataURL('image/png');
+  setTimeout(function(){
+    var target = container.firstElementChild || container;
+    html2canvas(target, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      logging: false
+    }).then(function(canvas){
+      var link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      document.body.appendChild(link);
       link.click();
-      downloadJSON();
-    }).catch(function(){ downloadJSON(); });
-  }else{
-    downloadJSON();
+      document.body.removeChild(link);
+      if(container) container.remove();
+      if(onDone) onDone();
+    }).catch(function(err){
+      console.error('Error generando PNG:', err);
+      if(container) container.remove();
+      toast('Error al generar la imagen','error');
+    });
+  }, 120);
+}
+
+function _slugNombre(){
+  var n = ESTADO.usuario.nombre || 'Estudiante';
+  return n.replace(/[^a-zA-Z0-9áéíóúñ]/g,'_').replace(/_+/g,'_').substring(0,40);
+}
+
+function generarNotaHTML(modId){
+  var m = getModulo(modId);
+  var est = ESTADO.modulos[modId];
+  var total = est.totalActividades;
+  var aciertos = est.scoreActividades;
+  var pct = total>0 ? Math.round((aciertos/total)*100) : 0;
+
+  var statusTxt, statusBg, statusFg;
+  if(est.dominado){ statusTxt = 'Dominado'; statusBg = '#e8f5e9'; statusFg = '#1b5e20'; }
+  else if(est.completado){ statusTxt = 'Completado'; statusBg = '#e3f2fd'; statusFg = '#0d47a1'; }
+  else if(aciertos>0){ statusTxt = 'En proceso'; statusBg = '#fff8e1'; statusFg = '#e65100'; }
+  else { statusTxt = 'Sin iniciar'; statusBg = '#f5f5f5'; statusFg = '#616161'; }
+
+  var rows = m.actividades.map(function(a,i){
+    var ea = est.actividades[i] || {};
+    var ok = !!ea.correcta;
+    var intentos = ea.intentos || 0;
+    var tipoLabel = ({
+      'opcion_multiple':'Opción múltiple',
+      'verdadero_falso':'Verdadero / Falso',
+      'seleccion_multiple':'Selección múltiple',
+      'completar_hueco':'Completar hueco',
+      'ordenar_pasos':'Ordenar pasos',
+      'emparejar':'Emparejar',
+      'numerica':'Respuesta numérica'
+    })[a.tipo] || a.tipo;
+    var resultColor = ok ? '#1b5e20' : (intentos>0 ? '#c62828' : '#9e9e9e');
+    var resultTxt = ok ? '✓ Correcta' : (intentos>0 ? '✗ Incorrecta' : '— Sin responder');
+    return '<tr>'
+      + '<td style="padding:7px 10px;border-bottom:1px solid #e0e0e0;text-align:center;color:#616161;font-size:.85rem">'+(i+1)+'</td>'
+      + '<td style="padding:7px 10px;border-bottom:1px solid #e0e0e0;font-size:.85rem">'+tipoLabel+'</td>'
+      + '<td style="padding:7px 10px;border-bottom:1px solid #e0e0e0;text-align:center;font-size:.85rem;color:'+resultColor+';font-weight:600">'+resultTxt+'</td>'
+      + '<td style="padding:7px 10px;border-bottom:1px solid #e0e0e0;text-align:center;font-size:.85rem;color:#616161">'+intentos+'</td>'
+      + '</tr>';
+  }).join('');
+
+  var errsMod = ESTADO.errores.filter(function(e){return e.mod===modId;}).slice(-6);
+  var errsHTML = '';
+  if(errsMod.length>0){
+    errsHTML = '<div style="margin-top:18px;background:#fff3e0;padding:12px 14px;border-radius:8px;border-left:4px solid #e65100">'
+      + '<div style="font-size:.78rem;font-weight:700;color:#e65100;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Errores registrados en este módulo (para repaso)</div>'
+      + errsMod.map(function(e){
+          return '<div style="font-size:.8rem;color:#4a4a4a;padding:4px 0;border-bottom:1px solid #ffe0b2">• '+escapeHtml(String(e.enunciado||'').replace(/\$/g,'').substring(0,110))+'</div>';
+        }).join('')
+      + '</div>';
   }
+
+  var nombre = ESTADO.usuario.nombre ? escapeHtml(ESTADO.usuario.nombre) : '<em style="color:#9e9e9e">Sin nombre registrado</em>';
+  var grupo = ESTADO.usuario.grupo ? escapeHtml(ESTADO.usuario.grupo) : '';
+  var correo = ESTADO.usuario.correo ? escapeHtml(ESTADO.usuario.correo) : '';
+  var infoExtra = '';
+  if(grupo) infoExtra += '<div style="font-size:.85rem;color:#4a4a4a;margin-top:2px">Grupo: '+grupo+'</div>';
+  if(correo) infoExtra += '<div style="font-size:.82rem;color:#707070;margin-top:2px">'+correo+'</div>';
+
+  return '<div style="width:820px;padding:36px 40px;background:#ffffff;color:#1a1a1a;font-family:\'Segoe UI\',Roboto,Arial,sans-serif;box-sizing:border-box">'
+    + '<div style="border-bottom:3px solid #4a4a4a;padding-bottom:14px;margin-bottom:22px">'
+    +   '<div style="font-size:.72rem;color:#707070;letter-spacing:1.5px;text-transform:uppercase;font-weight:600">UNII · Ingeniería Financiera</div>'
+    +   '<div style="font-size:1.5rem;font-weight:700;color:#2a2a2a;margin-top:4px">Matemáticas para la Economía I</div>'
+    +   '<div style="font-size:.85rem;color:#4a4a4a;margin-top:2px">Reporte académico del módulo · Curso-Taller Interactivo</div>'
+    + '</div>'
+    + '<div style="display:flex;gap:16px;margin-bottom:20px">'
+    +   '<div style="flex:2;background:#f5f5f5;padding:14px 16px;border-radius:8px">'
+    +     '<div style="font-size:.72rem;color:#707070;text-transform:uppercase;letter-spacing:.5px;font-weight:600">Estudiante</div>'
+    +     '<div style="font-size:1rem;font-weight:600;margin-top:3px">'+nombre+'</div>'
+    +     infoExtra
+    +   '</div>'
+    +   '<div style="flex:1;background:#f5f5f5;padding:14px 16px;border-radius:8px">'
+    +     '<div style="font-size:.72rem;color:#707070;text-transform:uppercase;letter-spacing:.5px;font-weight:600">Fecha del reporte</div>'
+    +     '<div style="font-size:.95rem;font-weight:600;margin-top:3px">'+fechaHora()+'</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div style="background:#ebebeb;padding:14px 18px;border-radius:8px;margin-bottom:18px;border-left:6px solid #4a4a4a">'
+    +   '<div style="font-size:.72rem;color:#707070;text-transform:uppercase;letter-spacing:.5px;font-weight:600">Módulo '+m.num+'</div>'
+    +   '<div style="font-size:1.15rem;font-weight:700;color:#2a2a2a;margin-top:2px">'+escapeHtml(m.titulo)+'</div>'
+    + '</div>'
+    + '<div style="display:flex;gap:14px;margin-bottom:18px">'
+    +   '<div style="flex:1;background:#f0f0f0;padding:16px;border-radius:8px;text-align:center">'
+    +     '<div style="font-size:2rem;font-weight:700;color:#2a2a2a;line-height:1.1">'+aciertos+'<span style="font-size:1.1rem;color:#9e9e9e">/'+total+'</span></div>'
+    +     '<div style="font-size:.78rem;color:#707070;margin-top:4px">Actividades correctas</div>'
+    +   '</div>'
+    +   '<div style="flex:1;background:#f0f0f0;padding:16px;border-radius:8px;text-align:center">'
+    +     '<div style="font-size:2rem;font-weight:700;color:#2a2a2a;line-height:1.1">'+pct+'%</div>'
+    +     '<div style="font-size:.78rem;color:#707070;margin-top:4px">Avance del módulo</div>'
+    +   '</div>'
+    +   '<div style="flex:1;background:'+statusBg+';padding:16px;border-radius:8px;text-align:center">'
+    +     '<div style="font-size:1.1rem;font-weight:700;color:'+statusFg+';line-height:1.4">'+statusTxt+'</div>'
+    +     '<div style="font-size:.78rem;color:#707070;margin-top:4px">Estado del módulo</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div style="margin-bottom:18px">'
+    +   '<div style="font-size:.85rem;font-weight:700;color:#2a2a2a;margin-bottom:8px">Detalle de actividades</div>'
+    +   '<table style="width:100%;border-collapse:collapse">'
+    +     '<thead><tr style="background:#2a2a2a;color:#ffffff">'
+    +       '<th style="padding:8px 10px;text-align:center;font-size:.78rem;font-weight:600;width:50px">#</th>'
+    +       '<th style="padding:8px 10px;text-align:left;font-size:.78rem;font-weight:600">Tipo de actividad</th>'
+    +       '<th style="padding:8px 10px;text-align:center;font-size:.78rem;font-weight:600;width:170px">Resultado</th>'
+    +       '<th style="padding:8px 10px;text-align:center;font-size:.78rem;font-weight:600;width:90px">Intentos</th>'
+    +     '</tr></thead>'
+    +     '<tbody>'+rows+'</tbody>'
+    +   '</table>'
+    + '</div>'
+    + '<div style="display:flex;gap:14px;margin-bottom:14px">'
+    +   '<div style="flex:1;background:#f5f5f5;padding:12px 14px;border-radius:8px">'
+    +     '<div style="font-size:.75rem;color:#707070;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Consolidación</div>'
+    +     '<div style="font-size:1rem;font-weight:600;margin-top:3px;color:'+(est.consolidacionHecha?'#1b5e20':'#9e9e9e')+'">'+(est.consolidacionHecha?'✓ Completada':'— Pendiente')+'</div>'
+    +   '</div>'
+    +   '<div style="flex:1;background:#f5f5f5;padding:12px 14px;border-radius:8px">'
+    +     '<div style="font-size:.75rem;color:#707070;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Errores en este módulo</div>'
+    +     '<div style="font-size:1rem;font-weight:600;margin-top:3px">'+errsMod.length+'</div>'
+    +   '</div>'
+    + '</div>'
+    + errsHTML
+    + '<div style="margin-top:32px;padding-top:16px;border-top:2px solid #d4d4d4;display:flex;justify-content:space-between;align-items:flex-end">'
+    +   '<div style="font-size:.78rem;color:#707070;line-height:1.5">'
+    +     'Dr. J. Adrián Cerda · Matemáticas para la Economía I<br>'
+    +     'Reporte generado automáticamente por la plataforma-taller'
+    +   '</div>'
+    +   '<div style="border-top:1px solid #1a1a1a;width:240px;text-align:center;padding-top:4px;font-size:.78rem;color:#707070">Firma del estudiante</div>'
+    + '</div>'
+    + '</div>';
 }
 
-function importarEvidencias(){
-  var input=document.createElement('input');
-  input.type='file';
-  input.accept='.json';
-  input.onchange=function(e){
-    var file=e.target.files[0];
-    if(!file)return;
-    var reader=new FileReader();
-    reader.onload=function(ev){
-      try{
-        var data=JSON.parse(ev.target.result);
-        if(data.usuario&&!ESTADO.usuario.nombre)ESTADO.usuario=data.usuario;
-        if(Array.isArray(data.errores))ESTADO.errores=ESTADO.errores.concat(data.errores);
-        if(Array.isArray(data.evidencias))ESTADO.evidencias=ESTADO.evidencias.concat(data.evidencias);
-        saveState();
-        renderDashboard();
-        toast('Evidencias importadas ✓','success');
-      }catch(err){
-        toast('Error al leer el archivo','error');
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
+function descargarNotaModulo(modId){
+  if(!modId) modId = moduloActual;
+  if(!modId){ toast('Abre un módulo primero','info'); return; }
+  var m = getModulo(modId);
+  if(!m){ toast('Módulo no encontrado','error'); return; }
+  toast('Generando reporte del módulo...','info');
+  var container = _crearContenedorOculto(generarNotaHTML(modId));
+  var filename = 'Reporte_' + m.id.toUpperCase() + '_' + _slugNombre() + '.png';
+  _renderizarYDescargar(container, filename, function(){
+    toast('Reporte descargado ✓','success');
+  });
 }
 
+function generarPortafolioHTML(){
+  var mods = MODULES.filter(function(m){return m.id!=='m0';});
+  var rows = mods.map(function(m){
+    var e = ESTADO.modulos[m.id];
+    var pct = e.totalActividades>0 ? Math.round((e.scoreActividades/e.totalActividades)*100) : 0;
+    var estTxt, estColor;
+    if(e.dominado){ estTxt='Dominado'; estColor='#1b5e20'; }
+    else if(e.completado){ estTxt='Completado'; estColor='#0d47a1'; }
+    else if(e.scoreActividades>0){ estTxt='En proceso'; estColor='#e65100'; }
+    else { estTxt='Sin iniciar'; estColor='#9e9e9e'; }
+    return '<tr>'
+      + '<td style="padding:8px 10px;border-bottom:1px solid #e0e0e0;font-size:.85rem"><strong>M'+m.num+'</strong></td>'
+      + '<td style="padding:8px 10px;border-bottom:1px solid #e0e0e0;font-size:.85rem">'+escapeHtml(m.titulo)+'</td>'
+      + '<td style="padding:8px 10px;border-bottom:1px solid #e0e0e0;text-align:center;font-size:.85rem">'+e.scoreActividades+'/'+e.totalActividades+'</td>'
+      + '<td style="padding:8px 10px;border-bottom:1px solid #e0e0e0;text-align:center;font-size:.85rem">'+pct+'%</td>'
+      + '<td style="padding:8px 10px;border-bottom:1px solid #e0e0e0;text-align:center;font-size:.85rem;font-weight:600;color:'+estColor+'">'+estTxt+'</td>'
+      + '<td style="padding:8px 10px;border-bottom:1px solid #e0e0e0;text-align:center;font-size:.85rem">'+(e.consolidacionHecha?'✓':'—')+'</td>'
+      + '</tr>';
+  }).join('');
+
+  var totalAct = 0, totalOk = 0;
+  mods.forEach(function(m){
+    totalAct += ESTADO.modulos[m.id].totalActividades;
+    totalOk += ESTADO.modulos[m.id].scoreActividades;
+  });
+  var pctGlobal = totalAct>0 ? Math.round((totalOk/totalAct)*100) : 0;
+  var dominados = mods.filter(function(m){return ESTADO.modulos[m.id].dominado;}).length;
+
+  var errsRec = ESTADO.errores.slice(-8).reverse();
+  var errsHTML = '';
+  if(errsRec.length>0){
+    errsHTML = '<div style="margin-top:18px;background:#fff3e0;padding:12px 14px;border-radius:8px;border-left:4px solid #e65100">'
+      + '<div style="font-size:.78rem;font-weight:700;color:#e65100;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Errores recientes</div>'
+      + errsRec.map(function(e){
+          var mm = getModulo(e.mod);
+          var modName = mm ? ('M'+mm.num) : (e.mod||'—');
+          return '<div style="font-size:.8rem;color:#4a4a4a;padding:4px 0;border-bottom:1px solid #ffe0b2">'
+            + '<strong>'+modName+'</strong> · '+escapeHtml(String(e.enunciado||'').replace(/\$/g,'').substring(0,100))
+            + '</div>';
+        }).join('')
+      + '</div>';
+  }
+
+  var nombre = ESTADO.usuario.nombre ? escapeHtml(ESTADO.usuario.nombre) : '<em style="color:#9e9e9e">Sin nombre registrado</em>';
+  var grupo = ESTADO.usuario.grupo ? escapeHtml(ESTADO.usuario.grupo) : '';
+  var correo = ESTADO.usuario.correo ? escapeHtml(ESTADO.usuario.correo) : '';
+  var infoExtra = '';
+  if(grupo) infoExtra += '<div style="font-size:.85rem;color:#4a4a4a;margin-top:2px">Grupo: '+grupo+'</div>';
+  if(correo) infoExtra += '<div style="font-size:.82rem;color:#707070;margin-top:2px">'+correo+'</div>';
+
+  var diagTxt = ESTADO.m0.completado ? (ESTADO.m0.score+'/'+ESTADO.m0.max+' correctas') : 'No realizado';
+
+  return '<div style="width:820px;padding:36px 40px;background:#ffffff;color:#1a1a1a;font-family:\'Segoe UI\',Roboto,Arial,sans-serif;box-sizing:border-box">'
+    + '<div style="border-bottom:3px solid #4a4a4a;padding-bottom:14px;margin-bottom:22px">'
+    +   '<div style="font-size:.72rem;color:#707070;letter-spacing:1.5px;text-transform:uppercase;font-weight:600">UNII · Ingeniería Financiera</div>'
+    +   '<div style="font-size:1.5rem;font-weight:700;color:#2a2a2a;margin-top:4px">Matemáticas para la Economía I</div>'
+    +   '<div style="font-size:.85rem;color:#4a4a4a;margin-top:2px">Portafolio de evidencias · Curso-Taller Interactivo</div>'
+    + '</div>'
+    + '<div style="display:flex;gap:16px;margin-bottom:20px">'
+    +   '<div style="flex:2;background:#f5f5f5;padding:14px 16px;border-radius:8px">'
+    +     '<div style="font-size:.72rem;color:#707070;text-transform:uppercase;letter-spacing:.5px;font-weight:600">Estudiante</div>'
+    +     '<div style="font-size:1rem;font-weight:600;margin-top:3px">'+nombre+'</div>'
+    +     infoExtra
+    +   '</div>'
+    +   '<div style="flex:1;background:#f5f5f5;padding:14px 16px;border-radius:8px">'
+    +     '<div style="font-size:.72rem;color:#707070;text-transform:uppercase;letter-spacing:.5px;font-weight:600">Fecha</div>'
+    +     '<div style="font-size:.95rem;font-weight:600;margin-top:3px">'+fechaHora()+'</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div style="display:flex;gap:14px;margin-bottom:20px">'
+    +   '<div style="flex:1;background:#f0f0f0;padding:16px;border-radius:8px;text-align:center">'
+    +     '<div style="font-size:2rem;font-weight:700;color:#2a2a2a;line-height:1.1">'+pctGlobal+'%</div>'
+    +     '<div style="font-size:.78rem;color:#707070;margin-top:4px">Progreso global</div>'
+    +   '</div>'
+    +   '<div style="flex:1;background:#f0f0f0;padding:16px;border-radius:8px;text-align:center">'
+    +     '<div style="font-size:2rem;font-weight:700;color:#2a2a2a;line-height:1.1">'+totalOk+'<span style="font-size:1.1rem;color:#9e9e9e">/'+totalAct+'</span></div>'
+    +     '<div style="font-size:.78rem;color:#707070;margin-top:4px">Actividades correctas</div>'
+    +   '</div>'
+    +   '<div style="flex:1;background:#f0f0f0;padding:16px;border-radius:8px;text-align:center">'
+    +     '<div style="font-size:2rem;font-weight:700;color:#2a2a2a;line-height:1.1">'+dominados+'<span style="font-size:1.1rem;color:#9e9e9e">/'+mods.length+'</span></div>'
+    +     '<div style="font-size:.78rem;color:#707070;margin-top:4px">Módulos dominados</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div style="margin-bottom:18px">'
+    +   '<div style="font-size:.85rem;font-weight:700;color:#2a2a2a;margin-bottom:8px">Resumen por módulo</div>'
+    +   '<table style="width:100%;border-collapse:collapse">'
+    +     '<thead><tr style="background:#2a2a2a;color:#ffffff">'
+    +       '<th style="padding:8px 10px;text-align:left;font-size:.78rem;font-weight:600;width:50px">Mód.</th>'
+    +       '<th style="padding:8px 10px;text-align:left;font-size:.78rem;font-weight:600">Título</th>'
+    +       '<th style="padding:8px 10px;text-align:center;font-size:.78rem;font-weight:600;width:80px">Aciertos</th>'
+    +       '<th style="padding:8px 10px;text-align:center;font-size:.78rem;font-weight:600;width:70px">%</th>'
+    +       '<th style="padding:8px 10px;text-align:center;font-size:.78rem;font-weight:600;width:120px">Estado</th>'
+    +       '<th style="padding:8px 10px;text-align:center;font-size:.78rem;font-weight:600;width:90px">Consol.</th>'
+    +     '</tr></thead>'
+    +     '<tbody>'+rows+'</tbody>'
+    +   '</table>'
+    + '</div>'
+    + '<div style="display:flex;gap:14px;margin-bottom:14px">'
+    +   '<div style="flex:1;background:#f5f5f5;padding:12px 14px;border-radius:8px">'
+    +     '<div style="font-size:.75rem;color:#707070;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Diagnóstico inicial</div>'
+    +     '<div style="font-size:.95rem;font-weight:600;margin-top:3px">'+diagTxt+'</div>'
+    +   '</div>'
+    +   '<div style="flex:1;background:#f5f5f5;padding:12px 14px;border-radius:8px">'
+    +     '<div style="font-size:.75rem;color:#707070;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Errores totales registrados</div>'
+    +     '<div style="font-size:.95rem;font-weight:600;margin-top:3px">'+ESTADO.errores.length+'</div>'
+    +   '</div>'
+    + '</div>'
+    + errsHTML
+    + '<div style="margin-top:32px;padding-top:16px;border-top:2px solid #d4d4d4;display:flex;justify-content:space-between;align-items:flex-end">'
+    +   '<div style="font-size:.78rem;color:#707070;line-height:1.5">'
+    +     'Dr. J. Adrián Cerda · Matemáticas para la Economía I<br>'
+    +     'Portafolio generado automáticamente por la plataforma-taller'
+    +   '</div>'
+    +   '<div style="border-top:1px solid #1a1a1a;width:240px;text-align:center;padding-top:4px;font-size:.78rem;color:#707070">Firma del estudiante</div>'
+    + '</div>'
+    + '</div>';
+}
+
+function descargarPortafolio(){
+  toast('Generando portafolio...','info');
+  var container = _crearContenedorOculto(generarPortafolioHTML());
+  var filename = 'Portafolio_Mate_Economia_' + _slugNombre() + '.png';
+  _renderizarYDescargar(container, filename, function(){
+    toast('Portafolio descargado ✓','success');
+  });
+}
+
+/* ============================================================
+   REINICIAR / DATOS
+   ============================================================ */
 function reiniciarProgreso(){
   if(!confirm('¿Seguro? Se borrará todo tu progreso guardado.'))return;
   localStorage.removeItem(STORAGE_KEY);
@@ -1777,7 +2011,6 @@ function renderProgresoDetallado(){
    INICIALIZACIÓN
    ============================================================ */
 (function init(){
-  // Tema guardado
   var savedTheme=localStorage.getItem('mate_theme');
   if(savedTheme){
     document.documentElement.setAttribute('data-theme',savedTheme);
@@ -1787,7 +2020,6 @@ function renderProgresoDetallado(){
       if(label)label.textContent=savedTheme==='dark'?'Modo claro':'Modo oscuro';
     }
   }
-  // Click fuera del modal cierra
   var mo=$('modal-overlay');
   if(mo){
     mo.addEventListener('click',function(e){
